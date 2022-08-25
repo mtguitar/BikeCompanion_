@@ -1,7 +1,5 @@
 package com.example.bikecomputerfirstdraft.ui.addSensor;
 
-import androidx.lifecycle.ViewModelProvider;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
@@ -18,14 +16,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.hardware.SensorManager;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.ui.AppBarConfiguration;
-
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -35,17 +26,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.ui.AppBarConfiguration;
+
 import com.example.bikecomputerfirstdraft.BluetoothLeService;
-import com.example.bikecomputerfirstdraft.MainActivity;
-import com.example.bikecomputerfirstdraft.R;
-import com.example.bikecomputerfirstdraft.databinding.ActivityMainBinding;
 import com.example.bikecomputerfirstdraft.databinding.FragmentAddSensorBinding;
-import com.example.bikecomputerfirstdraft.databinding.FragmentGalleryBinding;
-import com.example.bikecomputerfirstdraft.databinding.FragmentHomeBinding;
-import com.example.bikecomputerfirstdraft.ui.gallery.GalleryViewModel;
 
-
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.UUID;
 @SuppressLint("MissingPermission")
@@ -70,7 +58,7 @@ public class AddSensorFragment extends Fragment {
     public static UUID LIGHT_MODE_SERVICE_UUID = UUID.fromString("71261000-3692-ae93-e711-472ba41689c9");
     public static UUID LIGHT_MODE_CHARACTERISTIC_UUID = UUID.fromString("71261001-3692-ae93-e711-472ba41689c9");
 
-    private byte[] payloadToWrite;
+    //private byte[] payloadToWrite;
 
     private static String stringDaySolid = "1";
     private static String stringDayBlink = "7";
@@ -79,18 +67,13 @@ public class AddSensorFragment extends Fragment {
     private static String off = "0";
 
 
-    public void convertStingtoByte(String string) {
+    public byte[] convertStingtoByte(String string) {
         int intFromString = Integer.parseInt(string, 16);
         byte intToByte = (byte) intFromString;
         byte[] byteArray = new byte[1];
         byteArray[0] = (byte) (intFromString);
-        payloadToWrite = byteArray;
+        return byteArray;
     }
-
-
-
-
-
 
 
 
@@ -177,14 +160,19 @@ public class AddSensorFragment extends Fragment {
 
         initViewObjects();
 
+
         final Button buttonConnect = binding.buttonConnect;
         final Button buttonSubscribe = binding.buttonSubscribe;
         final Button buttonTurnOn = binding.buttonTurnOn;
         final Button buttonTurnOff = binding.buttonTurnOff;
+        final TextView textViewScanStatus = binding.textViewScanStatus;
+
+
 
         buttonConnect.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
                 connectDevice("F8:EF:93:1C:EC:DB");
+                textViewScanStatus.setText("connecting");
             }
         });
 
@@ -216,7 +204,6 @@ public class AddSensorFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
-
 
     private void initViewObjects() {
         // Make textViewLog scrollable
@@ -312,7 +299,7 @@ public class AddSensorFragment extends Fragment {
     }
 
     private void writeCharacteristic(String payload){
-        convertStingtoByte(payload);
+        byte[] payloadToWrite = convertStingtoByte(payload);
         bluetoothLeService.writeCharacteristic(SERVICE_UUID, CHARACTERISTIC_UUID, payloadToWrite);
     }
 
