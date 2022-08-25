@@ -25,9 +25,9 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
 
         public ScannerViewHolder(@NonNull View itemView) {
             super(itemView);
-            mImageView = itemView.findViewById(R.id.imageView);
-            mTextName = itemView.findViewById(R.id.textView);
-            mTextDescription = itemView.findViewById(R.id.textView);
+            mImageView = itemView.findViewById(R.id.imageViewScanResults);
+            mTextName = itemView.findViewById(R.id.textViewName);
+            mTextDescription = itemView.findViewById(R.id.textViewDescription);
         }
     }
 
@@ -45,14 +45,12 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
     }
 
 
-
     @Override
     public void onBindViewHolder(@NonNull ScannerAdapter.ScannerViewHolder holder, int position) {
         ScannerItem currentItem = mScannerList.get(position);
-        holder.mImageView.setImageResource(currentItem.getmImageResource());
-        holder.mTextDescription.setText(currentItem.getmTextDescription());
-        holder.mTextName.setText(currentItem.getmTextName());
-
+        holder.mImageView.setImageResource(currentItem.getImageResource());
+        holder.mTextDescription.setText(currentItem.getTextDescription());
+        holder.mTextName.setText(currentItem.getTextName());
 
     }
 

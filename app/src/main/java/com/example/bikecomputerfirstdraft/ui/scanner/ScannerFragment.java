@@ -22,14 +22,6 @@ public class ScannerFragment extends Fragment {
     private ScannerViewModel mViewModel;
 
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-    View root;
-    Context context;
-
-
-
-
     public static ScannerFragment newInstance() {
         return new ScannerFragment();
     }
@@ -38,24 +30,23 @@ public class ScannerFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
+
         ArrayList<ScannerItem> scannerList = new ArrayList<>();
 
         scannerList.add(new ScannerItem(R.drawable.ic_flare, "FlareRT", "bike light"));
         scannerList.add(new ScannerItem(R.drawable.ic_cadence, "Wahoo Sensor", "cadence sensor"));
         scannerList.add(new ScannerItem(R.drawable.ic_speed, "Random Sensor", "speed sensor"));
 
-        root = inflater.inflate(R.layout.fragment_scanner, container, false);
-        context = root.getContext();
+        View view = inflater.inflate(R.layout.fragment_scanner, container, false);
 
-        mRecyclerView = root.findViewById(R.id.recyclerViewScanner);
-        mLayoutManager = new LinearLayoutManager(context);
-        mAdapter = new ScannerAdapter(scannerList);
+        mRecyclerView = view.findViewById(R.id.recyclerViewScanner);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        mRecyclerView.setAdapter(new ScannerAdapter(scannerList));
 
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mAdapter);
-
-        return inflater.inflate(R.layout.fragment_scanner, container, false);
+        return view;
     }
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -63,5 +54,6 @@ public class ScannerFragment extends Fragment {
         mViewModel = new ViewModelProvider(this).get(ScannerViewModel.class);
         // TODO: Use the ViewModel
     }
+
 
 }

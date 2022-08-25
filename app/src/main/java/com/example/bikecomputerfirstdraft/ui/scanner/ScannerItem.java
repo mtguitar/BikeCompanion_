@@ -1,26 +1,26 @@
 package com.example.bikecomputerfirstdraft.ui.scanner;
 
 public class ScannerItem {
-    private int mImageResource;
-    private String mTextName;
-    private String mTextDescription;
+    private int ImageResource;
+    private String TextName;
+    private String TextDescription;
 
-    public ScannerItem(int mImageResource, String mTextName, String mTextDescription){
-        mImageResource = mImageResource;
-        mTextName = mTextName;
-        mTextDescription = mTextDescription;
+    public ScannerItem(int imageResource, String textName, String textDescription){
+        ImageResource = imageResource;
+        TextName = textName;
+        TextDescription = textDescription;
     }
 
-    public int getmImageResource(){
-        return mImageResource;
+    public int getImageResource(){
+        return ImageResource;
     }
 
-    public String getmTextName(){
-        return mTextName;
+    public String getTextName(){
+        return TextName;
     }
 
-    public String getmTextDescription(){
-        return mTextDescription;
+    public String getTextDescription(){
+        return TextDescription;
     }
 
 }
