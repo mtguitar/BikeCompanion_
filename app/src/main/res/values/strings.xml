@@ -32,4 +32,10 @@
     <string name="subscribe">Subscribe</string>
     <string name="turn_off">Turn off</string>
     <string name="turn_on">Turn On</string>
+    <string name="scan_status">Scan Status</string>
+    <string name="linear_layout_manager" />
+    <string name="grid_layout_manager" />
+    <string name="nav_scanner">Scanner</string>
+    <string name="menu_scannen">Scanner</string>
+    <string name="menu_scanner">Scanner</string>
 </resources>

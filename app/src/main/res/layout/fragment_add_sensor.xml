@@ -57,6 +57,16 @@
             app:layout_constraintStart_toEndOf="@+id/buttonTurnOff"
             app:layout_constraintTop_toBottomOf="@+id/buttonConnect"
             app:layout_constraintVertical_bias="0.317" />
+
+        <TextView
+            android:id="@+id/textViewScanStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="44dp"
+            android:layout_marginTop="148dp"
+            android:text="@string/scan_status"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>
