@@ -20,19 +20,19 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import java.util.UUID;
+@SuppressLint("MissingPermission")
 
 public class BluetoothLeService extends Service {
 
     private final static String TAG = "FlareLog";
 
-    private BluetoothManager bluetoothManager;
-    private BluetoothAdapter bluetoothAdapter;
-    private BluetoothGatt bluetoothGatt;
+    private BluetoothManager mBluetoothManager;
+    private BluetoothAdapter mBluetoothAdapter;
+    private BluetoothGatt mBluetoothGatt;
 
     private int connectionState = STATE_DISCONNECTED;
 
     private String deviceName;
-
 
     private final static int STATE_DISCONNECTED = 0;
     private final static int STATE_CONNECTING = 1;
@@ -61,9 +61,50 @@ public class BluetoothLeService extends Service {
     public final static UUID UUID_SERVICE_BATTERY = UUID.fromString("0000180f-0000-1000-8000-00805f9b34fb");
     public final static UUID UUID_CHARACTERISTIC_BATTERY = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
 
+
+
+    // Write characteristic
+    public void writeCharacteristic(UUID service, UUID characteristic, byte[] payload) {
+        if (mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothGatt not initialized");
+            return;
+        }
+        Log.w(TAG, "Trying to write: " + payload[0]);
+        int writeType = BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE;
+
+        BluetoothGattCharacteristic characteristicToWrite = mBluetoothGatt.getService(service).getCharacteristic(characteristic);
+
+        characteristicToWrite.setWriteType(writeType);
+        characteristicToWrite.setValue(payload);
+        mBluetoothGatt.writeCharacteristic(characteristicToWrite);
+    }
+
+
+    // Read characteristic
+    public void readCharacteristic(UUID service, UUID characteristic) {
+        if (mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothGatt not initialized");
+            return;
+        }
+        BluetoothGattCharacteristic characteristicToRead = mBluetoothGatt.getService(service).getCharacteristic(characteristic);
+        mBluetoothGatt.readCharacteristic(characteristicToRead);
+    }
+
+    // Subscribe to characteristic notifications
+    public void setCharacteristicNotification(UUID service, UUID characteristic, boolean enabled){
+        if (mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothGatt not initialized");
+            return;
+        }
+        BluetoothGattCharacteristic characteristicToSubscribe = mBluetoothGatt.getService(service).getCharacteristic(characteristic);
+        mBluetoothGatt.setCharacteristicNotification(characteristicToSubscribe, enabled);
+        Log.w(TAG, "Subscribed to characteristic " + characteristic);
+    }
+
+
     // Implements Gatt Callback method and data received methods
 
-    private final BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
+    private final BluetoothGattCallback mBluetoothGattCallback = new BluetoothGattCallback() {
         @SuppressLint("MissingPermission")
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
@@ -73,12 +114,12 @@ public class BluetoothLeService extends Service {
             if(newState == BluetoothProfile.STATE_CONNECTED){
                 intentAction = ACTION_GATT_CONNECTED;
                 connectionState = STATE_CONNECTED;
-                bluetoothGatt = gatt;
+                mBluetoothGatt = gatt;
                 broadcastUpdate(intentAction);
 
                 Log.d(TAG, "Device Connected");
 
-                bluetoothGatt.discoverServices();
+                mBluetoothGatt.discoverServices();
                 Log.i(TAG, "Start service discovery ");
 
             }
@@ -119,17 +160,14 @@ public class BluetoothLeService extends Service {
     };
 
 
-
     public class LocalBinder extends Binder {
         public BluetoothLeService getService() {
             return BluetoothLeService.this;
         }
-
     }
 
     private final IBinder binder = new LocalBinder();
 
-    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return binder;
@@ -138,43 +176,42 @@ public class BluetoothLeService extends Service {
 
     //Initializes a reference to the local Bluetooth adapter.
     public boolean initialize() {
-        if (bluetoothManager == null) {
-            bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-            if (bluetoothManager == null) {
+        if (mBluetoothManager == null) {
+            mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+            if (mBluetoothManager == null) {
                 Log.e(TAG, "Unable to initialize BluetoothManager.");
                 return false;
             }
         }
-        bluetoothAdapter = bluetoothManager.getAdapter();
-        if (bluetoothAdapter == null) {
+        mBluetoothAdapter = mBluetoothManager.getAdapter();
+        if (mBluetoothAdapter == null) {
             Log.e(TAG, "Unable to obtain a BluetoothAdapter.");
             return false;
         }
         return true;
     }
 
-    // Connects to the Device
-    @SuppressLint("MissingPermission")
-    public boolean connectToDevice(String deviceMacAddress) {
-        final BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceMacAddress);
+    // Connect to the device
+    public boolean connectDevice(String deviceMacAddress) {
+        final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(deviceMacAddress);
         if (device == null) {
             Log.w(TAG, "Device not found.  Unable to connect.");
             return false;
         }
         // We want to directly connect to the device, so we are setting the autoConnect
         // parameter to false.
-        bluetoothGatt = device.connectGatt(this, false, bluetoothGattCallback);
+        mBluetoothGatt = device.connectGatt(this, false, mBluetoothGattCallback);
         Log.d(TAG, "Connecting . . .");
         connectionState = STATE_CONNECTING;
         return true;
     }
 
-    public void disconnect() {
-        if (bluetoothAdapter == null || bluetoothGatt == null) {
+    public void disconnectDevice() {
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
-        bluetoothGatt.disconnect();
+        mBluetoothGatt.disconnect();
         Log.d(TAG, "Device disconnected");
     }
 
@@ -196,26 +233,7 @@ public class BluetoothLeService extends Service {
         sendBroadcast(intent);
     }
 
-    public void readCharacteristic(UUID service, UUID characteristic) {
-        if (bluetoothGatt == null) {
-            Log.w(TAG, "BluetoothGatt not initialized");
-            return;
-        }
-        BluetoothGattCharacteristic characteristicToRead = bluetoothGatt.getService(service).getCharacteristic(characteristic);
-        bluetoothGatt.readCharacteristic(characteristicToRead);
 
-    }
-
-    public void setCharacteristicNotification(UUID service, UUID characteristic, boolean enabled){
-        if (bluetoothGatt == null) {
-            Log.w(TAG, "BluetoothGatt not initialized");
-            return;
-        }
-        BluetoothGattCharacteristic characteristicToSubscribe = bluetoothGatt.getService(service).getCharacteristic(characteristic);
-        bluetoothGatt.setCharacteristicNotification(characteristicToSubscribe, enabled);
-        Log.w(TAG, "Subscribed to characteristic " + characteristic);
-
-    }
 
 
 }

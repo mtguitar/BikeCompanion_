@@ -3,6 +3,7 @@ package com.example.bikecomputerfirstdraft.ui.addSensor;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -43,10 +44,13 @@ import com.example.bikecomputerfirstdraft.databinding.FragmentGalleryBinding;
 import com.example.bikecomputerfirstdraft.databinding.FragmentHomeBinding;
 import com.example.bikecomputerfirstdraft.ui.gallery.GalleryViewModel;
 
+
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.UUID;
-
+@SuppressLint("MissingPermission")
 public class AddSensorFragment extends Fragment {
+
 
     private AddSensorViewModel mViewModel;
     private FragmentAddSensorBinding binding;
@@ -65,6 +69,30 @@ public class AddSensorFragment extends Fragment {
 
     public static UUID LIGHT_MODE_SERVICE_UUID = UUID.fromString("71261000-3692-ae93-e711-472ba41689c9");
     public static UUID LIGHT_MODE_CHARACTERISTIC_UUID = UUID.fromString("71261001-3692-ae93-e711-472ba41689c9");
+
+    private byte[] payloadToWrite;
+
+    private static String stringDaySolid = "1";
+    private static String stringDayBlink = "7";
+    private static String stringNightSolid = "5";
+    private static String stringNightBlink = "3F";
+    private static String off = "0";
+
+
+    public void convertStingtoByte(String string) {
+        int intFromString = Integer.parseInt(string, 16);
+        byte intToByte = (byte) intFromString;
+        byte[] byteArray = new byte[1];
+        byteArray[0] = (byte) (intFromString);
+        payloadToWrite = byteArray;
+    }
+
+
+
+
+
+
+
 
     public UUID SERVICE_UUID = LIGHT_MODE_SERVICE_UUID;
     public UUID CHARACTERISTIC_UUID = LIGHT_MODE_CHARACTERISTIC_UUID;
@@ -122,13 +150,13 @@ public class AddSensorFragment extends Fragment {
     }
 
     // Devices
-    MainActivity.Device flareOne = new MainActivity.Device(
+    Device flareOne = new Device(
             "Flare One",
             "Flare RT",
             "F8:EF:93:1C:EC:DB",
             "light");
 
-    MainActivity.Device flareTwo = new MainActivity.Device(
+    Device flareTwo = new Device(
             "Flare Two",
             "Flare RT",
             "F5:95:D9:24:C7:3A",
@@ -145,8 +173,14 @@ public class AddSensorFragment extends Fragment {
         binding = FragmentAddSensorBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final Button buttonConnect = binding.button2;
-        final Button buttonSubscribe = binding.button3;
+        //bluetoothLeService.registerReceiver(gattUpdateReceiver, makeGattUpdateIntentFilter());
+
+        initViewObjects();
+
+        final Button buttonConnect = binding.buttonConnect;
+        final Button buttonSubscribe = binding.buttonSubscribe;
+        final Button buttonTurnOn = binding.buttonTurnOn;
+        final Button buttonTurnOff = binding.buttonTurnOff;
 
         buttonConnect.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
@@ -160,6 +194,18 @@ public class AddSensorFragment extends Fragment {
             }
         });
 
+        buttonTurnOn.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                writeCharacteristic(stringDayBlink);
+            }
+        });
+
+        buttonTurnOff.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                writeCharacteristic(stringNightSolid);
+            }
+        });
+
         //final TextView textView = binding.textAddSensor;
         //addSensorViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
@@ -170,7 +216,6 @@ public class AddSensorFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
-
 
 
     private void initViewObjects() {
@@ -255,7 +300,7 @@ public class AddSensorFragment extends Fragment {
             getActivity().bindService(gattServiceIntent, serviceConnection, getActivity().BIND_AUTO_CREATE);
         }
         else {
-            bluetoothLeService.connectToDevice(deviceMacAddress);
+            bluetoothLeService.connectDevice(deviceMacAddress);
             logMessages("Trying to connect to " + deviceName);
         }
 
@@ -265,6 +310,12 @@ public class AddSensorFragment extends Fragment {
         bluetoothLeService.setCharacteristicNotification(SERVICE_UUID, CHARACTERISTIC_UUID, true);
         subscribeToNotification = false;
     }
+
+    private void writeCharacteristic(String payload){
+        convertStingtoByte(payload);
+        bluetoothLeService.writeCharacteristic(SERVICE_UUID, CHARACTERISTIC_UUID, payloadToWrite);
+    }
+
 
     // Stop scanning method
     public void stopScanning(){
@@ -285,7 +336,7 @@ public class AddSensorFragment extends Fragment {
             }
             boundToService = true;
 
-            bluetoothLeService.connectToDevice("F8:EF:93:1C:EC:DB");
+            bluetoothLeService.connectDevice("F8:EF:93:1C:EC:DB");
             logMessages("Trying to connect to " + deviceName);
 
         }

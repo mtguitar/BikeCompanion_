@@ -28,4 +28,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="nav_add_sensor">Add Sensor</string>
     <string name="menu_addSensor">Add Sensor</string>
+    <string name="connect">Connect</string>
+    <string name="subscribe">Subscribe</string>
+    <string name="turn_off">Turn off</string>
+    <string name="turn_on">Turn On</string>
 </resources>

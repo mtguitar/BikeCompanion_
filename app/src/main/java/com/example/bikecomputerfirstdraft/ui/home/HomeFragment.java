@@ -31,12 +31,7 @@ public class HomeFragment extends Fragment {
 
         final Button button = binding.button;
 
-        button.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-                ((MainActivity)getActivity()).scanDevice("F8:EF:93:1C:EC:DB");
 
-            }
-        });
 
         //final TextView textView = binding.textHome;
         //homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
