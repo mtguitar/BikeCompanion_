@@ -1,7 +1,10 @@
 package com.example.bikecomputerfirstdraft;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
+import android.Manifest;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.View;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -10,39 +13,9 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import android.Manifest;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothManager;
-import android.bluetooth.le.BluetoothLeScanner;
-import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanFilter;
-import android.bluetooth.le.ScanResult;
-import android.bluetooth.le.ScanSettings;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
-import android.view.Menu;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-
-
 import com.example.bikecomputerfirstdraft.databinding.ActivityMainBinding;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
-
-import java.util.Collections;
-import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -89,9 +62,6 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        //textViewLog = findViewById(R.id.textViewLog);
-        //textViewLightMode = findViewById(R.id.textViewLightMode);
-        //textViewConnectedDevices = findViewById(R.id.textViewConnectedDevices);
 
 
         //Request permissions
@@ -102,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
                 (MainActivity.this,
                         new String[]{PERMISSION_BACKGROUND_LOCATION},
                         PERMISSION_ALL);
+
+
     }
 
     @Override

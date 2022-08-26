@@ -10,15 +10,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecomputerfirstdraft.R;
-
-import java.util.ArrayList;
+import com.example.bikecomputerfirstdraft.ble.BleScanner;
 
 public class ScannerFragment extends Fragment {
 
+    private static final String TAG = "FlareLog";
     private ScannerViewModel mViewModel;
 
     private RecyclerView mRecyclerView;
@@ -26,23 +25,23 @@ public class ScannerFragment extends Fragment {
         return new ScannerFragment();
     }
 
+
+
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-
-        ArrayList<ScannerItem> scannerList = new ArrayList<>();
-
-        scannerList.add(new ScannerItem(R.drawable.ic_flare, "FlareRT", "bike light"));
-        scannerList.add(new ScannerItem(R.drawable.ic_cadence, "Wahoo Sensor", "cadence sensor"));
-        scannerList.add(new ScannerItem(R.drawable.ic_speed, "Random Sensor", "speed sensor"));
-
+        //scannerList = new ArrayList<>();
+        Context context = getActivity().getApplicationContext();
         View view = inflater.inflate(R.layout.fragment_scanner, container, false);
 
-        mRecyclerView = view.findViewById(R.id.recyclerViewScanner);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        mRecyclerView.setAdapter(new ScannerAdapter(scannerList));
+        BleScanner bleScanner = new BleScanner(context, view);
+
+
+
+
+
 
         return view;
     }
@@ -53,7 +52,23 @@ public class ScannerFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(ScannerViewModel.class);
         // TODO: Use the ViewModel
+
     }
+
+
+/*
+    public void addDevice(String name, String description){
+        scannerList.add(new ScannerItem(R.drawable.ic_flare, "FlareRT", "bike light"));
+        scannerList.add(new ScannerItem(R.drawable.ic_cadence, "Wahoo Sensor", "cadence sensor"));
+        scannerList.add(new ScannerItem(R.drawable.ic_speed, "Random Sensor", "speed sensor"));
+        scannerList.add(new ScannerItem(R.drawable.ic_flare, name, description));
+
+    }
+
+ */
+
+
+
 
 
 }

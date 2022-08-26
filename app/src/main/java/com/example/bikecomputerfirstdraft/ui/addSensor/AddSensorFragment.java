@@ -31,7 +31,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.ui.AppBarConfiguration;
 
-import com.example.bikecomputerfirstdraft.BluetoothLeService;
+import com.example.bikecomputerfirstdraft.ble.BluetoothLeService;
 import com.example.bikecomputerfirstdraft.databinding.FragmentAddSensorBinding;
 
 import java.util.Collections;

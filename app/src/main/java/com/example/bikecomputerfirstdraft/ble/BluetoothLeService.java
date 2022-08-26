@@ -1,4 +1,4 @@
-package com.example.bikecomputerfirstdraft;
+package com.example.bikecomputerfirstdraft.ble;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
@@ -9,15 +9,11 @@ import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.TextView;
-
-import androidx.annotation.Nullable;
 
 import java.util.UUID;
 @SuppressLint("MissingPermission")
@@ -48,19 +44,6 @@ public class BluetoothLeService extends Service {
             "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
     public final static String EXTRA_DATA =
             "com.example.bluetooth.le.EXTRA_DATA";
-
-    // Flare MAC Addresses
-    public final static String AC_FLARE_MAC_ADDRESS = "F8:EF:93:1C:EC:DB";
-    public final static String AVENTON_FLARE_MAC_ADDRESS = "F8:EF:93:1C:EC:DB";
-
-    // Light mode UUIDs
-    public final static UUID UUID_SERVICE_LIGHT_MODE = UUID.fromString("71261000-3692-ae93-e711-472ba41689c9");
-    public final static UUID UUID_CHARACTERISTIC_LIGHT_MODE = UUID.fromString("71261001-3692-ae93-e711-472ba41689c9");
-
-    // Battery UUIDs
-    public final static UUID UUID_SERVICE_BATTERY = UUID.fromString("0000180f-0000-1000-8000-00805f9b34fb");
-    public final static UUID UUID_CHARACTERISTIC_BATTERY = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
-
 
 
     // Write characteristic
@@ -108,14 +91,14 @@ public class BluetoothLeService extends Service {
         @SuppressLint("MissingPermission")
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-            String intentAction;
+            String intentConnectionState;
             String newState1 = String.valueOf(newState);
             Log.w(TAG, newState1);
             if(newState == BluetoothProfile.STATE_CONNECTED){
-                intentAction = ACTION_GATT_CONNECTED;
+                intentConnectionState = ACTION_GATT_CONNECTED;
                 connectionState = STATE_CONNECTED;
                 mBluetoothGatt = gatt;
-                broadcastUpdate(intentAction);
+                broadcastUpdate(intentConnectionState);
 
                 Log.d(TAG, "Device Connected");
 
@@ -124,9 +107,9 @@ public class BluetoothLeService extends Service {
 
             }
             else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                intentAction = ACTION_GATT_DISCONNECTED;
+                intentConnectionState = ACTION_GATT_DISCONNECTED;
                 connectionState = STATE_DISCONNECTED;
-                broadcastUpdate(intentAction);
+                broadcastUpdate(intentConnectionState);
             }
 
         }
@@ -205,7 +188,7 @@ public class BluetoothLeService extends Service {
         connectionState = STATE_CONNECTING;
         return true;
     }
-
+    // Disconnect from the device
     public void disconnectDevice() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
@@ -215,11 +198,12 @@ public class BluetoothLeService extends Service {
         Log.d(TAG, "Device disconnected");
     }
 
-    private void broadcastUpdate(final String action) {
-        final Intent intent = new Intent(action);
+    // Broadcast updates to connection state changes
+    private void broadcastUpdate(final String intentConnectionState) {
+        final Intent intent = new Intent(intentConnectionState);
         sendBroadcast(intent);
     }
-
+    // Broadcast updates to characteristics
     private void broadcastUpdate(final String action,
                                  final BluetoothGattCharacteristic characteristic) {
         final Intent intent = new Intent(action);

@@ -32,6 +32,7 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
     }
 
     public ScannerAdapter(ArrayList<ScannerItem> scannerList){
+
         mScannerList = scannerList;
     }
 
