@@ -2,6 +2,7 @@ package com.example.bikecomputerfirstdraft.ui.scanner;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.ParcelUuid;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,32 +16,27 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.bikecomputerfirstdraft.R;
 import com.example.bikecomputerfirstdraft.ble.BleScanner;
 
+import java.util.UUID;
+
 public class ScannerFragment extends Fragment {
 
     private static final String TAG = "FlareLog";
     private ScannerViewModel mViewModel;
 
-    private RecyclerView mRecyclerView;
     public static ScannerFragment newInstance() {
         return new ScannerFragment();
     }
-
-
-
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        //scannerList = new ArrayList<>();
         Context context = getActivity().getApplicationContext();
         View view = inflater.inflate(R.layout.fragment_scanner, container, false);
 
-        BleScanner bleScanner = new BleScanner(context, view);
+        ParcelUuid serviceUUID= new ParcelUuid(UUID.fromString("71262000-3692-ae93-e711-472ba41689c9"));
 
-
-
-
+        BleScanner bleScanner = new BleScanner(context, view, null, null, null);
 
 
         return view;
@@ -56,16 +52,6 @@ public class ScannerFragment extends Fragment {
     }
 
 
-/*
-    public void addDevice(String name, String description){
-        scannerList.add(new ScannerItem(R.drawable.ic_flare, "FlareRT", "bike light"));
-        scannerList.add(new ScannerItem(R.drawable.ic_cadence, "Wahoo Sensor", "cadence sensor"));
-        scannerList.add(new ScannerItem(R.drawable.ic_speed, "Random Sensor", "speed sensor"));
-        scannerList.add(new ScannerItem(R.drawable.ic_flare, name, description));
-
-    }
-
- */
 
 
 

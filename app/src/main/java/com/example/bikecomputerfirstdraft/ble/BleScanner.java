@@ -6,10 +6,13 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Handler;
+import android.os.ParcelUuid;
 import android.util.Log;
 import android.view.View;
 
@@ -22,6 +25,8 @@ import com.example.bikecomputerfirstdraft.ui.scanner.ScannerAdapter;
 import com.example.bikecomputerfirstdraft.ui.scanner.ScannerItem;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.UUID;
 
 @SuppressLint("MissingPermission")
 
@@ -29,70 +34,78 @@ public class BleScanner {
 
     private final static String TAG = "FlareLog";
 
-    private AppBarConfiguration mAppBarConfiguration;
 
-
-
+    //vars
     private boolean scanning = false;
 
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothLeScanner scanner;
-    private ScanSettings scanSettings;
-
     private Context mContext;
     private Handler handler;
-    private String deviceMacAddress;
-    private View view;
 
-    private String discoveredMacAddress;
-    private String deviceName;
+    //filter and scan settings vars
+    private ScanFilter scanFilter;
+    String name;
+    String macAddress;
+    ParcelUuid serviceUuids;
+    private ScanSettings scanSettings;
+    private static final long SCAN_PERIOD = 5000;
+
+    //recyclerView vars
+    private View view;
     private RecyclerView mRecyclerView;
 
-    ArrayList<ScannerItem> scannerList;
 
-    private static final long SCAN_PERIOD = 10000;
+    //scanResults vars
+    private String discoveredMacAddress;
+    private String deviceName;
+    private ArrayList<ScannerItem> scannerList;
 
 
 
-    public BleScanner(Context mContext, View view) {
+    //constructors, the last three parameters are scan filters and can be null
+    public BleScanner (Context mContext, View view, String name, String macAddress, ParcelUuid serviceUuids) {
         this.mContext = mContext;
         this.view = view;
+        this.name = name;
+        this.macAddress = macAddress;
+        this.serviceUuids = serviceUuids;
 
-        initializeScanner();
+        initializeBluetooth();
         startScan();
         scannerList = new ArrayList<>();
         mRecyclerView = view.findViewById(R.id.recyclerViewScanner);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-
-
     }
 
 
-    // Initialize scanner
-    public void initializeScanner() {
+
+    // Initialize bluetooth
+    public void initializeBluetooth() {
         final BluetoothManager bluetoothManager =
                 (BluetoothManager) mContext.getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
         scanner = bluetoothManager.getAdapter().getBluetoothLeScanner();
         logMessages("initialized ble");
-
-
     }
 
     // Scan for selected device by MacAddress
     public void startScan() {
         //Set scan settings and filter
-        //initializeScanner();
-
-
         scanSettings =
                 new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
-        /*
-        scanFilter =
-                new ScanFilter.Builder().setDeviceAddress(deviceMacAddress).build();
 
-         */
+        if(serviceUuids != null){
+            scanFilter = new ScanFilter.Builder().setServiceUuid(serviceUuids).build();
+        }
+        if(name != null){
+        scanFilter = new ScanFilter.Builder().setDeviceName(name).build();
+        }
+        if(macAddress != null) {
+            scanFilter = new ScanFilter.Builder().setDeviceAddress(macAddress).build();
+        }
+
 
         //Start scanning on a timer
         if (!scanning) {
@@ -106,8 +119,12 @@ public class BleScanner {
                     }
                 }
             }, SCAN_PERIOD);
-            scanner.startScan(scanCallback);
-            //scanner.startScan(Collections.singletonList(scanFilter), scanSettings, scanCallback);
+            if (serviceUuids != null | name != null | macAddress != null) {
+                scanner.startScan(Collections.singletonList(scanFilter), scanSettings, scanCallback);
+            }
+            else {
+                scanner.startScan(scanCallback);
+            }
             scanning = true;
             //textViewLog.setText("");
             logMessages("Scanning . . . ");
@@ -120,13 +137,6 @@ public class BleScanner {
         logMessages("Scanning stopped");
         scanning = false;
     }
-
-    // Logs messages to UI and logCat
-    private void logMessages(String logMessage) {
-        Log.d(TAG, logMessage);
-        //textViewLog.append(logMessage + "\n");
-    }
-
 
     // scanCallback object to receive scan results
     ScanCallback scanCallback = new ScanCallback() {
@@ -142,12 +152,28 @@ public class BleScanner {
             else {deviceName = "Unknown name";}
             logMessages("Device discovered: " + deviceName + " " + discoveredMacAddress);
 
+            //Checks for duplicate macAddresses in arraylist
+            int n = scannerList.size();
+            if(n > 0){
+                for (int i = 0; i < n; i++) {
+                    if(discoveredMacAddress.equals(scannerList.get(i).getTextDescription())){
+                        return;
+                    }
+                }
 
+            }
+            //if not already in list, add and send to rv adapter
             scannerList.add(new ScannerItem(R.drawable.ic_flare, deviceName, discoveredMacAddress));
             mRecyclerView.setAdapter(new ScannerAdapter(scannerList));
 
         }
     };
+
+    // Logs messages to UI and logCat
+    private void logMessages(String logMessage) {
+        Log.d(TAG, logMessage);
+        //textViewLog.append(logMessage + "\n");
+    }
 
 
 }
