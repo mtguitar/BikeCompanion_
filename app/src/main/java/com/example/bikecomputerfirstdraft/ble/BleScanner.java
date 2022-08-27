@@ -10,23 +10,22 @@ import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
-import android.graphics.Color;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.ParcelUuid;
 import android.util.Log;
 import android.view.View;
 
-import androidx.navigation.ui.AppBarConfiguration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecomputerfirstdraft.R;
 import com.example.bikecomputerfirstdraft.ui.scanner.ScannerAdapter;
+import com.example.bikecomputerfirstdraft.ui.scanner.ScannerFragment;
 import com.example.bikecomputerfirstdraft.ui.scanner.ScannerItem;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.UUID;
 
 @SuppressLint("MissingPermission")
 
@@ -36,11 +35,12 @@ public class BleScanner {
 
 
     //vars
-    private boolean scanning = false;
+    public boolean scanning = false;
 
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothLeScanner scanner;
-    private Context mContext;
+    private Context mContextApplication;
+    private Context mContextActivity;
     private Handler handler;
 
     //filter and scan settings vars
@@ -49,7 +49,8 @@ public class BleScanner {
     String macAddress;
     ParcelUuid serviceUuids;
     private ScanSettings scanSettings;
-    private static final long SCAN_PERIOD = 5000;
+    private static final long SCAN_PERIOD =3000;
+
 
     //recyclerView vars
     private View view;
@@ -61,15 +62,25 @@ public class BleScanner {
     private String deviceName;
     private ArrayList<ScannerItem> scannerList;
 
+    //broadcast vars
+    Intent scanningStatusIntent;
+    public final static String ACTION_BLE_SCANNING_STARTED =
+            "com.example.bluetooth.le.ACTION_BLE_SCANNING_STARTED";
+    public final static String ACTION_BLE_SCANNING_STOPPED =
+            "com.example.bluetooth.le.ACTION_BLE_SCANNING_STOPPED";
 
 
     //constructors, the last three parameters are scan filters and can be null
-    public BleScanner (Context mContext, View view, String name, String macAddress, ParcelUuid serviceUuids) {
-        this.mContext = mContext;
+    public BleScanner (Context mContextApplication, Context mContextActivity, View view, String name, String macAddress, ParcelUuid serviceUuids) {
+        this.mContextApplication = mContextApplication;
+        this.mContextActivity = mContextActivity;
         this.view = view;
         this.name = name;
         this.macAddress = macAddress;
         this.serviceUuids = serviceUuids;
+
+        scanningStatusIntent = new Intent(mContextActivity, ScannerFragment.class);
+
 
         initializeBluetooth();
         startScan();
@@ -80,11 +91,10 @@ public class BleScanner {
     }
 
 
-
     // Initialize bluetooth
     public void initializeBluetooth() {
         final BluetoothManager bluetoothManager =
-                (BluetoothManager) mContext.getSystemService(Context.BLUETOOTH_SERVICE);
+                (BluetoothManager) mContextApplication.getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
         scanner = bluetoothManager.getAdapter().getBluetoothLeScanner();
         logMessages("initialized ble");
@@ -128,21 +138,28 @@ public class BleScanner {
             scanning = true;
             //textViewLog.setText("");
             logMessages("Scanning . . . ");
+            Intent scanningStatusIntent = new Intent();
+            scanningStatusIntent.setAction(ACTION_BLE_SCANNING_STARTED);
+            mContextActivity.sendBroadcast(scanningStatusIntent);
+            logMessages("Sent intent");
         }
     }
 
     // Stop scanning method
     public void stopScanning() {
         scanner.stopScan(scanCallback);
-        logMessages("Scanning stopped");
         scanning = false;
+        Intent scanningStatusIntent = new Intent();
+        scanningStatusIntent.setAction(ACTION_BLE_SCANNING_STOPPED);
+        mContextActivity.sendBroadcast(scanningStatusIntent);
+        logMessages("Scanning stopped " + scanning);
     }
 
     // scanCallback object to receive scan results
     ScanCallback scanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
-            logMessages("Device discovered: ");
+            //logMessages("Device discovered: ");
             super.onScanResult(callbackType, result);
             BluetoothDevice device = result.getDevice();
             discoveredMacAddress = device.getAddress();
@@ -150,7 +167,7 @@ public class BleScanner {
                 deviceName = device.getAlias();
             }
             else {deviceName = "Unknown name";}
-            logMessages("Device discovered: " + deviceName + " " + discoveredMacAddress);
+           // logMessages("Device discovered: " + deviceName + " " + discoveredMacAddress);
 
             //Checks for duplicate macAddresses in arraylist
             int n = scannerList.size();

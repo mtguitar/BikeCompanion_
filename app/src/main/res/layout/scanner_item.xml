@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
@@ -9,47 +10,55 @@
     app:cardElevation="2dp"
     app:cardMaxElevation="2dp">
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="10dp">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/imageViewScanResults"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:padding="2dp" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            tools:layout_editor_absoluteX="10dp"
+            tools:layout_editor_absoluteY="10dp">
 
-        <TextView
-            android:id="@+id/textViewName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@id/imageViewScanResults"
-            android:fontFamily="sans-serif"
-            android:text="Line1"
-            android:textColor="@android:color/white"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            <ImageView
+                android:id="@+id/imageViewScanResults"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:padding="2dp" />
 
-        <TextView
-            android:id="@+id/textViewDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/textViewName"
-            android:layout_marginStart="8dp"
-            android:layout_toEndOf="@id/imageViewScanResults"
-            android:fontFamily="sans-serif"
-            android:text="Line 2"
-            android:textColor="@android:color/white"
-            android:textSize="15sp" />
+            <TextView
+                android:id="@+id/textViewName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_toEndOf="@id/imageViewScanResults"
+                android:fontFamily="sans-serif"
+                android:text="Line1"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/buttonScanConnect"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:text="Connect" />
+            <TextView
+                android:id="@+id/textViewDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/textViewName"
+                android:layout_marginStart="8dp"
+                android:layout_toEndOf="@id/imageViewScanResults"
+                android:fontFamily="sans-serif"
+                android:text="Line 2"
+                android:textColor="@android:color/white"
+                android:textSize="15sp" />
 
-    </RelativeLayout>
+            <Button
+                android:id="@+id/buttonScanConnect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:text="Connect" />
+
+        </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.cardview.widget.CardView>

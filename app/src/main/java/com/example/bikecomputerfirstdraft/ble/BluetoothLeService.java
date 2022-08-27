@@ -157,6 +157,7 @@ public class BluetoothLeService extends Service {
     }
 
 
+
     //Initializes a reference to the local Bluetooth adapter.
     public boolean initialize() {
         if (mBluetoothManager == null) {
@@ -172,6 +173,7 @@ public class BluetoothLeService extends Service {
             return false;
         }
         return true;
+
     }
 
     // Connect to the device
