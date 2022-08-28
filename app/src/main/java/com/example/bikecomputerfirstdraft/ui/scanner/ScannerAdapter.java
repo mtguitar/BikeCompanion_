@@ -30,6 +30,7 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
         public TextView mTextName;
         public TextView mTextDescription;
 
+
         public ScannerViewHolder(@NonNull View itemView, RecyclerViewInterface recyclerViewInterface) {
             super(itemView);
             mImageView = itemView.findViewById(R.id.imageViewScanResults);
@@ -46,6 +47,8 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
                             recyclerViewInterface.onItemClick(position);
                         }
                     }
+                    String name = (String) mTextName.getText();
+                    String description = (String) mTextDescription.getText();
                 }
             });
 
@@ -78,6 +81,11 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
     public int getItemCount() {
         return scannerList.size();
 
+    }
+
+    public String getItemName(int position){
+        String name = getItemName(position);
+        return name;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

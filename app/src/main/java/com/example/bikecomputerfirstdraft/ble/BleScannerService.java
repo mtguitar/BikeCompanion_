@@ -18,14 +18,12 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.ParcelUuid;
 import android.util.Log;
-import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.TaskStackBuilder;
 import androidx.lifecycle.LifecycleService;
 import androidx.lifecycle.MutableLiveData;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecomputerfirstdraft.MainActivity;
 import com.example.bikecomputerfirstdraft.R;
@@ -56,19 +54,10 @@ public class BleScannerService extends LifecycleService {
     private String macAddress;
     private ParcelUuid serviceUuids;
 
-    //recyclerView vars
-    private View view;
-    private RecyclerView mRecyclerView;
-
     //scanResults vars
     private String discoveredMacAddress;
     private String deviceName;
-    ArrayList<ScannerItem> scannerResults;
-
-    //communication with fragment
-    public static String ACTION_BLE_SCANNING_STARTED = Constant.ACTION_BLE_SCANNING_STARTED;
-    public static String ACTION_BLE_SCANNING_STOPPED = Constant.ACTION_BLE_SCANNING_STOPPED;
-
+    private ArrayList<ScannerItem> scannerResults;
 
     public BleScannerService() {
     }
@@ -123,14 +112,6 @@ public class BleScannerService extends LifecycleService {
      * Code related to scanning
      */
 
-    public void initializeBluetooth() {
-        final BluetoothManager bluetoothManager =
-                (BluetoothManager) this.getSystemService(Context.BLUETOOTH_SERVICE);
-        bluetoothAdapter = bluetoothManager.getAdapter();
-        scanner = bluetoothManager.getAdapter().getBluetoothLeScanner();
-        logMessages("initialized ble");
-    }
-
     // Scan for selected devices
     public void startScan() {
 
@@ -177,14 +158,7 @@ public class BleScannerService extends LifecycleService {
 
     }
 
-    // Stop scanning method
-    public void stopScanning() {
-        scanner.stopScan(scanCallback);
-        logMessages("Scanning stopped");
-        sendIntentToFragment(Constant.ACTION_BLE_SCANNING_STOPPED);
-        scanning = false;
-        stopSelf();
-    }
+
 
     // scanCallback object to receive scan results
     ScanCallback scanCallback = new ScanCallback() {
@@ -194,14 +168,30 @@ public class BleScannerService extends LifecycleService {
             super.onScanResult(callbackType, result);
             BluetoothDevice device = result.getDevice();
             discoveredMacAddress = device.getAddress();
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-                deviceName = device.getAlias();
+            deviceName = device.getName();
+            if (deviceName == null){
+                deviceName = "Unknown";
             }
             addScanResults(deviceName, discoveredMacAddress);
-
-            //mRecyclerView.setAdapter(new ScannerAdapter(scannerList));
         }
     };
+
+    // Stop scanning method
+    public void stopScanning() {
+        scanner.stopScan(scanCallback);
+        logMessages("Scanning stopped");
+        sendIntentToFragment(Constant.ACTION_BLE_SCANNING_STOPPED);
+        scanning = false;
+        stopSelf();
+    }
+
+    public void initializeBluetooth() {
+        final BluetoothManager bluetoothManager =
+                (BluetoothManager) this.getSystemService(Context.BLUETOOTH_SERVICE);
+        bluetoothAdapter = bluetoothManager.getAdapter();
+        scanner = bluetoothManager.getAdapter().getBluetoothLeScanner();
+        logMessages("initialized ble");
+    }
 
     private void sendIntentToFragment(String action) {
         Intent scanningStatusIntent = new Intent(action);

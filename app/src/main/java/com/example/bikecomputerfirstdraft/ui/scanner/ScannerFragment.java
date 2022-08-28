@@ -91,6 +91,7 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
         BleScannerService.getScanResults().observe(getActivity(), observerScanResults);
 
 
+
         //Intent filters to listen for scanning updates
         scannerUpdateIntentFilter ();
         getActivity().registerReceiver(scannerUpdateReceiver, scannerUpdateIntentFilter());
@@ -117,6 +118,8 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
     public void updateRecycleViewer(ArrayList scanResults){
         //might need to change context
         recyclerView.setAdapter(new ScannerAdapter(scanResults, this));
+        this.scanResults = scanResults;
+
 
     }
 
@@ -171,5 +174,14 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
     @Override
     public void onItemClick(int position) {
         Log.d(TAG, "clicked item RV");
+        ScannerAdapter scannerAdapter = new ScannerAdapter(scanResults, this);
+        name = scannerAdapter.scannerList.get(position).getTextName();
+        String description = scannerAdapter.scannerList.get(position).getTextDescription();
+        Log.d(TAG, name + " " + description);
+
+
+
+
+
     }
 }
