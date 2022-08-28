@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecomputerfirstdraft.R;
-import com.example.bikecomputerfirstdraft.ui.scanner.ScannerAdapter;
 import com.example.bikecomputerfirstdraft.ui.scanner.ScannerFragment;
 import com.example.bikecomputerfirstdraft.ui.scanner.ScannerItem;
 
@@ -181,7 +180,7 @@ public class BleScanner {
             }
             //if not already in list, add and send to rv adapter
             scannerList.add(new ScannerItem(R.drawable.ic_flare, deviceName, discoveredMacAddress));
-            mRecyclerView.setAdapter(new ScannerAdapter(scannerList));
+          //  mRecyclerView.setAdapter(new ScannerAdapter(scannerList));
 
         }
     };

@@ -17,7 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,7 +26,7 @@ import com.example.bikecomputerfirstdraft.other.Constant;
 
 import java.util.ArrayList;
 
-public class ScannerFragment extends Fragment {
+public class ScannerFragment extends Fragment implements RecyclerViewInterface{
 
     private static final String TAG = "FlareLog";
     private ScannerViewModel mViewModel;
@@ -37,8 +36,28 @@ public class ScannerFragment extends Fragment {
     private String macAddress;
     private ParcelUuid serviceUuids;
 
+    private static Button buttonStopScan;
+    private static TextView textViewScanTitle;
+
+    private ArrayList scanResults;
+
+
     public static ScannerFragment newInstance() {
         return new ScannerFragment();
+    }
+
+    public void deliverScanResults(ArrayList scanResults){
+        this.scanResults = scanResults;
+
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        //This is where we initialize the data. Normally this would be from a remote server
+        //Send intent to BleScannerService
+        sendCommandToService(Constant.ACTION_START_OR_RESUME_SERVICE);
+
     }
 
     @Override
@@ -47,27 +66,28 @@ public class ScannerFragment extends Fragment {
 
         //view vars
         View view = inflater.inflate(R.layout.fragment_scanner, container, false);
-        Button buttonStopScan = (Button)view.findViewById(R.id.buttonStopScan);
-        TextView textViewScanTitle = view.findViewById(R.id.textViewScanTitle);
+        buttonStopScan = (Button)view.findViewById(R.id.buttonStopScan);
+        textViewScanTitle = view.findViewById(R.id.textViewScanTitle);
 
-        //Send intent to BleScannerService
-        sendCommandToService(Constant.ACTION_START_OR_RESUME_SERVICE);
-
-        //Setup recyclerView
-        RecyclerView recyclerView = view.findViewById(R.id.recyclerViewScanner);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setHasFixedSize(true);
 
         //Setup observer of livedata
-        final Observer<ArrayList<ScannerItem>> observerScanResults = new Observer<ArrayList<ScannerItem>>(){
+        final Observer<ArrayList<ScannerItem>> observerScanResults;
+        observerScanResults = new Observer<ArrayList<ScannerItem>>(){
             public void onChanged(@Nullable final ArrayList scanResults) {
+                createRecycleViewer(scanResults);
                 // Update the recyclerView with the new livedata
-                recyclerView.setAdapter(new ScannerAdapter(scanResults));
             }
         };
 
         //start observing scan results
         BleScannerService.getScanResults().observe(getActivity(), observerScanResults);
+
+        //Setup recyclerView
+
+
+
+
+
 
         //Intent filters to listen for scanning updates
         scannerUpdateIntentFilter ();
@@ -92,13 +112,14 @@ public class ScannerFragment extends Fragment {
     }
 
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(ScannerViewModel.class);
-        // TODO: Use the ViewModel
-
+    void createRecycleViewer(ArrayList scanResults){
+        RecyclerView recyclerView = getActivity().findViewById(R.id.recyclerViewScanner);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(new ScannerAdapter(scanResults, this));
     }
+
+
 
     //Sends intent to BleScannerService
     private void sendCommandToService(String action) {
@@ -121,9 +142,6 @@ public class ScannerFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "Scanning broadcast received");
-
-            TextView textViewScanTitle = getView().findViewById(R.id.textViewScanTitle);
-            Button buttonStopScan = getView().findViewById(R.id.buttonStopScan);
 
             final String action = intent.getAction();
             Log.d(TAG, "Received broadcast with action " + action);
@@ -149,4 +167,8 @@ public class ScannerFragment extends Fragment {
 
 
 
+    @Override
+    public void onItemClick(int position) {
+        Log.d(TAG, "clicked item RV");
+    }
 }

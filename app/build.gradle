@@ -1,5 +1,7 @@
 plugins {
     id 'com.android.application'
+    id 'androidx.navigation.safeargs'
+
 }
 
 android {
@@ -56,5 +58,7 @@ dependencies {
     // alternately - if using Java8, use the following instead of lifecycle-compiler
     implementation "androidx.lifecycle:lifecycle-common-java8:2.6.0-alpha01"
     implementation "androidx.lifecycle:lifecycle-service:2.6.0-alpha01"
+
+
 
 }

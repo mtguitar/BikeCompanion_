@@ -183,6 +183,7 @@ public class BleScannerService extends LifecycleService {
         logMessages("Scanning stopped");
         sendIntentToFragment(Constant.ACTION_BLE_SCANNING_STOPPED);
         scanning = false;
+        stopSelf();
     }
 
     // scanCallback object to receive scan results
