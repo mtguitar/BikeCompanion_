@@ -50,7 +50,7 @@ public class BleScannerService extends LifecycleService {
     //filter and scan settings vars
     private ScanFilter scanFilter;
     private ScanSettings scanSettings;
-    private static final long SCAN_PERIOD =10000;
+    private static final long SCAN_PERIOD =5000;
 
     private String name;
     private String macAddress;
