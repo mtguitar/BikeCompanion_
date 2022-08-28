@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:allowBackup="true"
@@ -22,9 +23,15 @@
         android:theme="@style/Theme.BikeComputerFirstDraft"
         tools:targetApi="31">
         <service
+            android:name=".ble.BleScannerService"
+            android:enabled="true"
+            android:exported="true"
+            android:foregroundServiceType="connectedDevice"></service>
+        <service
             android:name=".ble.BluetoothLeService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true"
+            android:foregroundServiceType="connectedDevice"/>
 
         <activity
             android:name=".MainActivity"
@@ -33,9 +40,11 @@
             android:theme="@style/Theme.BikeComputerFirstDraft.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

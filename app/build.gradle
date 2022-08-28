@@ -37,8 +37,6 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.5.0'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
     implementation 'androidx.navigation:navigation-fragment:2.5.1'
     implementation 'androidx.navigation:navigation-ui:2.5.1'
     implementation 'androidx.preference:preference:1.2.0'
@@ -47,4 +45,16 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    // Lifecycle deps
+    //implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
+    //implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
+    implementation "androidx.lifecycle:lifecycle-viewmodel:2.6.0-alpha01"
+    implementation "androidx.lifecycle:lifecycle-livedata:2.6.0-alpha01"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.0-alpha01"
+    //annotationProcessor "androidx.lifecycle:lifecycle-compiler:2.6.0-alpha01"
+    // alternately - if using Java8, use the following instead of lifecycle-compiler
+    implementation "androidx.lifecycle:lifecycle-common-java8:2.6.0-alpha01"
+    implementation "androidx.lifecycle:lifecycle-service:2.6.0-alpha01"
+
 }

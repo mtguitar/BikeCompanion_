@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerViewHolder> {
 
-    private ArrayList<ScannerItem> mScannerList;
+    private ArrayList<ScannerItem> mScannerList = new ArrayList<>();
 
     public static class ScannerViewHolder extends RecyclerView.ViewHolder {
 
@@ -56,7 +56,8 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
     }
 
     @Override
-    public int getItemCount() {
-        return mScannerList.size();
-    }
+    public int getItemCount() {return mScannerList.size();}
+
+
+
 }

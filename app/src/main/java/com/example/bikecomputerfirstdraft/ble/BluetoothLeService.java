@@ -16,6 +16,9 @@ import android.os.IBinder;
 import android.util.Log;
 
 import java.util.UUID;
+
+import static com.example.bikecomputerfirstdraft.other.Constant.*;
+
 @SuppressLint("MissingPermission")
 
 public class BluetoothLeService extends Service {
@@ -26,9 +29,11 @@ public class BluetoothLeService extends Service {
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothGatt mBluetoothGatt;
 
-    private int connectionState = STATE_DISCONNECTED;
+    public int connectionState = STATE_DISCONNECTED;
 
     private String deviceName;
+
+    /*
 
     private final static int STATE_DISCONNECTED = 0;
     private final static int STATE_CONNECTING = 1;
@@ -44,6 +49,8 @@ public class BluetoothLeService extends Service {
             "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
     public final static String EXTRA_DATA =
             "com.example.bluetooth.le.EXTRA_DATA";
+
+     */
 
 
     // Write characteristic
@@ -113,6 +120,10 @@ public class BluetoothLeService extends Service {
             }
 
         }
+
+
+        String state_disconnected = ACTION_GATT_CONNECTED;
+
 
         @SuppressLint("MissingPermission")
         @Override

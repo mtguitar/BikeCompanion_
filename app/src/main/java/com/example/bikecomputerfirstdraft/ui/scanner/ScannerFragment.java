@@ -16,65 +16,80 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecomputerfirstdraft.R;
-import com.example.bikecomputerfirstdraft.ble.BleScanner;
+import com.example.bikecomputerfirstdraft.ble.BleScannerService;
+import com.example.bikecomputerfirstdraft.other.Constant;
 
-import java.util.UUID;
+import java.util.ArrayList;
 
 public class ScannerFragment extends Fragment {
 
-    //TODO Clean up context activity vs context application, clean up buttons
-
-    Context contextApplication;
-    Context contextActivity;
-    boolean contextSet = false;
-
-    Button buttonStopScan;
-
-
     private static final String TAG = "FlareLog";
     private ScannerViewModel mViewModel;
+    private boolean scanning = false;
+
+    private String name;
+    private String macAddress;
+    private ParcelUuid serviceUuids;
 
     public static ScannerFragment newInstance() {
         return new ScannerFragment();
     }
-/*
-    @Override
-    public void onAttach(Context context){
-        super.onAttach(context);
-        Context contextActivity = context;
-    }
-
-
- */
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        contextApplication = getActivity().getApplicationContext();
+        //view vars
         View view = inflater.inflate(R.layout.fragment_scanner, container, false);
+        Button buttonStopScan = (Button)view.findViewById(R.id.buttonStopScan);
+        TextView textViewScanTitle = view.findViewById(R.id.textViewScanTitle);
 
-        contextActivity = getActivity();
+        //Send intent to BleScannerService
+        sendCommandToService(Constant.ACTION_START_OR_RESUME_SERVICE);
 
+        //Setup recyclerView
+        RecyclerView recyclerView = view.findViewById(R.id.recyclerViewScanner);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
+
+        //Setup observer of livedata
+        final Observer<ArrayList<ScannerItem>> observerScanResults = new Observer<ArrayList<ScannerItem>>(){
+            public void onChanged(@Nullable final ArrayList scanResults) {
+                // Update the recyclerView with the new livedata
+                recyclerView.setAdapter(new ScannerAdapter(scanResults));
+            }
+        };
+
+        //start observing scan results
+        BleScannerService.getScanResults().observe(getActivity(), observerScanResults);
+
+        //Intent filters to listen for scanning updates
         scannerUpdateIntentFilter ();
         getActivity().registerReceiver(scannerUpdateReceiver, scannerUpdateIntentFilter());
 
-
-        Button buttonStopScan = view.findViewById(R.id.buttonStopScan);
-        TextView textViewScanTitle = view.findViewById(R.id.textViewScanTitle);
-
-
-        ParcelUuid serviceUUID= new ParcelUuid(UUID.fromString("71262000-3692-ae93-e711-472ba41689c9"));
-
-        BleScanner bleScanner = new BleScanner(contextApplication, contextActivity, view, null, null, null);
+        //set button onclick listener
+        buttonStopScan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(scanning){
+                    sendCommandToService(Constant.ACTION_PAUSE_SERVICE);
+                }
+                else{
+                    sendCommandToService(Constant.ACTION_START_OR_RESUME_SERVICE);
+                }
+                Log.d(Constant.TAG, "button clicked");
+            }
+        });
 
 
         return view;
     }
-
 
 
     @Override
@@ -85,28 +100,46 @@ public class ScannerFragment extends Fragment {
 
     }
 
-    //intent filters
+    //Sends intent to BleScannerService
+    private void sendCommandToService(String action) {
+        Intent scanningServiceIntent = new Intent(requireContext(), BleScannerService.class);
+        scanningServiceIntent.setAction(action);
+        requireContext().startService(scanningServiceIntent);
+        Log.d(Constant.TAG, "sent intent to scanner service " + action);
+    }
+
+    //Intent filters for receiving intents
     private static IntentFilter scannerUpdateIntentFilter () {
         final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(BleScanner.ACTION_BLE_SCANNING_STARTED);
-        intentFilter.addAction(BleScanner.ACTION_BLE_SCANNING_STOPPED);
+        intentFilter.addAction(Constant.ACTION_BLE_SCANNING_STARTED);
+        intentFilter.addAction(Constant.ACTION_BLE_SCANNING_STOPPED);
         return intentFilter;
     }
 
+    //Broadcast receiver that changes buttons and textview upon receiving intents from service
     private BroadcastReceiver scannerUpdateReceiver = new BroadcastReceiver() {
         @Override
-
         public void onReceive(Context context, Intent intent) {
-            Button buttonStopScan = getView().findViewById(R.id.buttonStopScan);
             Log.d(TAG, "Scanning broadcast received");
+
+            TextView textViewScanTitle = getView().findViewById(R.id.textViewScanTitle);
+            Button buttonStopScan = getView().findViewById(R.id.buttonStopScan);
+
             final String action = intent.getAction();
-            if (BleScanner.ACTION_BLE_SCANNING_STARTED.equals(action)){
+            Log.d(TAG, "Received broadcast with action " + action);
+            if (Constant.ACTION_BLE_SCANNING_STARTED.equals(action)){
+                scanning = true;
+                textViewScanTitle.setText("Scanning for devices . . .");
+                buttonStopScan.setText("Scanning");
+                buttonStopScan.setEnabled(false);
                 Log.d(TAG, "Scanning Started Intent Received");
-                buttonStopScan.setText("Stop Scan");
             }
-            else if (BleScanner.ACTION_BLE_SCANNING_STOPPED.equals(action)){
+            else if (Constant.ACTION_BLE_SCANNING_STOPPED.equals(action)){
+                scanning = false;
+                textViewScanTitle.setText("Select a device or scan again");
+                buttonStopScan.setText("Scan Again");
+                buttonStopScan.setEnabled(true);
                 Log.d(TAG, "Scanning stopped intent received");
-                buttonStopScan.setText("Start Scan");
 
             }
 

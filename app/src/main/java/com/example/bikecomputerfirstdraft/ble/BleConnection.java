@@ -14,17 +14,20 @@ import android.os.ParcelUuid;
 import android.util.Log;
 import android.view.View;
 
-import androidx.navigation.ui.AppBarConfiguration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecomputerfirstdraft.R;
-import com.example.bikecomputerfirstdraft.databinding.FragmentAddSensorBinding;
-import com.example.bikecomputerfirstdraft.ui.addSensor.AddSensorViewModel;
 import com.example.bikecomputerfirstdraft.ui.scanner.ScannerItem;
 
 import java.util.ArrayList;
 import java.util.UUID;
+
+import static com.example.bikecomputerfirstdraft.other.Constant.ACTION_DATA_AVAILABLE;
+import static com.example.bikecomputerfirstdraft.other.Constant.ACTION_GATT_CONNECTED;
+import static com.example.bikecomputerfirstdraft.other.Constant.ACTION_GATT_DISCONNECTED;
+import static com.example.bikecomputerfirstdraft.other.Constant.ACTION_GATT_SERVICES_DISCOVERED;
+import static com.example.bikecomputerfirstdraft.other.Constant.EXTRA_DATA;
 @SuppressLint("MissingPermission")
 
 public class BleConnection {
@@ -151,10 +154,10 @@ public class BleConnection {
     // Creates gatt intent filters to receive intents from BluetoothLeService
     private static IntentFilter makeGattUpdateIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECTED);
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED);
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
-        intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
+        intentFilter.addAction(ACTION_GATT_CONNECTED);
+        intentFilter.addAction(ACTION_GATT_DISCONNECTED);
+        intentFilter.addAction(ACTION_GATT_SERVICES_DISCOVERED);
+        intentFilter.addAction(ACTION_DATA_AVAILABLE);
         return intentFilter;
     }
 
@@ -169,25 +172,25 @@ public class BleConnection {
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "MainActivity:  broadcast received");
             final String action = intent.getAction();
-            final String characteristic = intent.getStringExtra(BluetoothLeService.EXTRA_DATA);
-            if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)){
+            final String characteristic = intent.getStringExtra(EXTRA_DATA);
+            if (ACTION_GATT_CONNECTED.equals(action)){
                 deviceConnected = true;
                 logMessages(deviceName + " connected");
                 //textViewConnectedDevices.append(deviceName + "\n");
 
             }
-            else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)){
+            else if (ACTION_GATT_DISCONNECTED.equals(action)){
                 deviceConnected = false;
                 logMessages(deviceName + " disconnected");
             }
-            else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)){
+            else if (ACTION_GATT_SERVICES_DISCOVERED.equals(action)){
                 logMessages(deviceName + " services discovered");
                 servicesDiscovered = true;
                 if(subscribeToNotification){
                     subscribeToNotification();
                 }
             }
-            else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)){
+            else if (ACTION_DATA_AVAILABLE.equals(action)){
                 logMessages(deviceName + " characteristic: " + characteristic);
 
             }
