@@ -15,7 +15,14 @@ import java.util.ArrayList;
 
 public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerViewHolder> {
 
-    private ArrayList<ScannerItem> mScannerList = new ArrayList<>();
+    private final RecyclerViewInterface recyclerViewInterface;
+    ArrayList<ScannerItem> scannerList;
+
+
+    public ScannerAdapter(ArrayList<ScannerItem> scannerList, RecyclerViewInterface recyclerViewInterface) {
+        this.scannerList = scannerList;
+        this.recyclerViewInterface = recyclerViewInterface;
+    }
 
     public static class ScannerViewHolder extends RecyclerView.ViewHolder {
 
@@ -23,32 +30,44 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
         public TextView mTextName;
         public TextView mTextDescription;
 
-        public ScannerViewHolder(@NonNull View itemView) {
+        public ScannerViewHolder(@NonNull View itemView, RecyclerViewInterface recyclerViewInterface) {
             super(itemView);
             mImageView = itemView.findViewById(R.id.imageViewScanResults);
             mTextName = itemView.findViewById(R.id.textViewName);
             mTextDescription = itemView.findViewById(R.id.textViewDescription);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (recyclerViewInterface != null) {
+                        int position = getAbsoluteAdapterPosition();
+
+                        if (position != RecyclerView.NO_POSITION){
+                            recyclerViewInterface.onItemClick(position);
+                        }
+                    }
+                }
+            });
+
         }
+
     }
 
-    public ScannerAdapter(ArrayList<ScannerItem> scannerList){
 
-        mScannerList = scannerList;
-    }
 
     @NonNull
     @Override
     public ScannerAdapter.ScannerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.scanner_item, parent, false);
-        ScannerViewHolder scannerViewHolder = new ScannerViewHolder(v);
+        ScannerViewHolder scannerViewHolder = new ScannerViewHolder(v, recyclerViewInterface);
         return scannerViewHolder;
     }
 
 
     @Override
     public void onBindViewHolder(@NonNull ScannerAdapter.ScannerViewHolder holder, int position) {
-        ScannerItem currentItem = mScannerList.get(position);
+        ScannerItem currentItem = scannerList.get(position);
         holder.mImageView.setImageResource(currentItem.getImageResource());
         holder.mTextDescription.setText(currentItem.getTextDescription());
         holder.mTextName.setText(currentItem.getTextName());
@@ -56,8 +75,21 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
     }
 
     @Override
-    public int getItemCount() {return mScannerList.size();}
+    public int getItemCount() {
+        return scannerList.size();
 
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+        }
+
+
+    }
 
 
 }
+
+
+
