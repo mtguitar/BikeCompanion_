@@ -3,55 +3,55 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="75dp"
     android:layout_margin="10dp"
     app:cardBackgroundColor="@color/primaryDarkColor"
     app:cardCornerRadius="0dp"
-    app:cardElevation="2dp"
-    app:cardMaxElevation="2dp">
+    app:cardElevation="15dp"
+    app:cardMaxElevation="15dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            tools:layout_editor_absoluteX="10dp"
-            tools:layout_editor_absoluteY="10dp">
+        <ImageView
+            android:id="@+id/imageViewScanResults"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_marginStart="10dp"
+            android:padding="2dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.38" />
 
-            <ImageView
-                android:id="@+id/imageViewScanResults"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:padding="2dp" />
+        <TextView
+            android:id="@+id/textViewDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="5dp"
+            android:fontFamily="sans-serif"
+            android:text="Line 2"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@+id/imageViewScanResults"
+            app:layout_constraintTop_toBottomOf="@+id/textViewName" />
 
-            <TextView
-                android:id="@+id/textViewName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_toEndOf="@id/imageViewScanResults"
-                android:fontFamily="sans-serif"
-                android:text="Line1"
-                android:textColor="@android:color/white"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+        <TextView
+            android:id="@+id/textViewName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="5dp"
+            android:fontFamily="sans-serif"
+            android:text="Line1"
+            android:textColor="@android:color/white"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@+id/imageViewScanResults"
+            app:layout_constraintTop_toTopOf="@+id/imageViewScanResults" />
 
-            <TextView
-                android:id="@+id/textViewDescription"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/textViewName"
-                android:layout_marginStart="8dp"
-                android:layout_toEndOf="@id/imageViewScanResults"
-                android:fontFamily="sans-serif"
-                android:text="Line 2"
-                android:textColor="@android:color/white"
-                android:textSize="15sp" />
-
-        </RelativeLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

@@ -28,7 +28,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.bikecomputerfirstdraft.MainActivity;
 import com.example.bikecomputerfirstdraft.R;
 import com.example.bikecomputerfirstdraft.other.Constant;
-import com.example.bikecomputerfirstdraft.ui.scanner.ScannerItem;
+import com.example.bikecomputerfirstdraft.ui.scanner.ScanResults;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,31 +50,40 @@ public class BleScannerService extends LifecycleService {
     private ScanSettings scanSettings;
     private static final long SCAN_PERIOD =5000;
 
-    private String name;
-    private String macAddress;
+    private String name = null;
+    private String macAddress = null;
     private ParcelUuid serviceUuids;
 
     //scanResults vars
     private String discoveredMacAddress;
     private String deviceName;
-    private ArrayList<ScannerItem> scannerResults;
+    private ArrayList<ScanResults> scannerResults;
 
     public BleScannerService() {
     }
 
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
+        Log.d(TAG, "received intent from add sensor fragment");
         String action = intent.getAction();
         if (intent.hasExtra("name")){
             name = intent.getStringExtra("name");
+            macAddress = null;
+            serviceUuids = null;
         }
-        if (intent.hasExtra("macAddress")){
+        else if (intent.hasExtra("macAddress")){
+            Log.d(TAG, macAddress + "not received");
             macAddress = intent.getStringExtra("macAddress");
+            name = null;
+            serviceUuids = null;
         }
-        if (intent.hasExtra("serviceUuids")) {
+        else if (intent.hasExtra("serviceUuids")) {
             serviceUuids = ParcelUuid.fromString(intent.getStringExtra("serviceUuids"));
+            name = null;
+            macAddress = null;
         }
 
+        Log.d("flareIntent", name + " " + macAddress + " " + serviceUuids + " received from intent");
         switch (action){
             case Constant.ACTION_START_OR_RESUME_SERVICE:
                 if(isFirstRun){
@@ -124,12 +133,15 @@ public class BleScannerService extends LifecycleService {
 
         if(serviceUuids != null){
             scanFilter = new ScanFilter.Builder().setServiceUuid(serviceUuids).build();
+            Log.d(TAG, "added serviceUUID to scan filter");
         }
         if(name != null){
             scanFilter = new ScanFilter.Builder().setDeviceName(name).build();
+            Log.d(TAG, "added name to scan filter");
         }
         if(macAddress != null) {
             scanFilter = new ScanFilter.Builder().setDeviceAddress(macAddress).build();
+            Log.d(TAG, "added macAddress to scan filter");
         }
 
         //Start scanning on a timer
@@ -144,14 +156,16 @@ public class BleScannerService extends LifecycleService {
                     }
                 }
             }, SCAN_PERIOD);
-            if (serviceUuids != null | name != null | macAddress != null) {
+            if (serviceUuids != null || name != null || macAddress != null) {
                 scanner.startScan(Collections.singletonList(scanFilter), scanSettings, scanCallback);
-                scanning = true;
+                Log.d(TAG, "scanning with filter");
             }
             else {
+                //scanner.startScan(Collections.singletonList(scanFilter), scanSettings, scanCallback);
                 scanner.startScan(scanCallback);
-                scanning = true;
+                Log.d(TAG, "scanning without filter");
             }
+            scanning = true;
             logMessages("Scanning . . . ");
             sendIntentToFragment(Constant.ACTION_BLE_SCANNING_STARTED);
         }
@@ -182,7 +196,6 @@ public class BleScannerService extends LifecycleService {
         logMessages("Scanning stopped");
         sendIntentToFragment(Constant.ACTION_BLE_SCANNING_STOPPED);
         scanning = false;
-        stopSelf();
     }
 
     public void initializeBluetooth() {
@@ -212,10 +225,10 @@ public class BleScannerService extends LifecycleService {
      * LiveData code
      */
 
-    public  static MutableLiveData<ArrayList<ScannerItem>> scannerLiveDataList = new MutableLiveData<>();
+    public  static MutableLiveData<ArrayList<ScanResults>> scannerLiveDataList = new MutableLiveData<>();
     public static MutableLiveData<String> isScanning = new MutableLiveData();
 
-    public static MutableLiveData<ArrayList<ScannerItem>> getScanResults() {
+    public static MutableLiveData<ArrayList<ScanResults>> getScanResults() {
         return scannerLiveDataList;
     }
 
@@ -236,7 +249,7 @@ public class BleScannerService extends LifecycleService {
             }
         }
         //if not already in list, add
-        scannerResults.add(new ScannerItem(R.drawable.ic_flare, deviceName, discoveredMacAddress));
+        scannerResults.add(new ScanResults(R.drawable.ic_flare, deviceName, discoveredMacAddress));
         getScanResults().postValue(scannerResults);
         logMessages("Posted scan result " + deviceName + discoveredMacAddress);
     }

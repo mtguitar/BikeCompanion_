@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecomputerfirstdraft.R;
 import com.example.bikecomputerfirstdraft.ui.scanner.ScannerFragment;
-import com.example.bikecomputerfirstdraft.ui.scanner.ScannerItem;
+import com.example.bikecomputerfirstdraft.ui.scanner.ScanResults;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,7 +59,7 @@ public class BleScanner {
     //scanResults vars
     private String discoveredMacAddress;
     private String deviceName;
-    private ArrayList<ScannerItem> scannerList;
+    private ArrayList<ScanResults> scannerList;
 
     //broadcast vars
     Intent scanningStatusIntent;
@@ -179,7 +179,7 @@ public class BleScanner {
 
             }
             //if not already in list, add and send to rv adapter
-            scannerList.add(new ScannerItem(R.drawable.ic_flare, deviceName, discoveredMacAddress));
+            scannerList.add(new ScanResults(R.drawable.ic_flare, deviceName, discoveredMacAddress));
           //  mRecyclerView.setAdapter(new ScannerAdapter(scannerList));
 
         }

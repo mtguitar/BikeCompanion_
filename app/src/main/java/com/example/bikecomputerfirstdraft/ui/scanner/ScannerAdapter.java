@@ -16,11 +16,11 @@ import java.util.ArrayList;
 public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerViewHolder> {
 
     private final RecyclerViewInterface recyclerViewInterface;
-    ArrayList<ScannerItem> scannerList;
+    ArrayList<ScanResults> scanResultsArrayList;
 
 
-    public ScannerAdapter(ArrayList<ScannerItem> scannerList, RecyclerViewInterface recyclerViewInterface) {
-        this.scannerList = scannerList;
+    public ScannerAdapter(ArrayList<ScanResults> scanResultsArrayList, RecyclerViewInterface recyclerViewInterface) {
+        this.scanResultsArrayList = scanResultsArrayList;
         this.recyclerViewInterface = recyclerViewInterface;
     }
 
@@ -70,7 +70,7 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
 
     @Override
     public void onBindViewHolder(@NonNull ScannerAdapter.ScannerViewHolder holder, int position) {
-        ScannerItem currentItem = scannerList.get(position);
+        ScanResults currentItem = scanResultsArrayList.get(position);
         holder.mImageView.setImageResource(currentItem.getImageResource());
         holder.mTextDescription.setText(currentItem.getTextDescription());
         holder.mTextName.setText(currentItem.getTextName());
@@ -79,7 +79,7 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
 
     @Override
     public int getItemCount() {
-        return scannerList.size();
+        return scanResultsArrayList.size();
 
     }
 
@@ -88,13 +88,6 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
         return name;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-        }
-
-
-    }
 
 
 }

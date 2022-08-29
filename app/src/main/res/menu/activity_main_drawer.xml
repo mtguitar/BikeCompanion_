@@ -20,9 +20,5 @@
             android:id="@+id/nav_add_sensor"
             android:icon="@drawable/ic_add_sensor"
             android:title="@string/nav_add_sensor" />
-        <item
-            android:id="@+id/nav_scanner"
-            android:icon="@drawable/ic_add_sensor"
-            android:title="@string/nav_scanner" />
     </group>
 </menu>

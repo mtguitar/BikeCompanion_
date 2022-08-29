@@ -1,11 +1,11 @@
 package com.example.bikecomputerfirstdraft.ui.scanner;
 
-public class ScannerItem {
+public class ScanResults {
     private int ImageResource;
     private String TextName;
     private String TextDescription;
 
-    public ScannerItem(int imageResource, String textName, String textDescription){
+    public ScanResults(int imageResource, String textName, String textDescription){
         ImageResource = imageResource;
         TextName = textName;
         TextDescription = textDescription;
