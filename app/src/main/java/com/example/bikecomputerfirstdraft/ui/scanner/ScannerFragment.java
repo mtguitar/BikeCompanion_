@@ -65,9 +65,12 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
         //creates recyclerView but does not show until there is data in it
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
+
         if (scanResults != null){
-            recyclerView.setAdapter(new ScannerAdapter(scanResults, this));
+            scanResults.clear();
+            updateRecycleViewer(scanResults);
         }
+
 
         //Setup observer of livedata for recyclerView, calls updateRecyclerView when data changes
         final Observer<ArrayList<ScanResults>> observerScanResults;
@@ -94,6 +97,10 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
                     sendCommandToService(Constant.ACTION_PAUSE_SERVICE);
                 }
                 else{
+                    if(scanResults != null) {
+                        scanResults.clear();
+                        updateRecycleViewer(scanResults);
+                    }
                     sendCommandToService(Constant.ACTION_START_OR_RESUME_SERVICE);
                 }
                 Log.d(Constant.TAG, "button clicked");
@@ -101,6 +108,15 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
         });
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(scanResults != null) {
+            scanResults.clear();
+            updateRecycleViewer(scanResults);
+        }
     }
 
     public void updateRecycleViewer(ArrayList scanResults){

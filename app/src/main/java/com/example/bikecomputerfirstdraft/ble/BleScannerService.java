@@ -81,11 +81,14 @@ public class BleScannerService extends LifecycleService {
                 if(isFirstRun){
                     //startForegroundService();
                     isFirstRun = false;
+
                     startScan();
-                    Log.d(Constant.TAG, "Started service");
+                    Log.d(Constant.TAG, "Started service" + "is first run?" + isFirstRun);
                 }
                 else{
-                    scannerResults.clear();
+                    if(scanning){
+                        stopScanning();
+                    }
                     startScan();
                     Log.d(Constant.TAG, "Resuming service");
                 }
@@ -193,10 +196,15 @@ public class BleScannerService extends LifecycleService {
 
     // Stop scanning method
     public void stopScanning() {
+        //stop timer
+        handler.removeCallbacksAndMessages(null);
+        //stop scanner
         scanner.stopScan(scanCallback);
-        logMessages("Scanning stopped");
-        sendIntentToFragment(Constant.ACTION_BLE_SCANNING_STOPPED);
         scanning = false;
+        //send intent to fragment that scanning is stopped
+        sendIntentToFragment(Constant.ACTION_BLE_SCANNING_STOPPED);
+
+        logMessages("Scanning stopped");
     }
 
     public void initializeBluetooth() {
@@ -215,7 +223,6 @@ public class BleScannerService extends LifecycleService {
 
 
 
-
     // Logs messages to UI and logCat
     private void logMessages(String logMessage) {
         Log.d(TAG, logMessage);
@@ -227,7 +234,6 @@ public class BleScannerService extends LifecycleService {
      */
 
     public  static MutableLiveData<ArrayList<ScanResults>> scannerLiveDataList = new MutableLiveData<>();
-    public static MutableLiveData<String> isScanning = new MutableLiveData();
 
     public static MutableLiveData<ArrayList<ScanResults>> getScanResults() {
         return scannerLiveDataList;
@@ -250,8 +256,7 @@ public class BleScannerService extends LifecycleService {
             }
         }
         //if not already in list, add
-        int image;
-        image = R.drawable.other_sensor;
+        int image = R.drawable.other_sensor;
         if (deviceName.contains("Flare")){
             image = R.drawable.flare;
         }
@@ -259,12 +264,8 @@ public class BleScannerService extends LifecycleService {
             image = R.drawable.speed;
         }
         scannerResults.add(new ScanResults(image, deviceName, discoveredMacAddress));
-        getScanResults().postValue(scannerResults);
+        scannerLiveDataList.postValue(scannerResults);
         logMessages("Posted scan result " + deviceName + discoveredMacAddress);
-    }
-
-    private void updateScanStatus(String scanningStatus) {
-        isScanning.postValue(scanningStatus);
     }
 
 

@@ -18,6 +18,7 @@ import androidx.navigation.Navigation;
 import com.example.bikecomputerfirstdraft.R;
 import com.example.bikecomputerfirstdraft.ble.BleScannerService;
 import com.example.bikecomputerfirstdraft.other.Constant;
+import com.example.bikecomputerfirstdraft.ui.scanner.ScannerFragment;
 import com.google.android.material.snackbar.Snackbar;
 
 public class AddSensorFragment extends Fragment {
