@@ -50,7 +50,7 @@ public class BleScannerService extends LifecycleService {
     //scanResults vars
     private String discoveredMacAddress;
     private String deviceName;
-    private ArrayList<ScanResults> scannerResults;
+    private ArrayList<ScanResults> scanResults;
 
     public BleScannerService() {
     }
@@ -243,19 +243,19 @@ public class BleScannerService extends LifecycleService {
         if (scannerLiveDataList == null) {
             scannerLiveDataList = new MutableLiveData<>();
         }
-        if (scannerResults == null) {
-            scannerResults = new ArrayList<>();
+        if (scanResults == null) {
+            scanResults = new ArrayList<>();
         }
         //checks to see if deviceMacAddress is already in list
-        int n = scannerResults.size();
+        int n = scanResults.size();
         if(n > 0){
             for (int i = 0; i < n; i++) {
-                if(discoveredMacAddress.equals(scannerResults.get(i).getTextDescription())){
+                if(discoveredMacAddress.equals(scanResults.get(i).getTextDescription())){
                     return;
                 }
             }
         }
-        //if not already in list, add
+        //if deviceMacAddress not already in list, add device to scannerReults
         int image = R.drawable.other_sensor;
         if (deviceName.contains("Flare")){
             image = R.drawable.flare;
@@ -263,8 +263,8 @@ public class BleScannerService extends LifecycleService {
         if (deviceName.contains("Wahoo")){
             image = R.drawable.speed;
         }
-        scannerResults.add(new ScanResults(image, deviceName, discoveredMacAddress));
-        scannerLiveDataList.postValue(scannerResults);
+        scanResults.add(new ScanResults(image, deviceName, discoveredMacAddress));
+        scannerLiveDataList.postValue(scanResults);
         logMessages("Posted scan result " + deviceName + discoveredMacAddress);
     }
 
