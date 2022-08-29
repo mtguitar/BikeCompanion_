@@ -28,7 +28,7 @@
             android:exported="true"
             android:foregroundServiceType="connectedDevice"></service>
         <service
-            android:name=".ble.BluetoothLeService"
+            android:name=".ble.BleService"
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="connectedDevice"/>

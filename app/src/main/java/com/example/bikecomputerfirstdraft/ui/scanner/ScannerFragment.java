@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.bikecomputerfirstdraft.R;
 import com.example.bikecomputerfirstdraft.ble.BleScannerService;
 import com.example.bikecomputerfirstdraft.other.Constant;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
@@ -164,6 +165,8 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
         String name = scannerAdapter.scanResultsArrayList.get(position).getTextName();
         String description = scannerAdapter.scanResultsArrayList.get(position).getTextDescription();
         Log.d(TAG, name + " " + description);
+        Snackbar snackbar = Snackbar.make(getView(), "Clicked: " + name + " " + description, Snackbar.LENGTH_SHORT);
+        snackbar.show();
 
     }
 }

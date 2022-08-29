@@ -21,7 +21,7 @@ import static com.example.bikecomputerfirstdraft.other.Constant.*;
 
 @SuppressLint("MissingPermission")
 
-public class BluetoothLeService extends Service {
+public class BleService extends Service {
 
     private final static String TAG = "FlareLog";
 
@@ -155,8 +155,8 @@ public class BluetoothLeService extends Service {
 
 
     public class LocalBinder extends Binder {
-        public BluetoothLeService getService() {
-            return BluetoothLeService.this;
+        public BleService getService() {
+            return BleService.this;
         }
     }
 

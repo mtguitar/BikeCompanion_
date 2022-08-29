@@ -12,74 +12,87 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 
 import com.example.bikecomputerfirstdraft.R;
 import com.example.bikecomputerfirstdraft.ble.BleScannerService;
 import com.example.bikecomputerfirstdraft.other.Constant;
+import com.google.android.material.snackbar.Snackbar;
 
 public class AddSensorFragment extends Fragment {
 
-    private AddSensorViewModel mViewModel;
+    private String name = null;
+    private String macAddress = null;
+    private ParcelUuid serviceUuids = null;
 
-
-
-    public static AddSensorFragment newInstance() {
-        return new AddSensorFragment();
-    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.add_sensor, container, false);
+        View view = inflater.inflate(R.layout.fragment_add_sensor, container, false);
 
         Button buttonSelectFlare = view.findViewById(R.id.buttonSelectFlare);
         Button buttonSelectSpeed = view.findViewById(R.id.buttonSelectSpeed);
         Button buttonSelectOther = view.findViewById(R.id.buttonSelectOther);
 
+
         buttonSelectFlare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String name = "Flare RT";
-                sendCommandToService(Constant.ACTION_START_OR_RESUME_SERVICE, name, null, null);
-                NavDirections action = AddSensorFragmentDirections.actionNavAddSensorToNavScanner();
-                Navigation.findNavController(view).navigate(action);
+                name = "Flare RT";
+                macAddress = null;
+                serviceUuids = null;
+                click();
+
             }
         });
         buttonSelectSpeed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendCommandToService(Constant.ACTION_START_OR_RESUME_SERVICE, null, null, null);
-                NavDirections action = AddSensorFragmentDirections.actionNavAddSensorToNavScanner();
-                Navigation.findNavController(view).navigate(action);
+                name = null;
+                macAddress = "D2:F7:80:A2:43:27";
+                serviceUuids = null;
+                click();
+
             }
         });
         buttonSelectOther.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                name = null;
+                macAddress = null;
+                serviceUuids = null;
+                click();
+                /*
                 sendCommandToService(Constant.ACTION_START_OR_RESUME_SERVICE, null, null, null);
                 NavDirections action = AddSensorFragmentDirections.actionNavAddSensorToNavScanner();
                 Navigation.findNavController(view).navigate(action);
+                Snackbar snackbar = Snackbar.make(view, "Selected: " + name, Snackbar.LENGTH_SHORT);
+                snackbar.show();
+
+                 */
             }
         });
 
         return view;
 
-
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(AddSensorViewModel.class);
-        // TODO: Use the ViewModel
+    //
+    private void click(){
+        sendCommandToService(Constant.ACTION_START_OR_RESUME_SERVICE, name, macAddress, serviceUuids);
+        NavDirections action = AddSensorFragmentDirections.actionNavAddSensorToNavScanner();
+        Navigation.findNavController(getView()).navigate(action);
+        Snackbar snackbar = Snackbar.make(getView(),"Selected: " + name, Snackbar.LENGTH_SHORT);
+        snackbar.show();
+
     }
 
     //Sends intent to BleScannerService
     private void sendCommandToService(String action, String name, String macAddress, ParcelUuid serviceUuids) {
         Intent scanningServiceIntent = new Intent(requireContext(), BleScannerService.class);
+        getActivity().stopService(scanningServiceIntent);
         scanningServiceIntent.setAction(action);
         if (name != null){
             scanningServiceIntent.putExtra("name", name);

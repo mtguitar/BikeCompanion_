@@ -53,7 +53,7 @@ public class BleConnection {
 
 
     //bluetooth vars
-    private BluetoothLeService bluetoothLeService;
+    private BleService bleService;
     private BluetoothAdapter bluetoothAdapter;
     private Intent gattServiceIntent;
     String name;
@@ -107,11 +107,11 @@ public class BleConnection {
     // If bound, call BluetoothLeService's connected method directly, passing deviceMacAddress
     private void connectDevice(String deviceMacAddress){
         if (!boundToService) {
-            gattServiceIntent = new Intent(mContext, BluetoothLeService.class);
+            gattServiceIntent = new Intent(mContext, BleService.class);
             mContext.bindService(gattServiceIntent, serviceConnection, mContext.BIND_AUTO_CREATE);
         }
         else {
-            bluetoothLeService.connectDevice(deviceMacAddress);
+            bleService.connectDevice(deviceMacAddress);
             logMessages("Trying to connect to " + deviceName);
         }
 
@@ -119,7 +119,7 @@ public class BleConnection {
 
     //subscribe to characteristic notification
     private void subscribeToNotification(){
-        bluetoothLeService.setCharacteristicNotification(SERVICE_UUID, CHARACTERISTIC_UUID, true);
+        bleService.setCharacteristicNotification(SERVICE_UUID, CHARACTERISTIC_UUID, true);
         subscribeToNotification = false;
     }
 
@@ -127,27 +127,27 @@ public class BleConnection {
     private void writeCharacteristic(String payload){
         FormatBleData formatBleData = new FormatBleData();
         byte[] payloadToWrite = formatBleData.convertStingtoByte(payload);
-        bluetoothLeService.writeCharacteristic(SERVICE_UUID, CHARACTERISTIC_UUID, payloadToWrite);
+        bleService.writeCharacteristic(SERVICE_UUID, CHARACTERISTIC_UUID, payloadToWrite);
     }
 
     // serviceConnection object to connect to BluetoothLeService
     private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            bluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
+            bleService = ((BleService.LocalBinder) service).getService();
             // If bluetoothLeService is initialized, connect to device
-            if (!bluetoothLeService.initialize()) {
+            if (!bleService.initialize()) {
                 logMessages("Failed to initialize BluetoothLeService");
             }
             boundToService = true;
 
-            bluetoothLeService.connectDevice("F8:EF:93:1C:EC:DB");
+            bleService.connectDevice("F8:EF:93:1C:EC:DB");
             logMessages("Trying to connect to " + deviceName);
 
         }
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            bluetoothLeService = null;
+            bleService = null;
         }
     };
 

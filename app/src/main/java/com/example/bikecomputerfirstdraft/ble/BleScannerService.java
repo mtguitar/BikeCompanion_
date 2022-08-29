@@ -1,9 +1,6 @@
 package com.example.bikecomputerfirstdraft.ble;
 
 import android.annotation.SuppressLint;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -14,18 +11,14 @@ import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Handler;
 import android.os.ParcelUuid;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.TaskStackBuilder;
 import androidx.lifecycle.LifecycleService;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.bikecomputerfirstdraft.MainActivity;
 import com.example.bikecomputerfirstdraft.R;
 import com.example.bikecomputerfirstdraft.other.Constant;
 import com.example.bikecomputerfirstdraft.ui.scanner.ScanResults;
@@ -72,7 +65,6 @@ public class BleScannerService extends LifecycleService {
             serviceUuids = null;
         }
         else if (intent.hasExtra("macAddress")){
-            Log.d(TAG, macAddress + "not received");
             macAddress = intent.getStringExtra("macAddress");
             name = null;
             serviceUuids = null;
@@ -87,12 +79,13 @@ public class BleScannerService extends LifecycleService {
         switch (action){
             case Constant.ACTION_START_OR_RESUME_SERVICE:
                 if(isFirstRun){
-                    startForegroundService();
+                    //startForegroundService();
                     isFirstRun = false;
                     startScan();
                     Log.d(Constant.TAG, "Started service");
                 }
                 else{
+                    scannerResults.clear();
                     startScan();
                     Log.d(Constant.TAG, "Resuming service");
                 }
@@ -114,6 +107,14 @@ public class BleScannerService extends LifecycleService {
         }
 
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    public void onDestroy() {
+        name = null;
+        macAddress = null;
+        serviceUuids = null;
+        stopScanning();
+        super.onDestroy();
     }
 
 
@@ -249,7 +250,15 @@ public class BleScannerService extends LifecycleService {
             }
         }
         //if not already in list, add
-        scannerResults.add(new ScanResults(R.drawable.ic_flare, deviceName, discoveredMacAddress));
+        int image;
+        image = R.drawable.other_sensor;
+        if (deviceName.contains("Flare")){
+            image = R.drawable.flare;
+        }
+        if (deviceName.contains("Wahoo")){
+            image = R.drawable.speed;
+        }
+        scannerResults.add(new ScanResults(image, deviceName, discoveredMacAddress));
         getScanResults().postValue(scannerResults);
         logMessages("Posted scan result " + deviceName + discoveredMacAddress);
     }
@@ -263,7 +272,7 @@ public class BleScannerService extends LifecycleService {
      * Set up foreground service, and notification
      */
 
-
+/*
     private void startForegroundService() {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -311,6 +320,8 @@ public class BleScannerService extends LifecycleService {
                         PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         return resultPendingIntent;
     }
+
+ */
 
 
 }
