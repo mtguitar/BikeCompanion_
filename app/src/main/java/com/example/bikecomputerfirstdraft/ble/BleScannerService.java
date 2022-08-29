@@ -112,6 +112,7 @@ public class BleScannerService extends LifecycleService {
         return super.onStartCommand(intent, flags, startId);
     }
 
+    //makes sure next scan does not have any leftover filters
     public void onDestroy() {
         name = null;
         macAddress = null;
@@ -120,12 +121,11 @@ public class BleScannerService extends LifecycleService {
         super.onDestroy();
     }
 
-
     /**
      * Code related to scanning
      */
 
-    // Scan for selected devices
+    // Scans for devices
     public void startScan() {
 
         //initialize ble
@@ -160,25 +160,27 @@ public class BleScannerService extends LifecycleService {
                     }
                 }
             }, SCAN_PERIOD);
-            if (serviceUuids != null || name != null || macAddress != null) {
+            //adds scan filter if one exists
+            if (scanFilter != null) {
                 scanner.startScan(Collections.singletonList(scanFilter), scanSettings, scanCallback);
                 Log.d(TAG, "scanning with filter");
             }
             else {
-                //scanner.startScan(Collections.singletonList(scanFilter), scanSettings, scanCallback);
                 scanner.startScan(scanCallback);
                 Log.d(TAG, "scanning without filter");
             }
             scanning = true;
-            logMessages("Scanning . . . ");
+
+            //send intent to fragment alerting it that scanning has started
             sendIntentToFragment(Constant.ACTION_BLE_SCANNING_STARTED);
+
+            logMessages("Scanning . . . ");
+
         }
 
     }
 
-
-
-    // scanCallback object to receive scan results
+    //scanCallback object to receive scan results
     ScanCallback scanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
@@ -194,9 +196,9 @@ public class BleScannerService extends LifecycleService {
         }
     };
 
-    // Stop scanning method
+    //Stops scanning
     public void stopScanning() {
-        //stop timer
+        //stop scan timer
         handler.removeCallbacksAndMessages(null);
         //stop scanner
         scanner.stopScan(scanCallback);
@@ -207,6 +209,7 @@ public class BleScannerService extends LifecycleService {
         logMessages("Scanning stopped");
     }
 
+    //initializes device's bluetooth adapter ble scanner
     public void initializeBluetooth() {
         final BluetoothManager bluetoothManager =
                 (BluetoothManager) this.getSystemService(Context.BLUETOOTH_SERVICE);
@@ -215,6 +218,7 @@ public class BleScannerService extends LifecycleService {
         logMessages("initialized ble");
     }
 
+    //method for sending intents to ScannerFragment
     private void sendIntentToFragment(String action) {
         Intent scanningStatusIntent = new Intent(action);
         sendBroadcast(scanningStatusIntent);
@@ -222,8 +226,7 @@ public class BleScannerService extends LifecycleService {
     }
 
 
-
-    // Logs messages to UI and logCat
+    //Logs messages to UI and logCat
     private void logMessages(String logMessage) {
         Log.d(TAG, logMessage);
         //textViewLog.append(logMessage + "\n");
@@ -232,7 +235,6 @@ public class BleScannerService extends LifecycleService {
     /**
      * LiveData code
      */
-
     public  static MutableLiveData<ArrayList<ScanResults>> scannerLiveDataList = new MutableLiveData<>();
 
     public static MutableLiveData<ArrayList<ScanResults>> getScanResults() {
