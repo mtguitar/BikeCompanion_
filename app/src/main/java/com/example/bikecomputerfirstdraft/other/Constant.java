@@ -37,5 +37,8 @@ public class Constant {
     public final static int NOTIFICATION_ID = 1;
 
 
+    public final static String AVENTON_FLARE_MAC_ADDRESS = "F8:EF:93:1C:EC:DB";
+
+
 
 }

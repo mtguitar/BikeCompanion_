@@ -46,6 +46,7 @@ public class BleScannerService extends LifecycleService {
     private String name = null;
     private String macAddress = null;
     private ParcelUuid serviceUuids = null;
+    private String deviceType = null;
 
     //scanResults vars
     private String discoveredMacAddress;
@@ -60,6 +61,7 @@ public class BleScannerService extends LifecycleService {
         String action = intent.getAction();
         Log.d(TAG, "Received intent from fragment: " + action);
 
+        deviceType = intent.getStringExtra("deviceType");
         if (intent.hasExtra("name")){
             name = intent.getStringExtra("name");
             macAddress = null;
@@ -232,13 +234,13 @@ public class BleScannerService extends LifecycleService {
                 }
             }
         }
-        //if deviceMacAddress not already in list, add device to scannerReults
-        int image = R.drawable.other_sensor;
-        if (deviceName.contains("Flare")){
-            image = R.drawable.flare;
+        //if deviceMacAddress not already in list, add device to scannerResults
+        int image = R.drawable.ic_device_type_other_sensor;
+        if (deviceType.equals("light")){
+            image = R.drawable.ic_device_type_light;
         }
-        if (deviceName.contains("Wahoo")){
-            image = R.drawable.speed;
+        if (deviceName.contains("speed")){
+            image = R.drawable.ic_speed;
         }
         scanResults.add(new ScanResults(image, deviceName, discoveredMacAddress));
         scannerLiveDataList.postValue(scanResults);

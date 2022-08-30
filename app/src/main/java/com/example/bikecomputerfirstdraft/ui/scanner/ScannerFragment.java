@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecomputerfirstdraft.R;
 import com.example.bikecomputerfirstdraft.ble.BleScannerService;
+import com.example.bikecomputerfirstdraft.deviceTypes.FlareRT;
 import com.example.bikecomputerfirstdraft.other.Constant;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -42,7 +43,8 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
 
     private String name;
     private String macAddress;
-    private ParcelUuid serviceUuids;
+    private String serviceUuids;
+    private String deviceType;
 
 
     @Override
@@ -53,9 +55,9 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
         name = ScannerFragmentArgs.fromBundle(getArguments()).getName();
         macAddress = ScannerFragmentArgs.fromBundle(getArguments()).getMacAddress();
         serviceUuids = ScannerFragmentArgs.fromBundle(getArguments()).getServiceUuids();
+        deviceType = ScannerFragmentArgs.fromBundle(getArguments()).getDeviceType();
 
         sendCommandToService(Constant.ACTION_START_OR_RESUME_SERVICE);
-
 
     }
 
@@ -146,6 +148,7 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
         if (serviceUuids != null) {
             scanningServiceIntent.putExtra("serviceUuids", serviceUuids);
         }
+        scanningServiceIntent.putExtra("deviceType", deviceType);
         requireContext().startService(scanningServiceIntent);
         Log.d(Constant.TAG, "sent intent to scanner service " + action);
     }
@@ -170,7 +173,6 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
                 scanning = true;
                 textViewScanTitle.setText("Scanning for devices");
                 buttonStopScan.setText("Stop Scan");
-                //buttonStopScan.setEnabled(false);
                 progressBarScan.setVisibility(View.VISIBLE);
                 Log.d(TAG, "Scanning Started Intent Received");
             }

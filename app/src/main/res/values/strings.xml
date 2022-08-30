@@ -1,15 +1,37 @@
 <resources>
-    <string name="app_name">BikeComputerFirstDraft</string>
+    <string name="app_name">Bike Companion</string>
+
+    <!-- Nav Drawer -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
+    <string name="nav_header_title">Navigation</string>
+    <string name="nav_header_subtitle">Bike Companion</string>
+    <string name="nav_header_desc"></string>
 
     <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
+    <string name="menu_settings">Settings</string>
     <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_scanner">Scanner</string>
+    <string name="menu_my_devices">My Devices</string>
+    <string name="menu_add_device">Add Device</string>
+
+    <!-- Settings menu -->
+    <string name="action_settings">Settings</string>
+
+    <!-- Nav Map -->
+    <string name="nav_scanner">Scanner</string>
+    <string name="nav_add_device">Add Device</string>
+    <string name="nav_home">Home</string>
+
+
+    <!-- Preference Titles -->
+
+
+
+
+
+
+
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
     <string name="sync_header">Sync</string>
@@ -26,8 +48,7 @@
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="nav_add_sensor">Add Sensor</string>
-    <string name="menu_addSensor">Add Sensor</string>
+
     <string name="connect">Connect</string>
     <string name="subscribe">Subscribe</string>
     <string name="turn_off">Turn off</string>
@@ -35,7 +56,4 @@
     <string name="scan_status">Scan Status</string>
     <string name="linear_layout_manager" />
     <string name="grid_layout_manager" />
-    <string name="nav_scanner">Scanner</string>
-    <string name="menu_scannen">Scanner</string>
-    <string name="menu_scanner">Scanner</string>
 </resources>

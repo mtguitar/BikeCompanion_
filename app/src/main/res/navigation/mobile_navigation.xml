@@ -5,7 +5,6 @@
     android:id="@+id/mobile_navigation"
     app:startDestination="@+id/nav_home">
 
-
     <fragment
         android:id="@+id/nav_home"
         android:name="com.example.bikecomputerfirstdraft.ui.home.HomeFragment"
@@ -13,17 +12,21 @@
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_nav_home_to_nav_add_sensor"
-            app:destination="@id/nav_add_sensor" />
+            app:destination="@id/nav_add_device" />
     </fragment>
 
     <fragment
-        android:id="@+id/nav_add_sensor"
-        android:name="com.example.bikecomputerfirstdraft.ui.addSensor.AddSensorFragment"
-        android:label="@string/menu_addSensor"
+        android:id="@+id/nav_add_device"
+        android:name="com.example.bikecomputerfirstdraft.ui.addDevice.AddDeviceFragment"
+        android:label="@string/menu_add_device"
         tools:layout="@layout/flare_rt" >
         <action
-            android:id="@+id/sensorToScanner"
-            app:destination="@id/nav_scanner" />
+            android:id="@+id/deviceToScanner"
+            app:destination="@id/nav_scanner"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
     <fragment
         android:id="@+id/nav_scanner"
@@ -43,7 +46,11 @@
             app:nullable="true" />
         <argument
             android:name="serviceUuids"
-            app:argType="android.os.ParcelUuid"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="deviceType"
+            app:argType="string"
             app:nullable="true" />
     </fragment>
 

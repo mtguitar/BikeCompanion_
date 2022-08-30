@@ -1,7 +1,6 @@
-package com.example.bikecomputerfirstdraft.ui.addSensor;
+package com.example.bikecomputerfirstdraft.ui.addDevice;
 
 import android.os.Bundle;
-import android.os.ParcelUuid;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +13,16 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 
 import com.example.bikecomputerfirstdraft.R;
+import com.example.bikecomputerfirstdraft.deviceTypes.FlareRT;
+import com.example.bikecomputerfirstdraft.deviceTypes.SpeedCadence;
 import com.google.android.material.snackbar.Snackbar;
 
-public class AddSensorFragment extends Fragment {
+public class AddDeviceFragment extends Fragment {
 
     private String name = null;
     private String macAddress = null;
-    private ParcelUuid serviceUuids = null;
+    private String serviceUuids = null;
+    private String deviceType;
 
 
     @Override
@@ -36,9 +38,10 @@ public class AddSensorFragment extends Fragment {
         buttonSelectFlare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                name = "Flare RT";
+                name = null;
                 macAddress = null;
-                serviceUuids = null;
+                serviceUuids = FlareRT.STRING_SERVICE_ADVERTISED_1;
+                deviceType = FlareRT.DEVICE_TYPE;
                 click();
             }
         });
@@ -46,8 +49,9 @@ public class AddSensorFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 name = null;
-                macAddress = "D2:F7:80:A2:43:27";
-                serviceUuids = null;
+                macAddress = null;
+                serviceUuids = SpeedCadence.STRING_SERVICE_ADVERTISED_1;
+                deviceType = SpeedCadence.DEVICE_TYPE;
                 click();
 
             }
@@ -58,22 +62,20 @@ public class AddSensorFragment extends Fragment {
                 name = null;
                 macAddress = null;
                 serviceUuids = null;
+                deviceType = "other";
                 click();
             }
         });
 
         return view;
-
     }
 
     private void click(){
-        NavDirections action = AddSensorFragmentDirections.sensorToScanner(name, macAddress, serviceUuids);
+        NavDirections action = AddDeviceFragmentDirections.deviceToScanner(null, null, serviceUuids, deviceType);
         Navigation.findNavController(getView()).navigate(action);
-        Snackbar snackbar = Snackbar.make(getView(),"Selected: " + name, Snackbar.LENGTH_SHORT);
+        Snackbar snackbar = Snackbar.make(getView(),"Selected: " + serviceUuids, Snackbar.LENGTH_SHORT);
         snackbar.show();
     }
-
-
 
 
 }

@@ -179,7 +179,7 @@ public class BleScanner {
 
             }
             //if not already in list, add and send to rv adapter
-            scannerList.add(new ScanResults(R.drawable.ic_flare, deviceName, discoveredMacAddress));
+            scannerList.add(new ScanResults(R.drawable.ic_device_type_flare, deviceName, discoveredMacAddress));
           //  mRecyclerView.setAdapter(new ScannerAdapter(scannerList));
 
         }

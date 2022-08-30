@@ -1,4 +1,4 @@
-package com.example.bikecomputerfirstdraft.ui.slideshow;
+package com.example.bikecomputerfirstdraft.ui.settingsDrawer;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,22 +10,27 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.bikecomputerfirstdraft.databinding.FragmentSlideshowBinding;
+import com.example.bikecomputerfirstdraft.databinding.FragmentGalleryBinding;
 
-public class SlideshowFragment extends Fragment {
+public class SettingsFragment extends Fragment {
 
-    private FragmentSlideshowBinding binding;
+    private FragmentGalleryBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        SlideshowViewModel slideshowViewModel =
-                new ViewModelProvider(this).get(SlideshowViewModel.class);
 
-        binding = FragmentSlideshowBinding.inflate(inflater, container, false);
+        SettingsViewModel settingsViewModel =
+                new ViewModelProvider(this).get(SettingsViewModel.class);
+
+
+        binding = FragmentGalleryBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textSlideshow;
-        slideshowViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+
+        final TextView textView = binding.textGallery;
+
+        settingsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+
         return root;
     }
 
