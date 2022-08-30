@@ -22,7 +22,6 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.bikecomputerfirstdraft.R;
 import com.example.bikecomputerfirstdraft.other.Constant;
 import com.example.bikecomputerfirstdraft.ui.scanner.ScanResults;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,7 +41,7 @@ public class BleScannerService extends LifecycleService {
     //filter and scan settings vars
     private ScanFilter scanFilter;
     private ScanSettings scanSettings;
-    private static final long SCAN_PERIOD =5000;
+    private static final long SCAN_PERIOD =3000;
 
     private String name = null;
     private String macAddress = null;
@@ -60,6 +59,7 @@ public class BleScannerService extends LifecycleService {
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
         String action = intent.getAction();
         Log.d(TAG, "Received intent from fragment: " + action);
+
         if (intent.hasExtra("name")){
             name = intent.getStringExtra("name");
             macAddress = null;
@@ -75,6 +75,7 @@ public class BleScannerService extends LifecycleService {
             name = null;
             macAddress = null;
         }
+
 
         Log.d("flareIntent", name + " " + macAddress + " " + serviceUuids + " received from intent");
         switch (action){
@@ -118,6 +119,7 @@ public class BleScannerService extends LifecycleService {
         super.onDestroy();
         stopScanning();
         Log.d(TAG, "BleScannerService Destroyed");
+        stopSelf();
     }
 
     /**
@@ -139,6 +141,7 @@ public class BleScannerService extends LifecycleService {
         // Sets a timer
         handler = new Handler();
         handler.postDelayed(new Runnable() {
+
             @Override
             public void run() {
                 if (scanning) {
@@ -153,7 +156,6 @@ public class BleScannerService extends LifecycleService {
 
         //send intent to fragment alerting it that scanning has started
         sendIntentToFragment(Constant.ACTION_BLE_SCANNING_STARTED);
-
     }
 
 

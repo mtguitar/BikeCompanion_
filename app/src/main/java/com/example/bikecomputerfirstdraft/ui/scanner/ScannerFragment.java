@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.ParcelUuid;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,8 +33,6 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
 
     private boolean scanning = true;
 
-
-
     private static Button buttonStopScan;
     private static TextView textViewScanTitle;
     private static View progressBarScan;
@@ -41,13 +40,22 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
     private ArrayList scanResults;
     private RecyclerView recyclerView;
 
+    private String name;
+    private String macAddress;
+    private ParcelUuid serviceUuids;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         //This is where we initialize the data. Normally this would be from a remote server
-        //Send intent to BleScannerService
-        //sendCommandToService(Constant.ACTION_START_OR_RESUME_SERVICE);
+
+        name = ScannerFragmentArgs.fromBundle(getArguments()).getName();
+        macAddress = ScannerFragmentArgs.fromBundle(getArguments()).getMacAddress();
+        serviceUuids = ScannerFragmentArgs.fromBundle(getArguments()).getServiceUuids();
+
+        sendCommandToService(Constant.ACTION_START_OR_RESUME_SERVICE);
+
 
     }
 
@@ -72,6 +80,8 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
         }
 
 
+
+
         //Setup observer of livedata for recyclerView, calls updateRecyclerView when data changes
         final Observer<ArrayList<ScanResults>> observerScanResults;
         observerScanResults = new Observer<ArrayList<ScanResults>>(){
@@ -83,10 +93,8 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
         //start observing scan results
         BleScannerService.getScanResults().observe(getActivity(), observerScanResults);
 
-
-
         //Intent filters to listen for scanning updates
-        //scannerUpdateIntentFilter ();
+        scannerUpdateIntentFilter();
         getActivity().registerReceiver(scannerUpdateReceiver, scannerUpdateIntentFilter());
 
         //set button onclick listener
@@ -125,12 +133,19 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
         this.scanResults = scanResults;
     }
 
-
-
     //Sends intent to BleScannerService
     private void sendCommandToService(String action) {
         Intent scanningServiceIntent = new Intent(requireContext(), BleScannerService.class);
         scanningServiceIntent.setAction(action);
+        if (name != null){
+            scanningServiceIntent.putExtra("name", name);
+        }
+        if (macAddress != null){
+            scanningServiceIntent.putExtra("macAddress", macAddress);
+        }
+        if (serviceUuids != null) {
+            scanningServiceIntent.putExtra("serviceUuids", serviceUuids);
+        }
         requireContext().startService(scanningServiceIntent);
         Log.d(Constant.TAG, "sent intent to scanner service " + action);
     }
@@ -143,8 +158,6 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
         return intentFilter;
     }
 
-
-
     //Broadcast receiver that changes buttons and textview upon receiving intents from service
     private BroadcastReceiver scannerUpdateReceiver = new BroadcastReceiver() {
         @Override
@@ -156,8 +169,8 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
             if (Constant.ACTION_BLE_SCANNING_STARTED.equals(action)){
                 scanning = true;
                 textViewScanTitle.setText("Scanning for devices");
-                buttonStopScan.setText("Scanning");
-                buttonStopScan.setEnabled(false);
+                buttonStopScan.setText("Stop Scan");
+                //buttonStopScan.setEnabled(false);
                 progressBarScan.setVisibility(View.VISIBLE);
                 Log.d(TAG, "Scanning Started Intent Received");
             }
@@ -175,7 +188,7 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
         }
     };
 
-
+/*
     private BroadcastReceiver scanFilterReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -205,12 +218,14 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
         }
     };
 
+ */
+
 
 
 
     @Override
     public void onItemClick(int position) {
-        Log.d(TAG, "clicked item RV");
+        Log.d(TAG, "Clicked item RV");
         ScannerAdapter scannerAdapter = new ScannerAdapter(scanResults, this);
         String name = scannerAdapter.scanResultsArrayList.get(position).getTextName();
         String description = scannerAdapter.scanResultsArrayList.get(position).getTextDescription();
