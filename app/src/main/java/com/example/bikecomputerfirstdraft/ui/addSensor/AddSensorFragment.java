@@ -82,8 +82,8 @@ public class AddSensorFragment extends Fragment {
 
     //
     private void click(){
-        sendCommandToService(Constant.ACTION_START_OR_RESUME_SERVICE, name, macAddress, serviceUuids);
-        NavDirections action = AddSensorFragmentDirections.actionNavAddSensorToNavScanner();
+
+        NavDirections action = AddSensorFragmentDirections.sensorToScanner(name, macAddress, serviceUuids);
         Navigation.findNavController(getView()).navigate(action);
         Snackbar snackbar = Snackbar.make(getView(),"Selected: " + name, Snackbar.LENGTH_SHORT);
         snackbar.show();
@@ -91,22 +91,20 @@ public class AddSensorFragment extends Fragment {
     }
 
     //Sends intent to BleScannerService
-    private void sendCommandToService(String action, String name, String macAddress, ParcelUuid serviceUuids) {
-        Intent scanningServiceIntent = new Intent(requireContext(), BleScannerService.class);
-        getActivity().stopService(scanningServiceIntent);
-        scanningServiceIntent.setAction(action);
+    private void sendScanningFilters(String action, String name, String macAddress, ParcelUuid serviceUuids) {
+        Intent scanningFiltersIntent = new Intent(requireContext(), ScannerFragment.class);
+
+        scanningFiltersIntent.setAction(action);
         if (name != null){
-            scanningServiceIntent.putExtra("name", name);
+            scanningFiltersIntent.putExtra("name", name);
         }
         if (macAddress != null){
-            scanningServiceIntent.putExtra("macAddress", macAddress);
+            scanningFiltersIntent.putExtra("macAddress", macAddress);
         }
         if (serviceUuids != null) {
-            scanningServiceIntent.putExtra("serviceUuids", serviceUuids);
+            scanningFiltersIntent.putExtra("serviceUuids", serviceUuids);
         }
 
-
-        requireContext().startService(scanningServiceIntent);
         Log.d(Constant.TAG, "sent intent to scanner service " + action);
     }
 

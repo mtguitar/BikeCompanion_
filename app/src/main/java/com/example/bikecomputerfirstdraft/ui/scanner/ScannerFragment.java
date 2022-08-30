@@ -86,7 +86,7 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
 
 
         //Intent filters to listen for scanning updates
-        scannerUpdateIntentFilter ();
+        //scannerUpdateIntentFilter ();
         getActivity().registerReceiver(scannerUpdateReceiver, scannerUpdateIntentFilter());
 
         //set button onclick listener
@@ -143,6 +143,8 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
         return intentFilter;
     }
 
+
+
     //Broadcast receiver that changes buttons and textview upon receiving intents from service
     private BroadcastReceiver scannerUpdateReceiver = new BroadcastReceiver() {
         @Override
@@ -172,6 +174,38 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
 
         }
     };
+
+
+    private BroadcastReceiver scanFilterReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "Scanning broadcast received");
+
+            final String action = intent.getAction();
+            Log.d(TAG, "Received broadcast with action " + action);
+            if (Constant.ACTION_BLE_SCANNING_STARTED.equals(action)){
+                scanning = true;
+                textViewScanTitle.setText("Scanning for devices");
+                buttonStopScan.setText("Scanning");
+                buttonStopScan.setEnabled(false);
+                progressBarScan.setVisibility(View.VISIBLE);
+                Log.d(TAG, "Scanning Started Intent Received");
+            }
+            else if (Constant.ACTION_BLE_SCANNING_STOPPED.equals(action)){
+                scanning = false;
+                textViewScanTitle.setText("Select a device or scan again");
+                buttonStopScan.setText("Scan Again");
+                buttonStopScan.setEnabled(true);
+                progressBarScan.setVisibility(View.GONE);
+                Log.d(TAG, "Scanning stopped intent received");
+
+            }
+
+
+        }
+    };
+
+
 
 
     @Override

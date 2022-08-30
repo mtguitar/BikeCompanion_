@@ -17,23 +17,12 @@
     </fragment>
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.example.bikecomputerfirstdraft.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
-
-    <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.example.bikecomputerfirstdraft.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
-    <fragment
         android:id="@+id/nav_add_sensor"
         android:name="com.example.bikecomputerfirstdraft.ui.addSensor.AddSensorFragment"
         android:label="@string/menu_addSensor"
         tools:layout="@layout/flare_rt" >
         <action
-            android:id="@+id/action_nav_add_sensor_to_nav_scanner"
+            android:id="@+id/sensorToScanner"
             app:destination="@id/nav_scanner" />
     </fragment>
     <fragment
@@ -44,6 +33,18 @@
         <action
             android:id="@+id/action_nav_scanner_to_nav_home"
             app:destination="@id/nav_home" />
+        <argument
+            android:name="name"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="macAddress"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="serviceUuids"
+            app:argType="android.os.ParcelUuid"
+            app:nullable="true" />
     </fragment>
 
 </navigation>

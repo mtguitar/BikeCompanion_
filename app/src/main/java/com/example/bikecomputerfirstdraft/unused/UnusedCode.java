@@ -1,5 +1,35 @@
 package com.example.bikecomputerfirstdraft.unused;
 
+import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanFilter;
+import android.bluetooth.le.ScanSettings;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.ui.AppBarConfiguration;
+
+import com.example.bikecomputerfirstdraft.MainActivity;
+import com.example.bikecomputerfirstdraft.databinding.FragmentAddSensorBinding;
+import com.example.bikecomputerfirstdraft.ui.addSensor.AddSensorViewModel;
+
+import java.util.UUID;
+
 public class UnusedCode {
 
 
@@ -7,6 +37,34 @@ public class UnusedCode {
 }
 
 /*
+
+
+        if(serviceUuids != null){
+            scanFilter = new ScanFilter.Builder().setServiceUuid(serviceUuids).build();
+            Log.d(TAG, "Added serviceUUID to scan filter");
+        }
+        if(name != null){
+            scanFilter = new ScanFilter.Builder().setDeviceName(name).build();
+            Log.d(TAG, "Added name to scan filter");
+        }
+        if(macAddress != null) {
+            scanFilter = new ScanFilter.Builder().setDeviceAddress(macAddress).build();
+            Log.d(TAG, "Added macAddress to scan filter");
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 public class AddSensorFragment extends Fragment {
 
 

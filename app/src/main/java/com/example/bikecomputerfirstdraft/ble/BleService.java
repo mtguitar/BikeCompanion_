@@ -231,6 +231,64 @@ public class BleService extends Service {
     }
 
 
+    /**
+     * Set up foreground service, and notification
+     */
+
+/*
+    private void startForegroundService() {
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel(notificationManager);
+        }
+
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, Constant.NOTIFICATION_CHANNEL_ID)
+                        .setAutoCancel(false)
+                        .setOngoing(true)
+                        .setSmallIcon(R.drawable.ic_flare)
+                        .setContentTitle("BikeComp")
+                        .setContentText("Scanning")
+                        .setContentIntent(createPendingIntent())
+                ;
+
+        startForeground(Constant.NOTIFICATION_ID, notificationBuilder.build());
+
+    }
+
+    private void createNotificationChannel(NotificationManager notificationManager){
+        NotificationChannel channel = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            channel = new NotificationChannel(
+                    Constant.NOTIFICATION_CHANNEL_ID,
+                    Constant.CHANNEL_NAME,
+                    NotificationManager.IMPORTANCE_LOW
+            );
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notificationManager.createNotificationChannel(channel);
+        }
+
+    }
+
+    private PendingIntent createPendingIntent(){
+        Intent resultIntent = new Intent(this, MainActivity.class);
+        // Create the TaskStackBuilder and add the intent, which inflates the back stack
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addNextIntentWithParentStack(resultIntent);
+        // Get the PendingIntent containing the entire back stack
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(0,
+                        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        return resultPendingIntent;
+    }
+
+ */
+
+
+
+
 
 
 }

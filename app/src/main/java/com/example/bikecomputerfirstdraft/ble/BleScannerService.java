@@ -22,6 +22,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.bikecomputerfirstdraft.R;
 import com.example.bikecomputerfirstdraft.other.Constant;
 import com.example.bikecomputerfirstdraft.ui.scanner.ScanResults;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,7 +31,7 @@ import java.util.Collections;
 public class BleScannerService extends LifecycleService {
 
     public boolean isFirstRun = true;
-    private final static String TAG = "FlareLog";
+    private final static String TAG = "FlareLog BleScannerServ";
 
     //vars
     private boolean scanning = false;
@@ -45,7 +46,7 @@ public class BleScannerService extends LifecycleService {
 
     private String name = null;
     private String macAddress = null;
-    private ParcelUuid serviceUuids;
+    private ParcelUuid serviceUuids = null;
 
     //scanResults vars
     private String discoveredMacAddress;
@@ -57,8 +58,8 @@ public class BleScannerService extends LifecycleService {
 
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
-        Log.d(TAG, "received intent from add sensor fragment");
         String action = intent.getAction();
+        Log.d(TAG, "Received intent from fragment: " + action);
         if (intent.hasExtra("name")){
             name = intent.getStringExtra("name");
             macAddress = null;
@@ -114,11 +115,9 @@ public class BleScannerService extends LifecycleService {
 
     //makes sure next scan does not have any leftover filters
     public void onDestroy() {
-        name = null;
-        macAddress = null;
-        serviceUuids = null;
-        stopScanning();
         super.onDestroy();
+        stopScanning();
+        Log.d(TAG, "BleScannerService Destroyed");
     }
 
     /**
@@ -134,57 +133,34 @@ public class BleScannerService extends LifecycleService {
         //Set scan settings and filter
         scanSettings =
                 new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
+        scanFilter =
+                new ScanFilter.Builder().setDeviceName(name).setDeviceAddress(macAddress).setServiceUuid(serviceUuids).build();
 
-        if(serviceUuids != null){
-            scanFilter = new ScanFilter.Builder().setServiceUuid(serviceUuids).build();
-            Log.d(TAG, "added serviceUUID to scan filter");
-        }
-        if(name != null){
-            scanFilter = new ScanFilter.Builder().setDeviceName(name).build();
-            Log.d(TAG, "added name to scan filter");
-        }
-        if(macAddress != null) {
-            scanFilter = new ScanFilter.Builder().setDeviceAddress(macAddress).build();
-            Log.d(TAG, "added macAddress to scan filter");
-        }
-
-        //Start scanning on a timer
-        if (!scanning) {
-            // Stops scanning after a predefined scan period.
-            handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (scanning) {
-                        stopScanning();
-                    }
+        // Sets a timer
+        handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (scanning) {
+                    stopScanning();
                 }
-            }, SCAN_PERIOD);
-            //adds scan filter if one exists
-            if (scanFilter != null) {
-                scanner.startScan(Collections.singletonList(scanFilter), scanSettings, scanCallback);
-                Log.d(TAG, "scanning with filter");
             }
-            else {
-                scanner.startScan(scanCallback);
-                Log.d(TAG, "scanning without filter");
-            }
-            scanning = true;
+        }, SCAN_PERIOD);
+        scanner.startScan(Collections.singletonList(scanFilter), scanSettings, scanCallback);
+        Log.d(TAG, "Scanning");
 
-            //send intent to fragment alerting it that scanning has started
-            sendIntentToFragment(Constant.ACTION_BLE_SCANNING_STARTED);
+        scanning = true;
 
-            logMessages("Scanning . . . ");
-
-        }
+        //send intent to fragment alerting it that scanning has started
+        sendIntentToFragment(Constant.ACTION_BLE_SCANNING_STARTED);
 
     }
+
 
     //scanCallback object to receive scan results
     ScanCallback scanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
-            //logMessages("Device discovered: ");
             super.onScanResult(callbackType, result);
             BluetoothDevice device = result.getDevice();
             discoveredMacAddress = device.getAddress();
@@ -206,7 +182,10 @@ public class BleScannerService extends LifecycleService {
         //send intent to fragment that scanning is stopped
         sendIntentToFragment(Constant.ACTION_BLE_SCANNING_STOPPED);
 
-        logMessages("Scanning stopped");
+        Log.d(TAG, "Scanning stopped");
+
+        //stop BleScannerService
+        stopSelf();
     }
 
     //initializes device's bluetooth adapter ble scanner
@@ -215,7 +194,7 @@ public class BleScannerService extends LifecycleService {
                 (BluetoothManager) this.getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
         scanner = bluetoothManager.getAdapter().getBluetoothLeScanner();
-        logMessages("initialized ble");
+        Log.d(TAG, "Initialized bluetooth scanner");
     }
 
     //method for sending intents to ScannerFragment
@@ -225,12 +204,6 @@ public class BleScannerService extends LifecycleService {
         Log.d(Constant.TAG, "sent intent to fragment " + action);
     }
 
-
-    //Logs messages to UI and logCat
-    private void logMessages(String logMessage) {
-        Log.d(TAG, logMessage);
-        //textViewLog.append(logMessage + "\n");
-    }
 
     /**
      * LiveData code
@@ -267,64 +240,9 @@ public class BleScannerService extends LifecycleService {
         }
         scanResults.add(new ScanResults(image, deviceName, discoveredMacAddress));
         scannerLiveDataList.postValue(scanResults);
-        logMessages("Posted scan result " + deviceName + discoveredMacAddress);
+        Log.d(TAG, "Posted scan result " + deviceName + discoveredMacAddress);
     }
 
-
-    /**
-     * Set up foreground service, and notification
-     */
-
-/*
-    private void startForegroundService() {
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createNotificationChannel(notificationManager);
-        }
-
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this, Constant.NOTIFICATION_CHANNEL_ID)
-                        .setAutoCancel(false)
-                        .setOngoing(true)
-                        .setSmallIcon(R.drawable.ic_flare)
-                        .setContentTitle("BikeComp")
-                        .setContentText("Scanning")
-                        .setContentIntent(createPendingIntent())
-                ;
-
-        startForeground(Constant.NOTIFICATION_ID, notificationBuilder.build());
-
-    }
-
-    private void createNotificationChannel(NotificationManager notificationManager){
-        NotificationChannel channel = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            channel = new NotificationChannel(
-                    Constant.NOTIFICATION_CHANNEL_ID,
-                    Constant.CHANNEL_NAME,
-                    NotificationManager.IMPORTANCE_LOW
-            );
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationManager.createNotificationChannel(channel);
-        }
-
-    }
-
-    private PendingIntent createPendingIntent(){
-        Intent resultIntent = new Intent(this, MainActivity.class);
-        // Create the TaskStackBuilder and add the intent, which inflates the back stack
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addNextIntentWithParentStack(resultIntent);
-        // Get the PendingIntent containing the entire back stack
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(0,
-                        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        return resultPendingIntent;
-    }
-
- */
 
 
 }
