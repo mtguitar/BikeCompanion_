@@ -4,8 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.ParcelUuid;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecomputerfirstdraft.R;
 import com.example.bikecomputerfirstdraft.ble.BleScannerService;
-import com.example.bikecomputerfirstdraft.deviceTypes.FlareRT;
 import com.example.bikecomputerfirstdraft.other.Constant;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -178,7 +177,12 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
             }
             else if (Constant.ACTION_BLE_SCANNING_STOPPED.equals(action)){
                 scanning = false;
-                textViewScanTitle.setText("Select a device or scan again");
+                if (scanResults == null){
+                    textViewScanTitle.setText("No devices found");
+                }
+                else {
+                    textViewScanTitle.setText("Select to add to myDevices");
+                }
                 buttonStopScan.setText("Scan Again");
                 buttonStopScan.setEnabled(true);
                 progressBarScan.setVisibility(View.GONE);
@@ -228,12 +232,24 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
     @Override
     public void onItemClick(int position) {
         Log.d(TAG, "Clicked item RV");
-        ScannerAdapter scannerAdapter = new ScannerAdapter(scanResults, this);
-        String name = scannerAdapter.scanResultsArrayList.get(position).getTextName();
-        String description = scannerAdapter.scanResultsArrayList.get(position).getTextDescription();
-        Log.d(TAG, name + " " + description);
-        Snackbar snackbar = Snackbar.make(getView(), "Clicked: " + name + " " + description, Snackbar.LENGTH_SHORT);
-        snackbar.show();
 
+        ScannerAdapter scannerAdapter = new ScannerAdapter(scanResults, this);
+        String deviceName = scannerAdapter.scanResultsArrayList.get(position).getDeviceName();
+        String deviceMacAddress = scannerAdapter.scanResultsArrayList.get(position).getDeviceMacAddress();
+        String deviceType = scannerAdapter.scanResultsArrayList.get(position).getDeviceType();
+        saveToSharedPreferences(macAddress, deviceType);
+
+
+        Log.d(TAG, deviceName + " " + deviceMacAddress);
+        Snackbar snackbar = Snackbar.make(getView(), "Clicked: " + deviceName + " " + deviceMacAddress, Snackbar.LENGTH_SHORT);
+        snackbar.show();
+    }
+
+    private void saveToSharedPreferences(String macAddress, String deviceType){
+        Context context = getActivity();
+        SharedPreferences sharedPrefs = context.getSharedPreferences(Constant.SHARED_PREFERENCES_MY_DEVICES_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putString(macAddress, deviceType);
+        editor.apply();
     }
 }

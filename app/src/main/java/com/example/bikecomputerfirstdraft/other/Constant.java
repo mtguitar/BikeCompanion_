@@ -39,6 +39,8 @@ public class Constant {
 
     public final static String AVENTON_FLARE_MAC_ADDRESS = "F8:EF:93:1C:EC:DB";
 
+    public final static String SHARED_PREFERENCES_MY_DEVICES_KEY = "com.example.bikecompanion.PREFERENCE_FILE_KEY";
+
 
 
 }

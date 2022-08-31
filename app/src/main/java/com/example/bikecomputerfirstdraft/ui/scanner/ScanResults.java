@@ -1,26 +1,32 @@
 package com.example.bikecomputerfirstdraft.ui.scanner;
 
 public class ScanResults {
-    private int ImageResource;
-    private String TextName;
-    private String TextDescription;
+    private int imageResource;
+    private String deviceName;
+    private String deviceMacAddress;
+    private String deviceType;
 
-    public ScanResults(int imageResource, String textName, String textDescription){
-        ImageResource = imageResource;
-        TextName = textName;
-        TextDescription = textDescription;
+    public ScanResults(int imageResource, String deviceName, String deviceMacAddress, String deviceType){
+        this.imageResource = imageResource;
+        this.deviceName = deviceName;
+        this.deviceMacAddress = deviceMacAddress;
+        this.deviceType = deviceType;
     }
 
     public int getImageResource(){
-        return ImageResource;
+        return imageResource;
     }
 
-    public String getTextName(){
-        return TextName;
+    public String getDeviceName(){
+        return deviceName;
     }
 
-    public String getTextDescription(){
-        return TextDescription;
+    public String getDeviceMacAddress(){
+        return deviceMacAddress;
+    }
+
+    public String getDeviceType(){
+        return deviceType;
     }
 
 }

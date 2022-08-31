@@ -49,9 +49,9 @@ public class BleScannerService extends LifecycleService {
     private String deviceType = null;
 
     //scanResults vars
-    private String discoveredMacAddress;
     private String deviceName;
     private ArrayList<ScanResults> scanResults;
+    private String deviceMacAddress = null;
 
     public BleScannerService() {
     }
@@ -167,12 +167,12 @@ public class BleScannerService extends LifecycleService {
         public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
             BluetoothDevice device = result.getDevice();
-            discoveredMacAddress = device.getAddress();
+            deviceMacAddress = device.getAddress();
             deviceName = device.getName();
             if (deviceName == null){
                 deviceName = "Unknown";
             }
-            addScanResults(deviceName, discoveredMacAddress);
+            addScanResults(deviceName, deviceMacAddress, deviceType);
         }
     };
 
@@ -218,7 +218,7 @@ public class BleScannerService extends LifecycleService {
         return scannerLiveDataList;
     }
 
-    private void addScanResults(String deviceName, String discoveredMacAddress) {
+    private void addScanResults(String deviceName, String deviceMacAddress, String deviceType) {
         if (scannerLiveDataList == null) {
             scannerLiveDataList = new MutableLiveData<>();
         }
@@ -229,22 +229,22 @@ public class BleScannerService extends LifecycleService {
         int n = scanResults.size();
         if(n > 0){
             for (int i = 0; i < n; i++) {
-                if(discoveredMacAddress.equals(scanResults.get(i).getTextDescription())){
+                if(deviceMacAddress.equals(scanResults.get(i).getDeviceMacAddress())){
                     return;
                 }
             }
         }
         //if deviceMacAddress not already in list, add device to scannerResults
         int image = R.drawable.ic_device_type_other_sensor;
-        if (deviceType.equals("light")){
+        if (this.deviceType.equals("light")){
             image = R.drawable.ic_device_type_light;
         }
         if (deviceName.contains("speed")){
             image = R.drawable.ic_speed;
         }
-        scanResults.add(new ScanResults(image, deviceName, discoveredMacAddress));
+        scanResults.add(new ScanResults(image, deviceName, deviceMacAddress, deviceType));
         scannerLiveDataList.postValue(scanResults);
-        Log.d(TAG, "Posted scan result " + deviceName + discoveredMacAddress);
+        Log.d(TAG, "Posted scan result " + deviceName + deviceMacAddress);
     }
 
 

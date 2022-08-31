@@ -55,6 +55,7 @@ public class BleScanner {
     private View view;
     private RecyclerView mRecyclerView;
 
+    private String deviceType = null;
 
     //scanResults vars
     private String discoveredMacAddress;
@@ -172,14 +173,14 @@ public class BleScanner {
             int n = scannerList.size();
             if(n > 0){
                 for (int i = 0; i < n; i++) {
-                    if(discoveredMacAddress.equals(scannerList.get(i).getTextDescription())){
+                    if(discoveredMacAddress.equals(scannerList.get(i).getDeviceMacAddress())){
                         return;
                     }
                 }
 
             }
             //if not already in list, add and send to rv adapter
-            scannerList.add(new ScanResults(R.drawable.ic_device_type_flare, deviceName, discoveredMacAddress));
+            scannerList.add(new ScanResults(R.drawable.ic_device_type_flare, deviceName, discoveredMacAddress, deviceType));
           //  mRecyclerView.setAdapter(new ScannerAdapter(scannerList));
 
         }

@@ -72,8 +72,8 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
     public void onBindViewHolder(@NonNull ScannerAdapter.ScannerViewHolder holder, int position) {
         ScanResults currentItem = scanResultsArrayList.get(position);
         holder.mImageView.setImageResource(currentItem.getImageResource());
-        holder.mTextDescription.setText(currentItem.getTextDescription());
-        holder.mTextName.setText(currentItem.getTextName());
+        holder.mTextDescription.setText(currentItem.getDeviceMacAddress());
+        holder.mTextName.setText(currentItem.getDeviceName());
 
     }
 
