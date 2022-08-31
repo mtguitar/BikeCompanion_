@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.bikecomputerfirstdraft.MainActivity;
 
 import com.example.bikecomputerfirstdraft.databinding.FragmentHomeBinding;
+import com.google.android.material.snackbar.Snackbar;
 
 public class HomeFragment extends Fragment {
 
@@ -28,6 +29,8 @@ public class HomeFragment extends Fragment {
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+
 
         final Button button = binding.button;
 
