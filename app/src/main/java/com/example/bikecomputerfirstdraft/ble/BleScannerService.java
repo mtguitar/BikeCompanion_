@@ -20,7 +20,7 @@ import androidx.lifecycle.LifecycleService;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.bikecomputerfirstdraft.R;
-import com.example.bikecomputerfirstdraft.other.Constant;
+import com.example.bikecomputerfirstdraft.constants.Constants;
 import com.example.bikecomputerfirstdraft.ui.scanner.ScanResults;
 
 import java.util.ArrayList;
@@ -81,32 +81,32 @@ public class BleScannerService extends LifecycleService {
 
         Log.d("flareIntent", name + " " + macAddress + " " + serviceUuids + " received from intent");
         switch (action){
-            case Constant.ACTION_START_OR_RESUME_SERVICE:
+            case Constants.ACTION_START_OR_RESUME_SERVICE:
                 if(isFirstRun){
                     //startForegroundService();
                     isFirstRun = false;
 
                     startScan();
-                    Log.d(Constant.TAG, "Started service" + "is first run?" + isFirstRun);
+                    Log.d(Constants.TAG, "Started service" + "is first run?" + isFirstRun);
                 }
                 else{
                     if(scanning){
                         stopScanning();
                     }
                     startScan();
-                    Log.d(Constant.TAG, "Resuming service");
+                    Log.d(Constants.TAG, "Resuming service");
                 }
                 break;
 
-            case Constant.ACTION_PAUSE_SERVICE:
-                Log.d(Constant.TAG, "Paused service");
+            case Constants.ACTION_PAUSE_SERVICE:
+                Log.d(Constants.TAG, "Paused service");
                 if(scanning){
                     stopScanning();
                 }
                 break;
 
-            case Constant.ACTION_STOP_SERVICE:
-                Log.d(Constant.TAG, "Stopped service");
+            case Constants.ACTION_STOP_SERVICE:
+                Log.d(Constants.TAG, "Stopped service");
                 if(scanning){
                     stopScanning();
                 }
@@ -157,7 +157,7 @@ public class BleScannerService extends LifecycleService {
         scanning = true;
 
         //send intent to fragment alerting it that scanning has started
-        sendIntentToFragment(Constant.ACTION_BLE_SCANNING_STARTED);
+        sendIntentToFragment(Constants.ACTION_BLE_SCANNING_STARTED);
     }
 
 
@@ -184,7 +184,7 @@ public class BleScannerService extends LifecycleService {
         scanner.stopScan(scanCallback);
         scanning = false;
         //send intent to fragment that scanning is stopped
-        sendIntentToFragment(Constant.ACTION_BLE_SCANNING_STOPPED);
+        sendIntentToFragment(Constants.ACTION_BLE_SCANNING_STOPPED);
 
         Log.d(TAG, "Scanning stopped");
 
@@ -205,7 +205,7 @@ public class BleScannerService extends LifecycleService {
     private void sendIntentToFragment(String action) {
         Intent scanningStatusIntent = new Intent(action);
         sendBroadcast(scanningStatusIntent);
-        Log.d(Constant.TAG, "sent intent to fragment " + action);
+        Log.d(Constants.TAG, "sent intent to fragment " + action);
     }
 
 

@@ -17,7 +17,7 @@ import android.util.Log;
 
 import java.util.UUID;
 
-import static com.example.bikecomputerfirstdraft.other.Constant.*;
+import static com.example.bikecomputerfirstdraft.constants.Constants.*;
 
 @SuppressLint("MissingPermission")
 

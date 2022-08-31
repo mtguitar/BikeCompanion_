@@ -1,37 +1,54 @@
 package com.example.bikecomputerfirstdraft.ui.myDevices;
 
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-
+import com.example.bikecomputerfirstdraft.R;
 import com.example.bikecomputerfirstdraft.databinding.FragmentSlideshowBinding;
+
+import java.util.List;
 
 public class MyDevicesFragment extends Fragment {
 
-    private FragmentSlideshowBinding binding;
+    private MyDevicesViewModel myDevicesViewModel;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        MyDevicesViewModel slideshowViewModel =
-                new ViewModelProvider(this).get(MyDevicesViewModel.class);
-
-        binding = FragmentSlideshowBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
-
-        final TextView textView = binding.textSlideshow;
-        slideshowViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-        return root;
+    public static MyDevicesFragment newInstance() {
+        return new MyDevicesFragment();
     }
+
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        myDevicesViewModel = new ViewModelProvider(this).get(MyDevicesViewModel.class);
+        myDevicesViewModel.getAllDevices().observe(this, new Observer<List<Device>>() {
+            @Override
+            public void onChanged(List<Device> devices) {
+                //TODO update RecyclerView
+                Toast.makeText(getActivity(), "onChanged", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+
     }
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_my_devices, container, false);
+    }
+
+
+
 }

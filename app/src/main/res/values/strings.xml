@@ -22,6 +22,7 @@
     <string name="nav_scanner">Scanner</string>
     <string name="nav_add_device">Add Device</string>
     <string name="nav_home">Home</string>
+    <string name="nav_my_devices">My Devices</string>
 
 
     <!-- Preference Titles -->

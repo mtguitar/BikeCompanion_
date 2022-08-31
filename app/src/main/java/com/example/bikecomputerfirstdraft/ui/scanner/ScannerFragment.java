@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecomputerfirstdraft.R;
 import com.example.bikecomputerfirstdraft.ble.BleScannerService;
-import com.example.bikecomputerfirstdraft.other.Constant;
+import com.example.bikecomputerfirstdraft.constants.Constants;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -56,7 +56,7 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
         serviceUuids = ScannerFragmentArgs.fromBundle(getArguments()).getServiceUuids();
         deviceType = ScannerFragmentArgs.fromBundle(getArguments()).getDeviceType();
 
-        sendCommandToService(Constant.ACTION_START_OR_RESUME_SERVICE);
+        sendCommandToService(Constants.ACTION_START_OR_RESUME_SERVICE);
 
     }
 
@@ -103,16 +103,16 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
             @Override
             public void onClick(View view) {
                 if(scanning){
-                    sendCommandToService(Constant.ACTION_PAUSE_SERVICE);
+                    sendCommandToService(Constants.ACTION_PAUSE_SERVICE);
                 }
                 else{
                     if(scanResults != null) {
                         scanResults.clear();
                         updateRecycleViewer(scanResults);
                     }
-                    sendCommandToService(Constant.ACTION_START_OR_RESUME_SERVICE);
+                    sendCommandToService(Constants.ACTION_START_OR_RESUME_SERVICE);
                 }
-                Log.d(Constant.TAG, "button clicked");
+                Log.d(Constants.TAG, "button clicked");
             }
         });
 
@@ -149,14 +149,14 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
         }
         scanningServiceIntent.putExtra("deviceType", deviceType);
         requireContext().startService(scanningServiceIntent);
-        Log.d(Constant.TAG, "sent intent to scanner service " + action);
+        Log.d(Constants.TAG, "sent intent to scanner service " + action);
     }
 
     //Intent filters for receiving intents
     private static IntentFilter scannerUpdateIntentFilter () {
         final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Constant.ACTION_BLE_SCANNING_STARTED);
-        intentFilter.addAction(Constant.ACTION_BLE_SCANNING_STOPPED);
+        intentFilter.addAction(Constants.ACTION_BLE_SCANNING_STARTED);
+        intentFilter.addAction(Constants.ACTION_BLE_SCANNING_STOPPED);
         return intentFilter;
     }
 
@@ -168,14 +168,14 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
 
             final String action = intent.getAction();
             Log.d(TAG, "Received broadcast with action " + action);
-            if (Constant.ACTION_BLE_SCANNING_STARTED.equals(action)){
+            if (Constants.ACTION_BLE_SCANNING_STARTED.equals(action)){
                 scanning = true;
                 textViewScanTitle.setText("Scanning for devices");
                 buttonStopScan.setText("Stop Scan");
                 progressBarScan.setVisibility(View.VISIBLE);
                 Log.d(TAG, "Scanning Started Intent Received");
             }
-            else if (Constant.ACTION_BLE_SCANNING_STOPPED.equals(action)){
+            else if (Constants.ACTION_BLE_SCANNING_STOPPED.equals(action)){
                 scanning = false;
                 if (scanResults == null){
                     textViewScanTitle.setText("No devices found");
@@ -193,39 +193,6 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
 
         }
     };
-
-/*
-    private BroadcastReceiver scanFilterReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "Scanning broadcast received");
-
-            final String action = intent.getAction();
-            Log.d(TAG, "Received broadcast with action " + action);
-            if (Constant.ACTION_BLE_SCANNING_STARTED.equals(action)){
-                scanning = true;
-                textViewScanTitle.setText("Scanning for devices");
-                buttonStopScan.setText("Scanning");
-                buttonStopScan.setEnabled(false);
-                progressBarScan.setVisibility(View.VISIBLE);
-                Log.d(TAG, "Scanning Started Intent Received");
-            }
-            else if (Constant.ACTION_BLE_SCANNING_STOPPED.equals(action)){
-                scanning = false;
-                textViewScanTitle.setText("Select a device or scan again");
-                buttonStopScan.setText("Scan Again");
-                buttonStopScan.setEnabled(true);
-                progressBarScan.setVisibility(View.GONE);
-                Log.d(TAG, "Scanning stopped intent received");
-
-            }
-
-
-        }
-    };
-
- */
-
 
 
 
@@ -247,7 +214,7 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
 
     private void saveToSharedPreferences(String macAddress, String deviceType){
         Context context = getActivity();
-        SharedPreferences sharedPrefs = context.getSharedPreferences(Constant.SHARED_PREFERENCES_MY_DEVICES_KEY, Context.MODE_PRIVATE);
+        SharedPreferences sharedPrefs = context.getSharedPreferences(Constants.SHARED_PREFERENCES_MY_DEVICES_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putString(macAddress, deviceType);
         editor.apply();

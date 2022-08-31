@@ -5,7 +5,7 @@ import android.os.ParcelUuid;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class Device {
+public class SingleDevice {
     public String assignedName;
     public String bleName;
     public String macAddress;

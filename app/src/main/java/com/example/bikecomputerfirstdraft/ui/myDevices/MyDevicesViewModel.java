@@ -1,19 +1,45 @@
 package com.example.bikecomputerfirstdraft.ui.myDevices;
 
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class MyDevicesViewModel extends ViewModel {
+import java.util.List;
 
-    private final MutableLiveData<String> mText;
+public class MyDevicesViewModel extends AndroidViewModel {
 
-    public MyDevicesViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is slideshow fragment");
+    private DeviceRepository repository;
+    private LiveData<List<Device>> allDevices;
+
+    public MyDevicesViewModel(@NonNull Application application) {
+        super(application);
+        repository = new DeviceRepository(application);
+        allDevices = repository.getAllDevices();
     }
 
-    public LiveData<String> getText() {
-        return mText;
+    public void insert(Device device){
+        repository.insert(device);
     }
+
+    public void update(Device device){
+        repository.update(device);
+    }
+
+    public void delete(Device device){
+        repository.delete(device);
+    }
+
+    public void deleteAllNotes(){
+        repository.deleteAllDevices();
+    }
+
+    public LiveData<List<Device>> getAllDevices(){
+        return allDevices;
+    }
+
+
 }

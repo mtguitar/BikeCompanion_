@@ -24,8 +24,6 @@ public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
 
-
-
     private final static String[] PERMISSIONS = {
             Manifest.permission.BLUETOOTH_SCAN,
             Manifest.permission.BLUETOOTH_CONNECT,
@@ -33,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
     };
     private final static String PERMISSION_BACKGROUND_LOCATION =
             "Manifest.permission.ACCESS_BACKGROUND_LOCATION";
-
 
 
     @Override
@@ -72,8 +69,6 @@ public class MainActivity extends AppCompatActivity {
                 (MainActivity.this,
                         new String[]{PERMISSION_BACKGROUND_LOCATION},
                         PERMISSION_ALL);
-
-
     }
 
     @Override

@@ -1,6 +1,6 @@
-package com.example.bikecomputerfirstdraft.other;
+package com.example.bikecomputerfirstdraft.constants;
 
-public class Constant {
+public class Constants {
     public final static String ACTION_BLE_SCANNING_STARTED =
             "com.example.bluetooth.le.ACTION_BLE_SCANNING_STARTED";
     public final static String ACTION_BLE_SCANNING_STOPPED =

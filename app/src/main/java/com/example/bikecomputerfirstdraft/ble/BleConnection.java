@@ -23,11 +23,11 @@ import com.example.bikecomputerfirstdraft.ui.scanner.ScanResults;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static com.example.bikecomputerfirstdraft.other.Constant.ACTION_DATA_AVAILABLE;
-import static com.example.bikecomputerfirstdraft.other.Constant.ACTION_GATT_CONNECTED;
-import static com.example.bikecomputerfirstdraft.other.Constant.ACTION_GATT_DISCONNECTED;
-import static com.example.bikecomputerfirstdraft.other.Constant.ACTION_GATT_SERVICES_DISCOVERED;
-import static com.example.bikecomputerfirstdraft.other.Constant.EXTRA_DATA;
+import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_DATA_AVAILABLE;
+import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_GATT_CONNECTED;
+import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_GATT_DISCONNECTED;
+import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_GATT_SERVICES_DISCOVERED;
+import static com.example.bikecomputerfirstdraft.constants.Constants.EXTRA_DATA;
 @SuppressLint("MissingPermission")
 
 public class BleConnection {
