@@ -11,9 +11,6 @@
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" >
         <action
-            android:id="@+id/action_nav_home_to_nav_add_sensor"
-            app:destination="@id/nav_add_device" />
-        <action
             android:id="@+id/action_nav_home_to_myDevicesFragment"
             app:destination="@id/nav_my_devices" />
     </fragment>
@@ -22,7 +19,7 @@
         android:id="@+id/nav_add_device"
         android:name="com.example.bikecomputerfirstdraft.ui.addDevice.AddDeviceFragment"
         android:label="@string/menu_add_device"
-        tools:layout="@layout/flare_rt" >
+        tools:layout="@layout/fragment_add_device" >
         <action
             android:id="@+id/deviceToScanner"
             app:destination="@id/nav_scanner"
@@ -36,9 +33,6 @@
         android:name="com.example.bikecomputerfirstdraft.ui.scanner.ScannerFragment"
         android:label="@string/menu_scanner"
         tools:layout="@layout/fragment_scanner" >
-        <action
-            android:id="@+id/action_nav_scanner_to_nav_home"
-            app:destination="@id/nav_home" />
         <argument
             android:name="name"
             app:argType="string"
@@ -55,11 +49,22 @@
             android:name="deviceType"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_nav_scanner_to_nav_my_devices"
+            app:destination="@id/nav_my_devices" />
     </fragment>
     <fragment
         android:id="@+id/nav_my_devices"
         android:name="com.example.bikecomputerfirstdraft.ui.myDevices.MyDevicesFragment"
         android:label="@string/nav_add_device"
-        tools:layout="@layout/fragment_my_devices" />
+        tools:layout="@layout/fragment_my_devices" >
+        <action
+            android:id="@+id/action_nav_my_devices_to_nav_add_device"
+            app:destination="@id/nav_add_device"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
 
 </navigation>

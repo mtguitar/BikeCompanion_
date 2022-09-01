@@ -54,6 +54,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+                <ImageView
+                    android:id="@+id/imageView4"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="10dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_device_type_light" />
+
                 <Button
                     android:id="@+id/button_select_flare"
                     android:layout_width="wrap_content"
@@ -69,7 +79,7 @@
                     android:id="@+id/text_view_flare"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="70dp"
                     android:layout_marginTop="10dp"
                     android:fontFamily="sans-serif"
                     android:text="Flare RT"
@@ -83,7 +93,7 @@
                     android:id="@+id/text_view_device_type_flare"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="70dp"
                     android:fontFamily="sans-serif"
                     android:text="Light"
                     android:textColor="@android:color/white"
@@ -107,6 +117,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+                <ImageView
+                    android:id="@+id/imageView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_speed" />
+
                 <Button
                     android:id="@+id/button_select_speed"
                     android:layout_width="wrap_content"
@@ -122,7 +142,7 @@
                     android:id="@+id/text_view_speed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="70dp"
                     android:layout_marginTop="10dp"
                     android:fontFamily="sans-serif"
                     android:text="Speed/Cadence"
@@ -136,7 +156,7 @@
                     android:id="@+id/text_view_device_type_speed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="70dp"
                     android:fontFamily="sans-serif"
                     android:text="Sensor"
                     android:textColor="@android:color/white"
@@ -160,6 +180,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+                <ImageView
+                    android:id="@+id/imageView6"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="10dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_device_type_other_sensor" />
+
                 <Button
                     android:id="@+id/button_select_other"
                     android:layout_width="wrap_content"
@@ -175,7 +205,7 @@
                     android:id="@+id/text_view_other"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="70dp"
                     android:layout_marginTop="10dp"
                     android:fontFamily="sans-serif"
                     android:text="Other"
@@ -189,7 +219,7 @@
                     android:id="@+id/text_view_device_type_other"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="70dp"
                     android:fontFamily="sans-serif"
                     android:text="Ble Device"
                     android:textColor="@android:color/white"

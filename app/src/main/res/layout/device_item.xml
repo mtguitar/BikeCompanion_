@@ -27,7 +27,8 @@
             android:id="@+id/text_view_my_device_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="70dp"
+            android:layout_marginTop="10dp"
             android:fontFamily="sans-serif"
             android:text="Line1"
             android:textColor="@android:color/white"
@@ -41,14 +42,23 @@
             android:id="@+id/text_view_my_device_mac_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="70dp"
             android:fontFamily="sans-serif"
             android:text="Line 2"
             android:textColor="@android:color/white"
             android:textSize="15sp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text_view_my_device_name" />
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_device_type_other_sensor" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -28,7 +28,7 @@ public class AddDeviceFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_add_sensor, container, false);
+        View view = inflater.inflate(R.layout.fragment_add_device, container, false);
 
         Button buttonSelectFlare = view.findViewById(R.id.button_select_flare);
         Button buttonSelectSpeed = view.findViewById(R.id.button_select_speed);
