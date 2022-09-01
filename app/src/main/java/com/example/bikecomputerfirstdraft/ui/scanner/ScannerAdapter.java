@@ -26,16 +26,16 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
 
     public static class ScannerViewHolder extends RecyclerView.ViewHolder {
 
-        public ImageView mImageView;
-        public TextView mTextName;
-        public TextView mTextDescription;
+        public ImageView imageViewScanResults;
+        public TextView imageViewScannerDeviceName;
+        public TextView imageViewScannerDeviceMacAddress;
 
 
         public ScannerViewHolder(@NonNull View itemView, RecyclerViewInterface recyclerViewInterface) {
             super(itemView);
-            mImageView = itemView.findViewById(R.id.image_view_scan_results);
-            mTextName = itemView.findViewById(R.id.text_view_scanner_device_name);
-            mTextDescription = itemView.findViewById(R.id.text_view_scanner_device_mac_address);
+            imageViewScanResults = itemView.findViewById(R.id.image_view_scan_results);
+            imageViewScannerDeviceName = itemView.findViewById(R.id.text_view_scanner_device_name);
+            imageViewScannerDeviceMacAddress = itemView.findViewById(R.id.text_view_scanner_device_mac_address);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -47,8 +47,8 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
                             recyclerViewInterface.onItemClick(position);
                         }
                     }
-                    String name = (String) mTextName.getText();
-                    String description = (String) mTextDescription.getText();
+                    String deviceName = (String) imageViewScannerDeviceName.getText();
+                    String deviceMacAddress = (String) imageViewScannerDeviceMacAddress.getText();
                 }
             });
 
@@ -71,9 +71,9 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
     @Override
     public void onBindViewHolder(@NonNull ScannerAdapter.ScannerViewHolder holder, int position) {
         ScanResults currentItem = scanResultsArrayList.get(position);
-        holder.mImageView.setImageResource(currentItem.getImageResource());
-        holder.mTextDescription.setText(currentItem.getDeviceMacAddress());
-        holder.mTextName.setText(currentItem.getDeviceName());
+        holder.imageViewScanResults.setImageResource(currentItem.getImageResource());
+        holder.imageViewScannerDeviceMacAddress.setText(currentItem.getDeviceMacAddress());
+        holder.imageViewScannerDeviceName.setText(currentItem.getDeviceName());
 
     }
 

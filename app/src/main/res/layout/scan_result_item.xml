@@ -4,15 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="75dp"
-    android:layout_margin="10dp"
+    android:layout_margin="15dp"
     app:cardBackgroundColor="@color/primaryDarkColor"
     app:cardCornerRadius="0dp"
-    app:cardElevation="15dp"
-    app:cardMaxElevation="15dp">
+    app:cardElevation="10dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="75dp">
 
         <ImageView
             android:id="@+id/image_view_scan_results"
@@ -52,5 +51,6 @@
             app:layout_constraintTop_toBottomOf="@+id/text_view_scanner_device_name" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.cardview.widget.CardView>
