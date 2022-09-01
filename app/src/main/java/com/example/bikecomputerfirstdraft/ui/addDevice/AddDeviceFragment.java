@@ -30,9 +30,9 @@ public class AddDeviceFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_sensor, container, false);
 
-        Button buttonSelectFlare = view.findViewById(R.id.buttonSelectFlare);
-        Button buttonSelectSpeed = view.findViewById(R.id.buttonSelectSpeed);
-        Button buttonSelectOther = view.findViewById(R.id.buttonSelectOther);
+        Button buttonSelectFlare = view.findViewById(R.id.button_select_flare);
+        Button buttonSelectSpeed = view.findViewById(R.id.button_select_speed);
+        Button buttonSelectOther = view.findViewById(R.id.button_select_other);
 
 
         buttonSelectFlare.setOnClickListener(new View.OnClickListener() {

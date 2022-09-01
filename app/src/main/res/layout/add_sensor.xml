@@ -29,7 +29,7 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/buttonSelectFlare"
+                android:id="@+id/button_select_flare"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
@@ -40,7 +40,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/textViewName1"
+                android:id="@+id/text_view_device_type_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"

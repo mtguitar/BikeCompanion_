@@ -33,9 +33,9 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
 
         public ScannerViewHolder(@NonNull View itemView, RecyclerViewInterface recyclerViewInterface) {
             super(itemView);
-            mImageView = itemView.findViewById(R.id.imageViewScanResults);
-            mTextName = itemView.findViewById(R.id.textViewName);
-            mTextDescription = itemView.findViewById(R.id.textViewDescription);
+            mImageView = itemView.findViewById(R.id.image_view_scan_results);
+            mTextName = itemView.findViewById(R.id.text_view_scanner_device_name);
+            mTextDescription = itemView.findViewById(R.id.text_view_scanner_device_mac_address);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

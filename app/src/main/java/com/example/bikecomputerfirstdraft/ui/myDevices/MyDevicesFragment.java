@@ -8,6 +8,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,14 +33,14 @@ public class MyDevicesFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
+
+
+
         myDevicesViewModel = new ViewModelProvider(this).get(MyDevicesViewModel.class);
-        myDevicesViewModel.getAllDevices().observe(this, new Observer<List<Device>>() {
-            @Override
-            public void onChanged(List<Device> devices) {
-                //TODO update RecyclerView
-                Toast.makeText(getActivity(), "onChanged", Toast.LENGTH_SHORT).show();
-            }
-        });
+
 
 
 
@@ -46,7 +48,22 @@ public class MyDevicesFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_my_devices, container, false);
+        View view = inflater.inflate(R.layout.fragment_my_devices, container, false);
+
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_view_my_devices);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
+        DeviceAdapter deviceAdapter = new DeviceAdapter();
+        recyclerView.setAdapter(deviceAdapter);
+
+        myDevicesViewModel.getAllDevices().observe(getViewLifecycleOwner(), new Observer<List<Device>>() {
+            @Override
+            public void onChanged(List<Device> devices) {
+                deviceAdapter.setDevices(devices);
+            }
+        });
+
+        return view;
     }
 
 

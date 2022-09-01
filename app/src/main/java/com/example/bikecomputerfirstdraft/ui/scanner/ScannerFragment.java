@@ -81,8 +81,6 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
         }
 
 
-
-
         //Setup observer of livedata for recyclerView, calls updateRecyclerView when data changes
         final Observer<ArrayList<ScanResults>> observerScanResults;
         observerScanResults = new Observer<ArrayList<ScanResults>>(){
@@ -130,7 +128,8 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
 
     public void updateRecycleViewer(ArrayList scanResults){
         //might need to change context
-        recyclerView.setAdapter(new ScannerAdapter(scanResults, this));
+        ScannerAdapter scannerAdapter = new ScannerAdapter(scanResults, this);
+        recyclerView.setAdapter(scannerAdapter);
         this.scanResults = scanResults;
     }
 
@@ -200,11 +199,14 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
     public void onItemClick(int position) {
         Log.d(TAG, "Clicked item RV");
 
+        //Get device info when clicked
         ScannerAdapter scannerAdapter = new ScannerAdapter(scanResults, this);
         String deviceName = scannerAdapter.scanResultsArrayList.get(position).getDeviceName();
         String deviceMacAddress = scannerAdapter.scanResultsArrayList.get(position).getDeviceMacAddress();
         String deviceType = scannerAdapter.scanResultsArrayList.get(position).getDeviceType();
-        saveToSharedPreferences(macAddress, deviceType);
+
+
+
 
 
         Log.d(TAG, deviceName + " " + deviceMacAddress);
@@ -212,11 +214,5 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
         snackbar.show();
     }
 
-    private void saveToSharedPreferences(String macAddress, String deviceType){
-        Context context = getActivity();
-        SharedPreferences sharedPrefs = context.getSharedPreferences(Constants.SHARED_PREFERENCES_MY_DEVICES_KEY, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPrefs.edit();
-        editor.putString(macAddress, deviceType);
-        editor.apply();
-    }
+
 }

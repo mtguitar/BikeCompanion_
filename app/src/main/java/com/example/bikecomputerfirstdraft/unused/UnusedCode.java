@@ -38,6 +38,31 @@ public class UnusedCode {
 /*
 
 
+
+@Override
+    public void onItemClick(int position) {
+        Log.d(TAG, "Clicked item RV");
+
+        ScannerAdapter scannerAdapter = new ScannerAdapter(scanResults, this);
+        String deviceName = scannerAdapter.scanResultsArrayList.get(position).getDeviceName();
+        String deviceMacAddress = scannerAdapter.scanResultsArrayList.get(position).getDeviceMacAddress();
+        String deviceType = scannerAdapter.scanResultsArrayList.get(position).getDeviceType();
+        saveToSharedPreferences(macAddress, deviceType);
+
+
+        Log.d(TAG, deviceName + " " + deviceMacAddress);
+        Snackbar snackbar = Snackbar.make(getView(), "Clicked: " + deviceName + " " + deviceMacAddress, Snackbar.LENGTH_SHORT);
+        snackbar.show();
+    }
+
+    private void saveToSharedPreferences(String macAddress, String deviceType){
+        Context context = getActivity();
+        SharedPreferences sharedPrefs = context.getSharedPreferences(Constants.SHARED_PREFERENCES_MY_DEVICES_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putString(macAddress, deviceType);
+        editor.apply();
+    }
+
         if(serviceUuids != null){
             scanFilter = new ScanFilter.Builder().setServiceUuid(serviceUuids).build();
             Log.d(TAG, "Added serviceUUID to scan filter");
