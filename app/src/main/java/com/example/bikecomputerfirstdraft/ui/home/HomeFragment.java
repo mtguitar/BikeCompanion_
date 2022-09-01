@@ -32,7 +32,7 @@ public class HomeFragment extends Fragment {
 
 
 
-        final Button button = binding.button;
+
 
 
 

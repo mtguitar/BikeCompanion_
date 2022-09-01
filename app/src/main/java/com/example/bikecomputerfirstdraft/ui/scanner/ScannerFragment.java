@@ -207,11 +207,25 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface{
 
 
 
+        Snackbar snackbar = Snackbar.make(getView(), "Card Clicked: " + deviceName + " " + deviceMacAddress, Snackbar.LENGTH_SHORT);
+        snackbar.show();
 
 
         Log.d(TAG, deviceName + " " + deviceMacAddress);
-        Snackbar snackbar = Snackbar.make(getView(), "Clicked: " + deviceName + " " + deviceMacAddress, Snackbar.LENGTH_SHORT);
+
+    }
+
+    @Override
+    public void onButtonClick(int position) {
+
+        ScannerAdapter scannerAdapter = new ScannerAdapter(scanResults, this);
+        String deviceName = scannerAdapter.scanResultsArrayList.get(position).getDeviceName();
+        String deviceMacAddress = scannerAdapter.scanResultsArrayList.get(position).getDeviceMacAddress();
+        String deviceType = scannerAdapter.scanResultsArrayList.get(position).getDeviceType();
+
+        Snackbar snackbar = Snackbar.make(getView(), "Button Clicked: " + deviceName + " " + deviceMacAddress, Snackbar.LENGTH_SHORT);
         snackbar.show();
+
     }
 
 

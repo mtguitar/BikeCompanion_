@@ -3,8 +3,11 @@ package com.example.bikecomputerfirstdraft.ui.scanner;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,9 +18,8 @@ import java.util.ArrayList;
 
 public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerViewHolder> {
 
-    private final RecyclerViewInterface recyclerViewInterface;
     ArrayList<ScanResults> scanResultsArrayList;
-
+    public RecyclerViewInterface recyclerViewInterface;
 
     public ScannerAdapter(ArrayList<ScanResults> scanResultsArrayList, RecyclerViewInterface recyclerViewInterface) {
         this.scanResultsArrayList = scanResultsArrayList;
@@ -27,15 +29,23 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
     public static class ScannerViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView imageViewScanResults;
-        public TextView imageViewScannerDeviceName;
-        public TextView imageViewScannerDeviceMacAddress;
+        public TextView textViewScannerDeviceName;
+        public TextView textViewScannerDeviceMacAddress;
+        public Button buttonScannerConnect;
+        public View constraintLayoutScanResult;
+
+        private ScannerAdapter scannerAdapter;
 
 
         public ScannerViewHolder(@NonNull View itemView, RecyclerViewInterface recyclerViewInterface) {
             super(itemView);
             imageViewScanResults = itemView.findViewById(R.id.image_view_scan_results);
-            imageViewScannerDeviceName = itemView.findViewById(R.id.text_view_scanner_device_name);
-            imageViewScannerDeviceMacAddress = itemView.findViewById(R.id.text_view_scanner_device_mac_address);
+            textViewScannerDeviceName = itemView.findViewById(R.id.text_view_scanner_device_name);
+            textViewScannerDeviceMacAddress = itemView.findViewById(R.id.text_view_scanner_device_mac_address);
+            buttonScannerConnect = itemView.findViewById(R.id.button_scanner_connect);
+            constraintLayoutScanResult = itemView.findViewById(R.id.constraint_layout_scan_result);
+
+
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -45,11 +55,30 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
 
                         if (position != RecyclerView.NO_POSITION){
                             recyclerViewInterface.onItemClick(position);
+                            if(constraintLayoutScanResult.getVisibility() == View.GONE){
+                                constraintLayoutScanResult.setVisibility(View.VISIBLE);
+                            }
+                            else {
+                                constraintLayoutScanResult.setVisibility(View.GONE);
+                            }
                         }
                     }
-                    String deviceName = (String) imageViewScannerDeviceName.getText();
-                    String deviceMacAddress = (String) imageViewScannerDeviceMacAddress.getText();
                 }
+            });
+
+            buttonScannerConnect.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    if (recyclerViewInterface != null) {
+                        int position = getAbsoluteAdapterPosition();
+
+                        if (position != RecyclerView.NO_POSITION){
+                            recyclerViewInterface.onButtonClick(position);
+                        }
+                    }
+
+                    }
             });
 
         }
@@ -72,8 +101,9 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
     public void onBindViewHolder(@NonNull ScannerAdapter.ScannerViewHolder holder, int position) {
         ScanResults currentItem = scanResultsArrayList.get(position);
         holder.imageViewScanResults.setImageResource(currentItem.getImageResource());
-        holder.imageViewScannerDeviceMacAddress.setText(currentItem.getDeviceMacAddress());
-        holder.imageViewScannerDeviceName.setText(currentItem.getDeviceName());
+        holder.textViewScannerDeviceMacAddress.setText(currentItem.getDeviceMacAddress());
+        holder.textViewScannerDeviceName.setText(currentItem.getDeviceName());
+        holder.constraintLayoutScanResult.setVisibility(View.GONE);
 
     }
 
