@@ -28,7 +28,7 @@
             android:exported="true"
             android:foregroundServiceType="connectedDevice"></service>
         <service
-            android:name=".ble.BleService"
+            android:name=".ble.BleConnectionService"
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="connectedDevice"/>

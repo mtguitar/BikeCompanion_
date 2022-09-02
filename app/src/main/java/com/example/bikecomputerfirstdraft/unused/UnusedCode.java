@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -24,18 +25,20 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.ui.AppBarConfiguration;
 
-import com.example.bikecomputerfirstdraft.MainActivity;
-import com.example.bikecomputerfirstdraft.databinding.FragmentAddSensorBinding;
+
+import com.example.bikecomputerfirstdraft.constants.Constants;
+import com.example.bikecomputerfirstdraft.ui.scanner.ScannerAdapter;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.UUID;
-
+/*
 public class UnusedCode {
 
 
 
 }
 
-/*
+
 
 
 

@@ -1,4 +1,4 @@
-package com.example.bikecomputerfirstdraft.ble;
+package com.example.bikecomputerfirstdraft.unused;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
@@ -18,6 +18,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecomputerfirstdraft.R;
+import com.example.bikecomputerfirstdraft.ble.BleConnectionService;
+import com.example.bikecomputerfirstdraft.ble.FormatBleData;
 import com.example.bikecomputerfirstdraft.ui.scanner.ScanResults;
 
 import java.util.ArrayList;
@@ -28,9 +30,10 @@ import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_GATT
 import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_GATT_DISCONNECTED;
 import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_GATT_SERVICES_DISCOVERED;
 import static com.example.bikecomputerfirstdraft.constants.Constants.EXTRA_DATA;
+
 @SuppressLint("MissingPermission")
 
-public class BleConnection {
+public class BleConnectionUnused {
 
     private final static String TAG = "FlareLog";
 
@@ -80,7 +83,18 @@ public class BleConnection {
     private ArrayList<ScanResults> scannerList;
 
 
-    public BleConnection() {
+    public BleConnectionUnused(Context mContext, View view, String name, String macAddress, ParcelUuid serviceUuids) {
+        this.mContext = mContext;
+        this.view = view;
+        this.name = name;
+        this.macAddress = macAddress;
+        this.serviceUuids = serviceUuids;
+
+
+        scannerList = new ArrayList<>();
+        mRecyclerView = view.findViewById(R.id.recyclerViewScanner);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
     }
 
     // Initialize bluetooth
@@ -94,7 +108,7 @@ public class BleConnection {
     // Checks if BluetoothLeService is bound
     // If not bound, binds to BluetoothLeService and calls serviceConnection
     // If bound, call BluetoothLeService's connected method directly, passing deviceMacAddress
-    public void connectDevice(String deviceMacAddress){
+    private void connectDevice(String deviceMacAddress){
         if (!boundToService) {
             gattServiceIntent = new Intent(mContext, BleConnectionService.class);
             mContext.bindService(gattServiceIntent, serviceConnection, mContext.BIND_AUTO_CREATE);
@@ -107,20 +121,20 @@ public class BleConnection {
     }
 
     //subscribe to characteristic notification
-    public void subscribeToNotification(){
+    private void subscribeToNotification(){
         bleService.setCharacteristicNotification(SERVICE_UUID, CHARACTERISTIC_UUID, true);
         subscribeToNotification = false;
     }
 
     //write to characteristic notification
-    public void writeCharacteristic(String payload){
+    private void writeCharacteristic(String payload){
         FormatBleData formatBleData = new FormatBleData();
         byte[] payloadToWrite = formatBleData.convertStingtoByte(payload);
         bleService.writeCharacteristic(SERVICE_UUID, CHARACTERISTIC_UUID, payloadToWrite);
     }
 
     // serviceConnection object to connect to BluetoothLeService
-    public final ServiceConnection serviceConnection = new ServiceConnection() {
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             bleService = ((BleConnectionService.LocalBinder) service).getService();
@@ -141,7 +155,7 @@ public class BleConnection {
     };
 
     // Creates gatt intent filters to receive intents from BluetoothLeService
-    public static IntentFilter makeGattUpdateIntentFilter() {
+    private static IntentFilter makeGattUpdateIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ACTION_GATT_CONNECTED);
         intentFilter.addAction(ACTION_GATT_DISCONNECTED);
@@ -156,7 +170,7 @@ public class BleConnection {
     // ACTION_GATT_SERVICES_DISCOVERED: discovered GATT services.
     // ACTION_DATA_AVAILABLE: received data from the device.  This can be a result of read
     //                        or notification operations.
-    public BroadcastReceiver gattUpdateReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver gattUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "MainActivity:  broadcast received");

@@ -21,7 +21,7 @@ import static com.example.bikecomputerfirstdraft.constants.Constants.*;
 
 @SuppressLint("MissingPermission")
 
-public class BleService extends Service {
+public class BleConnectionService extends Service {
 
     private final static String TAG = "FlareLog";
 
@@ -29,29 +29,56 @@ public class BleService extends Service {
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothGatt mBluetoothGatt;
 
+    public final static String EXTRA_DATA = "com.example.bike.companion.EXTRA_DATA";
+
     public int connectionState = STATE_DISCONNECTED;
 
     private String deviceName;
 
-    /*
 
-    private final static int STATE_DISCONNECTED = 0;
-    private final static int STATE_CONNECTING = 1;
-    private final static int STATE_CONNECTED = 2;
+    //Initializes a reference to the local Bluetooth adapter.
+    public boolean initialize() {
+        if (mBluetoothManager == null) {
+            mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+            if (mBluetoothManager == null) {
+                Log.e(TAG, "Unable to initialize BluetoothManager.");
+                return false;
+            }
+        }
+        mBluetoothAdapter = mBluetoothManager.getAdapter();
+        if (mBluetoothAdapter == null) {
+            Log.e(TAG, "Unable to obtain a BluetoothAdapter.");
+            return false;
+        }
+        return true;
 
-    public final static String ACTION_GATT_CONNECTED =
-            "com.example.bluetooth.le.ACTION_GATT_CONNECTED";
-    public final static String ACTION_GATT_DISCONNECTED =
-            "com.example.bluetooth.le.ACTION_GATT_DISCONNECTED";
-    public final static String ACTION_GATT_SERVICES_DISCOVERED =
-            "com.example.bluetooth.le.ACTION_SERVICES_DISCOVERED";
-    public final static String ACTION_DATA_AVAILABLE =
-            "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
-    public final static String EXTRA_DATA =
-            "com.example.bluetooth.le.EXTRA_DATA";
+    }
 
-     */
+    // Connect to the device
+    public boolean connectDevice(String deviceMacAddress) {
+        final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(deviceMacAddress);
+        if (device == null) {
+            Log.w(TAG, "Device not found.  Unable to connect.");
+            return false;
+        }
+        // We want to directly connect to the device, so we are setting the autoConnect
+        // parameter to false.
+        mBluetoothGatt = device.connectGatt(this, false, mBluetoothGattCallback);
+        Log.d(TAG, "Connecting . . .");
+        connectionState = STATE_CONNECTING;
+        return true;
+    }
 
+
+    // Disconnect from the device
+    public void disconnectDevice() {
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized");
+            return;
+        }
+        mBluetoothGatt.disconnect();
+        Log.d(TAG, "Device disconnected");
+    }
 
     // Write characteristic
     public void writeCharacteristic(UUID service, UUID characteristic, byte[] payload) {
@@ -93,7 +120,6 @@ public class BleService extends Service {
 
 
     // Implements Gatt Callback method and data received methods
-
     private final BluetoothGattCallback mBluetoothGattCallback = new BluetoothGattCallback() {
         @SuppressLint("MissingPermission")
         @Override
@@ -138,8 +164,8 @@ public class BleService extends Service {
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicRead(gatt, characteristic, status);
-            byte[] lightMode = characteristic.getValue();
-            Log.i("Flare Test", "Light Mode is " + lightMode[0]);
+            byte[] characteristicValue = characteristic.getValue();
+            Log.i("Flare Test", "Light Mode is " + characteristicValue[0]);
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
             }
@@ -154,9 +180,10 @@ public class BleService extends Service {
     };
 
 
+    //Allows fragments to bind to this service
     public class LocalBinder extends Binder {
-        public BleService getService() {
-            return BleService.this;
+        public BleConnectionService getService() {
+            return BleConnectionService.this;
         }
     }
 
@@ -169,47 +196,9 @@ public class BleService extends Service {
 
 
 
-    //Initializes a reference to the local Bluetooth adapter.
-    public boolean initialize() {
-        if (mBluetoothManager == null) {
-            mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-            if (mBluetoothManager == null) {
-                Log.e(TAG, "Unable to initialize BluetoothManager.");
-                return false;
-            }
-        }
-        mBluetoothAdapter = mBluetoothManager.getAdapter();
-        if (mBluetoothAdapter == null) {
-            Log.e(TAG, "Unable to obtain a BluetoothAdapter.");
-            return false;
-        }
-        return true;
 
-    }
 
-    // Connect to the device
-    public boolean connectDevice(String deviceMacAddress) {
-        final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(deviceMacAddress);
-        if (device == null) {
-            Log.w(TAG, "Device not found.  Unable to connect.");
-            return false;
-        }
-        // We want to directly connect to the device, so we are setting the autoConnect
-        // parameter to false.
-        mBluetoothGatt = device.connectGatt(this, false, mBluetoothGattCallback);
-        Log.d(TAG, "Connecting . . .");
-        connectionState = STATE_CONNECTING;
-        return true;
-    }
-    // Disconnect from the device
-    public void disconnectDevice() {
-        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
-        }
-        mBluetoothGatt.disconnect();
-        Log.d(TAG, "Device disconnected");
-    }
+
 
     // Broadcast updates to connection state changes
     private void broadcastUpdate(final String intentConnectionState) {
@@ -220,12 +209,9 @@ public class BleService extends Service {
     private void broadcastUpdate(final String action,
                                  final BluetoothGattCharacteristic characteristic) {
         final Intent intent = new Intent(action);
-        final byte[] data = characteristic.getValue();
-        if (data != null && data.length > 0) {
-            final StringBuilder stringBuilder = new StringBuilder(data.length);
-            for(byte byteChar : data)
-                stringBuilder.append(String.format("%02X ", byteChar));
-            intent.putExtra(EXTRA_DATA, new String(data) + "\n" + stringBuilder.toString());
+        final byte[] characteristicValue = characteristic.getValue();
+        if (characteristicValue != null && characteristicValue.length > 0) {
+            intent.putExtra(EXTRA_DATA, characteristicValue);
         }
         sendBroadcast(intent);
     }
