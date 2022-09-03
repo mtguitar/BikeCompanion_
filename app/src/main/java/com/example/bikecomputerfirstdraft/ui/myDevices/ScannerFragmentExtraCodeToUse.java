@@ -1,11 +1,14 @@
-package com.example.bikecomputerfirstdraft.ui.scanner;
+package com.example.bikecomputerfirstdraft.ui.myDevices;
 
 import android.app.Application;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,15 +26,34 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecomputerfirstdraft.R;
+import com.example.bikecomputerfirstdraft.ble.BleConnectionService;
 import com.example.bikecomputerfirstdraft.ble.BleScannerService;
 import com.example.bikecomputerfirstdraft.constants.Constants;
-import com.example.bikecomputerfirstdraft.ui.myDevices.Device;
-import com.example.bikecomputerfirstdraft.ui.myDevices.DeviceRepository;
+import com.example.bikecomputerfirstdraft.deviceTypes.GenericDevice;
+import com.example.bikecomputerfirstdraft.ui.scanner.RecyclerViewInterface;
+import com.example.bikecomputerfirstdraft.ui.scanner.ScanResults;
+import com.example.bikecomputerfirstdraft.ui.scanner.ScannerAdapter;
+import com.example.bikecomputerfirstdraft.ui.scanner.ScannerFragmentArgs;
+import com.example.bikecomputerfirstdraft.ui.scanner.ScannerFragmentDirections;
 
 import java.util.ArrayList;
 
-public class ScannerFragment extends Fragment implements RecyclerViewInterface {
+import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_DATA_AVAILABLE;
+import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_GATT_CONNECTED;
+import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_GATT_DISCONNECTED;
+import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_GATT_SERVICES_DISCOVERED;
 
+public class ScannerFragmentExtraCodeToUse extends Fragment implements RecyclerViewInterface {
+    @Override
+    public void onItemClick(int position) {
+
+    }
+
+    @Override
+    public void onButtonClick(int position) {
+
+    }
+/*
     private static final String TAG = "FlareLog ScanFrag";
 
     //scanning vars
@@ -41,14 +63,23 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
     private ArrayList scanResults;
     private RecyclerView recyclerView;
     private String deviceName;
-    private String deviceMacAddress;
 
     //view vars
     private View view;
     private static Button buttonStopScan;
     private static TextView textViewScanTitle;
     private static View progressBarScan;
+    private static TextView textViewDeviceManufacturer;
+    private static TextView textViewDeviceType;
+    private static TextView textViewDeviceBattery;
+    private static View constraintLayoutScanResult;
     private static Button buttonAddToMyDevices;
+
+    //connection vars
+    private String deviceMacAddress;
+    private Intent gattServiceIntent;
+    private BleConnectionService bleConnectionService;
+    private boolean boundToService = false;
 
 
 
@@ -92,10 +123,10 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
         buttonStopScan = (Button)view.findViewById(R.id.buttonStopScan);
         textViewScanTitle = view.findViewById(R.id.textViewScanTitle);
         progressBarScan = view.findViewById(R.id.progressBarScan);
+        recyclerView = view.findViewById(R.id.recyclerViewScanner);
         buttonAddToMyDevices = view.findViewById(R.id.button_scanner_add_to_my_devices);
 
         //creates recyclerView but does not show until there is data in it
-        recyclerView = view.findViewById(R.id.recyclerViewScanner);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
 
@@ -104,7 +135,7 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
             updateRecycleViewer(scanResults);
         }
 
-        //set scan button onclick listener
+        //set scan/stopScan button onclick listener
         buttonStopScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -123,7 +154,7 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
 
     }
 
-    // saves characteristics when user clicks on a scan result
+    //connects to device and reads characteristics when user clicks on a scan result
     @Override
     public void onItemClick(int position) {
 
@@ -132,6 +163,19 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
         deviceName = scannerAdapter.scanResultsArrayList.get(position).getDeviceName();
         deviceMacAddress = scannerAdapter.scanResultsArrayList.get(position).getDeviceMacAddress();
         deviceType = scannerAdapter.scanResultsArrayList.get(position).getDeviceType();
+
+        constraintLayoutScanResult = getView().findViewById(R.id.constraint_layout_scan_result);
+        int visibility = constraintLayoutScanResult.getVisibility();
+
+        if (visibility == View.GONE) {
+            //connectDevice(deviceMacAddress);
+            sendCommandToService(BleScannerService.class, Constants.ACTION_STOP_SERVICE);
+        }
+        else{
+            //bleConnectionService.disconnectDevice(deviceMacAddress);
+            Log.d(TAG, "Trying to disconnect device");
+
+        }
 
     }
 
@@ -173,7 +217,10 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
     }
 
 
-    //Sends intents to BleScannerService
+
+
+
+    //Sends intents to services (only used for scanner service right now)
     private void sendCommandToService(Class serviceClass, String action) {
         Intent bleServiceIntent = new Intent(requireContext(), serviceClass);
         bleServiceIntent.setAction(action);
@@ -199,6 +246,10 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.ACTION_BLE_SCANNING_STARTED);
         intentFilter.addAction(Constants.ACTION_BLE_SCANNING_STOPPED);
+        intentFilter.addAction(ACTION_GATT_CONNECTED);
+        intentFilter.addAction(ACTION_GATT_DISCONNECTED);
+        intentFilter.addAction(ACTION_GATT_SERVICES_DISCOVERED);
+        intentFilter.addAction(ACTION_DATA_AVAILABLE);
         return intentFilter;
     }
 
@@ -227,9 +278,59 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
                 buttonStopScan.setEnabled(true);
                 progressBarScan.setVisibility(View.GONE);
             }
+            if (ACTION_GATT_SERVICES_DISCOVERED.equals(action)){
+                bleConnectionService.readCharacteristic(GenericDevice.UUID_SERVICE_BATTERY, GenericDevice.UUID_CHARACTERISTIC_BATTERY, GenericDevice.DATA_TYPE_BATTERY);
+                Log.d(TAG, "Sent intent to " + BleScannerService.class + " " + Constants.ACTION_READ_CHARACTERISTIC);
+
+            }
+            if (ACTION_DATA_AVAILABLE.equals(action)){
+                String characteristic = intent.getStringExtra(Constants.EXTRA_DATA);
+                Log.d(TAG, "received characteristic " + characteristic);
+                //textViewDeviceBattery.setText(characteristic);
+
+
+            }
+
 
         }
     };
 
+    // Checks if BluetoothLeService is bound
+    // If not bound, binds to BluetoothLeService and calls serviceConnection
+    // If bound, call BluetoothLeService's connected method directly, passing deviceMacAddress
+    public void connectDevice(String deviceMacAddress){
+        if (!boundToService) {
+            Log.d(TAG, "Not bound, trying to connect " + deviceMacAddress);
+            gattServiceIntent = new Intent(getActivity(), BleConnectionService.class);
+            getActivity().bindService(gattServiceIntent, serviceConnection, getActivity().BIND_AUTO_CREATE);
+        }
+        else {
+            bleConnectionService.connectDevice(deviceMacAddress);
+            Log.d(TAG, "Already bound, trying to connect " + deviceMacAddress);
+        }
+    }
 
+
+    // Code to manage BleConnectionService lifecycle.
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {
+
+            bleConnectionService = ((BleConnectionService.LocalBinder) service).getService();
+            if (!bleConnectionService.initialize()) {
+                Log.e(TAG, "Unable to initialize Bluetooth");
+            }
+            // Automatically connects to the device upon successful start-up initialization.
+            boundToService = true;
+            bleConnectionService.connectDevice(deviceMacAddress);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            boundToService = false;
+            bleConnectionService = null;
+        }
+    };
+*/
 }

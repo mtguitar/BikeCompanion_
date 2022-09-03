@@ -20,7 +20,7 @@ public abstract class DeviceDataBase extends RoomDatabase {
     public static synchronized DeviceDataBase getInstance(Context context){
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(),
-                    DeviceDataBase.class, "device_databse")
+                    DeviceDataBase.class, "device_database")
                     .fallbackToDestructiveMigration()
                     .addCallback(roomCallback)
                     .build();

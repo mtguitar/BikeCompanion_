@@ -1,36 +1,30 @@
 package com.example.bikecomputerfirstdraft.ui.myDevices;
 
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-
-import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.Toast;
-
 import com.example.bikecomputerfirstdraft.R;
-import com.example.bikecomputerfirstdraft.databinding.FragmentSlideshowBinding;
-import com.example.bikecomputerfirstdraft.ui.addDevice.AddDeviceFragment;
-import com.example.bikecomputerfirstdraft.ui.addDevice.AddDeviceFragmentDirections;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MyDevicesFragment extends Fragment {
 
     private MyDevicesViewModel myDevicesViewModel;
+    private ArrayList<Device> devices;
 
     public static MyDevicesFragment newInstance() {
         return new MyDevicesFragment();

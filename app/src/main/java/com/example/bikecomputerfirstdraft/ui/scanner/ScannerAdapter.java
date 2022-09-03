@@ -3,11 +3,9 @@ package com.example.bikecomputerfirstdraft.ui.scanner;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,6 +33,7 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
         public TextView textViewScannerDeviceType;
         public TextView textViewScannerBattery;
         public TextView textViewScannerDeviceManufacturer;
+        public Button buttonAddToMyDevices;
 
         public Button buttonScannerConnect;
         public View constraintLayoutScanResult;
@@ -47,11 +46,8 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
             imageViewScanResults = itemView.findViewById(R.id.image_view_scan_results);
             textViewScannerDeviceName = itemView.findViewById(R.id.text_view_scanner_device_name);
             textViewScannerDeviceMacAddress = itemView.findViewById(R.id.text_view_scanner_device_mac_address);
-            textViewScannerDeviceType = itemView.findViewById(R.id.text_view_scanner_device_type);
-            textViewScannerBattery = itemView.findViewById(R.id.text_view_scanner_battery);
-            textViewScannerDeviceManufacturer = itemView.findViewById(R.id.text_view_scanner_manufacturer);
-            buttonScannerConnect = itemView.findViewById(R.id.button_scanner_connect);
-            constraintLayoutScanResult = itemView.findViewById(R.id.constraint_layout_scan_result);
+            buttonAddToMyDevices = itemView.findViewById(R.id.button_scanner_add_to_my_devices);
+            constraintLayoutScanResult = itemView.findViewById(R.id.constraint_layout_device_info);
 
 
 
@@ -76,7 +72,7 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
                 }
             });
 
-            buttonScannerConnect.setOnClickListener(new View.OnClickListener() {
+            buttonAddToMyDevices.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
