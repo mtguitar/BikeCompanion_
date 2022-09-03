@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public class SpeedCadence {
 
-    public final static String DEVICE_TYPE = "Speed";
+    public final static String DEVICE_TYPE = "Speed/Cadence";
 
     //Advertised service UUIDs
     public final static String STRING_SERVICE_ADVERTISED_1 = "00001816-0000-1000-8000-00805f9b34fb";

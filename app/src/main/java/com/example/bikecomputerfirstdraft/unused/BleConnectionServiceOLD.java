@@ -1,4 +1,4 @@
-package com.example.bikecomputerfirstdraft.ble;
+package com.example.bikecomputerfirstdraft.unused;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
@@ -12,17 +12,8 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
-import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Parcel;
 import android.util.Log;
-
-import androidx.annotation.Nullable;
-import androidx.lifecycle.LifecycleService;
-
-import com.example.bikecomputerfirstdraft.constants.Constants;
-import com.example.bikecomputerfirstdraft.deviceTypes.FlareRT;
-import com.example.bikecomputerfirstdraft.deviceTypes.GenericDevice;
 
 import java.util.UUID;
 
@@ -30,52 +21,20 @@ import static com.example.bikecomputerfirstdraft.constants.Constants.*;
 
 @SuppressLint("MissingPermission")
 
-public class BleConnectionService extends LifecycleService {
+public class BleConnectionServiceOLD extends Service {
 
+    private final static String TAG = "FlareLog";
 
-    public boolean isFirstRun = true;
-    private final static String TAG = "FlareLog ConnectService";
-
-    //connection vars
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothGatt mBluetoothGatt;
-    private String deviceMacAddress;
-    public int connectionState = STATE_DISCONNECTED;
-    private String action;
-    private UUID characteristicToRead;
-    private UUID serviceToRead;
-    private String dataType;
 
+    public final static String EXTRA_DATA = "com.example.bike.companion.EXTRA_DATA";
+
+    public int connectionState = STATE_DISCONNECTED;
 
     private String deviceName;
 
-
-    @Override
-    public int onStartCommand (@Nullable Intent intent, int flags, int startId){
-        action = intent.getAction();
-        Log.d(TAG, "Received intent from fragment: " + action);
-
-        if (action.equals(ACTION_CONNECT_TO_DEVICE) && intent.hasExtra("macAddress")) {
-            deviceMacAddress = intent.getStringExtra("macAddress");
-            connectDevice(deviceMacAddress);
-            Log.d(TAG, "Received intent extra: " + deviceMacAddress);
-        }
-        if (action.contains(ACTION_READ_CHARACTERISTIC)){
-
-            String characteristic = intent.getStringExtra(Constants.EXTRA_DATA);
-            Log.d(TAG, characteristic);
-
-        }
-
-
-        return super.onStartCommand(intent, flags, startId);
-    }
-
-
-
-    // This is the object that receives interactions from clients.
-    private final IBinder mBinder = new LocalBinder();
 
     //Initializes a reference to the local Bluetooth adapter.
     public boolean initialize() {
@@ -97,7 +56,6 @@ public class BleConnectionService extends LifecycleService {
 
     // Connect to the device
     public boolean connectDevice(String deviceMacAddress) {
-        initialize();
         final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(deviceMacAddress);
         if (device == null) {
             Log.w(TAG, "Device not found.  Unable to connect.");
@@ -113,13 +71,12 @@ public class BleConnectionService extends LifecycleService {
 
 
     // Disconnect from the device
-    public void disconnectDevice(String deviceMacAddress) {
+    public void disconnectDevice() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
         mBluetoothGatt.disconnect();
-        mBluetoothGatt.close();
         Log.d(TAG, "Device disconnected");
     }
 
@@ -139,25 +96,23 @@ public class BleConnectionService extends LifecycleService {
         mBluetoothGatt.writeCharacteristic(characteristicToWrite);
     }
 
+
     // Read characteristic
-    public void readCharacteristic(UUID service, UUID characteristic, String dataType) {
+    public void readCharacteristic(UUID service, UUID characteristic) {
         if (mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothGatt not initialized");
             return;
         }
-        this.dataType = dataType;
         BluetoothGattCharacteristic characteristicToRead = mBluetoothGatt.getService(service).getCharacteristic(characteristic);
         mBluetoothGatt.readCharacteristic(characteristicToRead);
-        Log.w(TAG, "Reading characteristic");
     }
 
     // Subscribe to characteristic notifications
-    public void setCharacteristicNotification(UUID service, UUID characteristic, boolean enabled, String dataType){
+    public void setCharacteristicNotification(UUID service, UUID characteristic, boolean enabled){
         if (mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothGatt not initialized");
             return;
         }
-        this.dataType = dataType;
         BluetoothGattCharacteristic characteristicToSubscribe = mBluetoothGatt.getService(service).getCharacteristic(characteristic);
         mBluetoothGatt.setCharacteristicNotification(characteristicToSubscribe, enabled);
         Log.w(TAG, "Subscribed to characteristic " + characteristic);
@@ -188,7 +143,6 @@ public class BleConnectionService extends LifecycleService {
                 intentConnectionState = ACTION_GATT_DISCONNECTED;
                 connectionState = STATE_DISCONNECTED;
                 broadcastUpdate(intentConnectionState);
-                Log.d(TAG, "Device Disconnected");
             }
 
         }
@@ -202,7 +156,6 @@ public class BleConnectionService extends LifecycleService {
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
-                Log.w(TAG, "onServicesDiscovered received: " + status);
             } else {
                 Log.w(TAG, "onServicesDiscovered received: " + status);
             }
@@ -211,7 +164,8 @@ public class BleConnectionService extends LifecycleService {
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicRead(gatt, characteristic, status);
-
+            byte[] characteristicValue = characteristic.getValue();
+            Log.i("Flare Test", "Light Mode is " + characteristicValue[0]);
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
             }
@@ -228,8 +182,8 @@ public class BleConnectionService extends LifecycleService {
 
     //Allows fragments to bind to this service
     public class LocalBinder extends Binder {
-        public BleConnectionService getService() {
-            return BleConnectionService.this;
+        public BleConnectionServiceOLD getService() {
+            return BleConnectionServiceOLD.this;
         }
     }
 
@@ -237,9 +191,13 @@ public class BleConnectionService extends LifecycleService {
 
     @Override
     public IBinder onBind(Intent intent) {
-        super.onBind(intent);
         return binder;
     }
+
+
+
+
+
 
 
     // Broadcast updates to connection state changes
@@ -248,15 +206,13 @@ public class BleConnectionService extends LifecycleService {
         sendBroadcast(intent);
     }
     // Broadcast updates to characteristics
-    private void broadcastUpdate(final String action, final BluetoothGattCharacteristic characteristic) {
-        byte[] characteristicValue = characteristic.getValue();
-
-        byte[] characteristicTest = characteristic.getValue();
-        String charValue = String.valueOf(characteristicTest[0]);
-        Log.d(TAG, "read character " + charValue);
-
+    private void broadcastUpdate(final String action,
+                                 final BluetoothGattCharacteristic characteristic) {
         final Intent intent = new Intent(action);
-        intent.putExtra(Constants.EXTRA_DATA, charValue);
+        final byte[] characteristicValue = characteristic.getValue();
+        if (characteristicValue != null && characteristicValue.length > 0) {
+            intent.putExtra(EXTRA_DATA, characteristicValue);
+        }
         sendBroadcast(intent);
     }
 

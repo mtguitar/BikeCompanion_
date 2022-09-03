@@ -30,7 +30,7 @@ import java.util.Collections;
 public class BleScannerService extends LifecycleService {
 
     public boolean isFirstRun = true;
-    private final static String TAG = "FlareLog BleScannerServ";
+    private final static String TAG = "FlareLog ScannerService";
 
     //vars
     private boolean scanning = false;
@@ -43,15 +43,14 @@ public class BleScannerService extends LifecycleService {
     private ScanSettings scanSettings;
     private static final long SCAN_PERIOD =3000;
 
-    private String name = null;
-    private String macAddress = null;
     private ParcelUuid serviceUuids = null;
-    private String deviceType = null;
+    private String deviceType = "Unknown";
 
     //scanResults vars
-    private String deviceName;
     private ArrayList<ScanResults> scanResults;
-    private String deviceMacAddress = null;
+    private String deviceName;
+    private String deviceMacAddress;
+
 
     public BleScannerService() {
     }
@@ -59,54 +58,18 @@ public class BleScannerService extends LifecycleService {
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
         String action = intent.getAction();
-        Log.d(TAG, "Received intent from fragment: " + action);
+        getIntentExtras(intent);
 
-        deviceType = intent.getStringExtra("deviceType");
-        if (intent.hasExtra("name")){
-            name = intent.getStringExtra("name");
-            macAddress = null;
-            serviceUuids = null;
-        }
-        else if (intent.hasExtra("macAddress")){
-            macAddress = intent.getStringExtra("macAddress");
-            name = null;
-            serviceUuids = null;
-        }
-        else if (intent.hasExtra("serviceUuids")) {
-            serviceUuids = ParcelUuid.fromString(intent.getStringExtra("serviceUuids"));
-            name = null;
-            macAddress = null;
-        }
+        Log.d(TAG, "Received intent from fragment: " + action + " " + deviceType);
 
-
-        Log.d("flareIntent", name + " " + macAddress + " " + serviceUuids + " received from intent");
         switch (action){
             case Constants.ACTION_START_OR_RESUME_SERVICE:
-                if(isFirstRun){
-                    //startForegroundService();
-                    isFirstRun = false;
-
-                    startScan();
-                    Log.d(Constants.TAG, "Started service" + "is first run?" + isFirstRun);
-                }
-                else{
-                    if(scanning){
-                        stopScanning();
-                    }
-                    startScan();
-                    Log.d(Constants.TAG, "Resuming service");
-                }
-                break;
-
-            case Constants.ACTION_PAUSE_SERVICE:
-                Log.d(Constants.TAG, "Paused service");
-                if(scanning){
-                    stopScanning();
-                }
+                startScan();
+                Log.d(TAG, "Started service");
                 break;
 
             case Constants.ACTION_STOP_SERVICE:
-                Log.d(Constants.TAG, "Stopped service");
+                Log.d(TAG, "Stopped service");
                 if(scanning){
                     stopScanning();
                 }
@@ -119,9 +82,16 @@ public class BleScannerService extends LifecycleService {
     //makes sure next scan does not have any leftover filters
     public void onDestroy() {
         super.onDestroy();
-        stopScanning();
         Log.d(TAG, "BleScannerService Destroyed");
         stopSelf();
+    }
+
+    private void getIntentExtras(Intent intent){
+        deviceType = intent.getStringExtra("deviceType");
+        if (intent.hasExtra("serviceUuids")) {
+            serviceUuids = ParcelUuid.fromString(intent.getStringExtra("serviceUuids"));
+        }
+
     }
 
     /**
@@ -138,7 +108,7 @@ public class BleScannerService extends LifecycleService {
         scanSettings =
                 new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
         scanFilter =
-                new ScanFilter.Builder().setDeviceName(name).setDeviceAddress(macAddress).setServiceUuid(serviceUuids).build();
+                new ScanFilter.Builder().setServiceUuid(serviceUuids).build();
 
         // Sets a timer
         handler = new Handler();
@@ -179,7 +149,9 @@ public class BleScannerService extends LifecycleService {
     //Stops scanning
     public void stopScanning() {
         //stop scan timer
-        handler.removeCallbacksAndMessages(null);
+        if(handler != null) {
+            handler.removeCallbacksAndMessages(null);
+        }
         //stop scanner
         scanner.stopScan(scanCallback);
         scanning = false;
@@ -205,7 +177,7 @@ public class BleScannerService extends LifecycleService {
     private void sendIntentToFragment(String action) {
         Intent scanningStatusIntent = new Intent(action);
         sendBroadcast(scanningStatusIntent);
-        Log.d(Constants.TAG, "sent intent to fragment " + action);
+        //Log.d(TAG, "Sent intent to fragment " + action);
     }
 
 
@@ -236,15 +208,15 @@ public class BleScannerService extends LifecycleService {
         }
         //if deviceMacAddress not already in list, add device to scannerResults
         int image = R.drawable.ic_device_type_other_sensor;
-        if (this.deviceType.equals("light")){
+        if (deviceType.contains("light")){
             image = R.drawable.ic_device_type_light;
         }
-        if (deviceName.contains("speed")){
+        if (deviceType.contains("speed")){
             image = R.drawable.ic_speed;
         }
         scanResults.add(new ScanResults(image, deviceName, deviceMacAddress, deviceType));
         scannerLiveDataList.postValue(scanResults);
-        Log.d(TAG, "Posted scan result " + deviceName + deviceMacAddress);
+        //Log.d(TAG, "Posted scan result " + deviceName + deviceMacAddress);
     }
 
 

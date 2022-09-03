@@ -73,7 +73,7 @@
             android:id="@+id/constraint_layout_scan_result"
             android:layout_width="match_parent"
             android:layout_height="163dp"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/textView4"
@@ -128,7 +128,7 @@
                 android:layout_weight="4"
                 android:text="Type"
                 android:textColor="@color/cardview_light_background"
-                app:layout_constraintBottom_toTopOf="@+id/tex_view_scanner_manufact"
+                app:layout_constraintBottom_toTopOf="@+id/text_view_scanner_manufacturer"
                 app:layout_constraintStart_toStartOf="@+id/guideline6"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -152,7 +152,7 @@
                 android:textColor="@color/cardview_light_background"
                 app:layout_constraintBottom_toTopOf="@+id/button_scanner_connect"
                 app:layout_constraintStart_toStartOf="@+id/guideline6"
-                app:layout_constraintTop_toBottomOf="@+id/tex_view_scanner_manufact" />
+                app:layout_constraintTop_toBottomOf="@+id/text_view_scanner_manufacturer" />
 
             <androidx.constraintlayout.widget.Barrier
                 android:layout_width="wrap_content"

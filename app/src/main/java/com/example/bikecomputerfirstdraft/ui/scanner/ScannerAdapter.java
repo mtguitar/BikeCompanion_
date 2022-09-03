@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerViewHolder> {
 
+
     ArrayList<ScanResults> scanResultsArrayList;
     public RecyclerViewInterface recyclerViewInterface;
 
@@ -31,6 +32,10 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
         public ImageView imageViewScanResults;
         public TextView textViewScannerDeviceName;
         public TextView textViewScannerDeviceMacAddress;
+        public TextView textViewScannerDeviceType;
+        public TextView textViewScannerBattery;
+        public TextView textViewScannerDeviceManufacturer;
+
         public Button buttonScannerConnect;
         public View constraintLayoutScanResult;
 
@@ -42,6 +47,9 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
             imageViewScanResults = itemView.findViewById(R.id.image_view_scan_results);
             textViewScannerDeviceName = itemView.findViewById(R.id.text_view_scanner_device_name);
             textViewScannerDeviceMacAddress = itemView.findViewById(R.id.text_view_scanner_device_mac_address);
+            textViewScannerDeviceType = itemView.findViewById(R.id.text_view_scanner_device_type);
+            textViewScannerBattery = itemView.findViewById(R.id.text_view_scanner_battery);
+            textViewScannerDeviceManufacturer = itemView.findViewById(R.id.text_view_scanner_manufacturer);
             buttonScannerConnect = itemView.findViewById(R.id.button_scanner_connect);
             constraintLayoutScanResult = itemView.findViewById(R.id.constraint_layout_scan_result);
 
@@ -60,7 +68,9 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
                             }
                             else {
                                 constraintLayoutScanResult.setVisibility(View.GONE);
+
                             }
+
                         }
                     }
                 }

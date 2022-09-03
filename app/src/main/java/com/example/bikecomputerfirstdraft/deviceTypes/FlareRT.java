@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class FlareRT{
 
-    public final static String DEVICE_TYPE = "light";
+    public final static String DEVICE_TYPE = "Light";
 
     public final static int icon = R.drawable.ic_device_type_light;
 

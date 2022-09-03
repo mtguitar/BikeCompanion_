@@ -17,16 +17,6 @@ public class Constants {
     public final static int STATE_CONNECTING = 1;
     public final static int STATE_CONNECTED = 2;
 
-    public final static String ACTION_GATT_CONNECTED =
-            "com.example.bluetooth.le.ACTION_GATT_CONNECTED";
-    public final static String ACTION_GATT_DISCONNECTED =
-            "com.example.bluetooth.le.ACTION_GATT_DISCONNECTED";
-    public final static String ACTION_GATT_SERVICES_DISCOVERED =
-            "com.example.bluetooth.le.ACTION_SERVICES_DISCOVERED";
-    public final static String ACTION_DATA_AVAILABLE =
-            "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
-    public final static String EXTRA_DATA =
-            "com.example.bluetooth.le.EXTRA_DATA";
 
     public final static String ACTION_SHOW_SCANNING_FRAGMENT = "ACTION_SHOW_SCANNING_FRAGMENT";
     public final static String ACTION_SHOW_CONNECTION_FRAGMENT = "ACTION_SHOW_CONNECTION_FRAGMENT";
@@ -37,10 +27,41 @@ public class Constants {
     public final static int NOTIFICATION_ID = 1;
 
 
-    public final static String AVENTON_FLARE_MAC_ADDRESS = "F8:EF:93:1C:EC:DB";
+    public final static String AVENTON_FLARE_MAC_ADDRESS =
+            "F8:EF:93:1C:EC:DB";
 
-    public final static String SHARED_PREFERENCES_MY_DEVICES_KEY = "com.example.bikecompanion.PREFERENCE_FILE_KEY";
+    public final static String SHARED_PREFERENCES_MY_DEVICES_KEY =
+            "com.example.bikecompanion.PREFERENCE_FILE_KEY";
 
 
+    public final static String ACTION_GATT_CONNECTED =
+            "com.example.bluetooth.le.ACTION_GATT_CONNECTED";
+    public final static String ACTION_GATT_DISCONNECTED =
+            "com.example.bluetooth.le.ACTION_GATT_DISCONNECTED";
+    public final static String ACTION_GATT_SERVICES_DISCOVERED =
+            "com.example.bluetooth.le.ACTION_SERVICES_DISCOVERED";
+    public final static String ACTION_DATA_AVAILABLE =
+            "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
+    public final static String ACTION_CONNECT_TO_DEVICE =
+            "com.example.bluetooth.le.CONNECT_TO_DEVICE";
+    public static final String ACTION_READ_CHARACTERISTIC =
+            "com.example.bluetooth.le.ACTION_READ_CHARACTERISTIC";
+    public static final String ACTION_WRITE_CHARACTERISTIC =
+            "com.example.bluetooth.le.ACTION_WRITE_CHARACTERISTIC";
+    public static final String ACTION_SUBSCRIBE_TO_CHARACTERISTIC =
+            "com.example.bluetooth.le.ACTION_SUBSCRIBE_TO_CHARACTERISTIC";
+
+    public static final String ACTION_READ_CHARACTERISTIC_BATTERY =
+            "com.example.bluetooth.le.ACTION_READ_CHARACTERISTIC_BATTERY";
+    public static final String ACTION_READ_CHARACTERISTIC_MANUFACTURER =
+            "com.example.bluetooth.le.ACTION_READ_CHARACTERISTIC_MANUFACTURER";
+
+
+    public final static String EXTRA_DATA =
+            "com.example.bluetooth.le.EXTRA_DATA";
+    public static final String EXTRA_DATA_BATTERY =
+            "com.example.bluetooth.le.EXTRA_DATA_BATTERY";
+    public static final String EXTRA_DATA_MANUFACTURER =
+            "com.example.bluetooth.le.EXTRA_DATA_MANUFACTURER";
 
 }

@@ -1,4 +1,4 @@
-package com.example.bikecomputerfirstdraft.ble;
+package com.example.bikecomputerfirstdraft.unused;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
@@ -14,10 +14,9 @@ import android.os.ParcelUuid;
 import android.util.Log;
 import android.view.View;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.bikecomputerfirstdraft.R;
+import com.example.bikecomputerfirstdraft.ble.FormatBleData;
 import com.example.bikecomputerfirstdraft.ui.scanner.ScanResults;
 
 import java.util.ArrayList;
@@ -53,7 +52,7 @@ public class BleConnection {
 
 
     //bluetooth vars
-    private BleConnectionService bleService;
+    private BleConnectionServiceOLD bleService;
     private BluetoothAdapter bluetoothAdapter;
     private Intent gattServiceIntent;
     String name;
@@ -96,7 +95,7 @@ public class BleConnection {
     // If bound, call BluetoothLeService's connected method directly, passing deviceMacAddress
     public void connectDevice(String deviceMacAddress){
         if (!boundToService) {
-            gattServiceIntent = new Intent(mContext, BleConnectionService.class);
+            gattServiceIntent = new Intent(mContext, BleConnectionServiceOLD.class);
             mContext.bindService(gattServiceIntent, serviceConnection, mContext.BIND_AUTO_CREATE);
         }
         else {
@@ -123,7 +122,7 @@ public class BleConnection {
     public final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            bleService = ((BleConnectionService.LocalBinder) service).getService();
+            bleService = ((BleConnectionServiceOLD.LocalBinder) service).getService();
             // If bluetoothLeService is initialized, connect to device
             if (!bleService.initialize()) {
                 logMessages("Failed to initialize BluetoothLeService");
