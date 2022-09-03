@@ -1,6 +1,5 @@
 package com.example.bikecomputerfirstdraft.ui.scanner;
 
-import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,19 +15,22 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecomputerfirstdraft.R;
-import com.example.bikecomputerfirstdraft.ble.BleScannerService;
 import com.example.bikecomputerfirstdraft.constants.Constants;
+import com.example.bikecomputerfirstdraft.ui.home.ble.BleScannerService;
 import com.example.bikecomputerfirstdraft.ui.myDevices.Device;
-import com.example.bikecomputerfirstdraft.ui.myDevices.DeviceRepository;
+import com.example.bikecomputerfirstdraft.ui.myDevices.MyDevicesViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ScannerFragment extends Fragment implements RecyclerViewInterface {
 
@@ -50,17 +52,15 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
     private static View progressBarScan;
     private static Button buttonAddToMyDevices;
 
+    private MyDevicesViewModel myDevicesViewModel;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        myDevicesViewModel = new ViewModelProvider(this).get(MyDevicesViewModel.class);
 
-        //vars passed from other fragment
-        deviceName = ScannerFragmentArgs.fromBundle(getArguments()).getName();
-        deviceMacAddress = ScannerFragmentArgs.fromBundle(getArguments()).getMacAddress();
-        serviceUuids = ScannerFragmentArgs.fromBundle(getArguments()).getServiceUuids();
-        deviceType = ScannerFragmentArgs.fromBundle(getArguments()).getDeviceType();
+        getVarsFromPreviousFragment();
 
         //SendCommand to BleScannerService to start scanning
         sendCommandToService(BleScannerService.class, Constants.ACTION_START_OR_RESUME_SERVICE);
@@ -70,9 +70,11 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
         view = inflater.inflate(R.layout.fragment_scanner, container, false);
+
         setupViews();
+        setOnClickListeners();
+        setupRecyclerViewer();
         observeLiveData();
         registerBroadcastReceiver();
 
@@ -88,22 +90,35 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
         }
     }
 
-    private void setupViews(){
-        buttonStopScan = (Button)view.findViewById(R.id.buttonStopScan);
+    @Override
+    public void onPause() {
+        super.onPause();
+        sendCommandToService(BleScannerService.class, Constants.ACTION_STOP_SERVICE);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        sendCommandToService(BleScannerService.class, Constants.ACTION_STOP_SERVICE);
+    }
+
+
+
+    private void getVarsFromPreviousFragment(){
+        //vars passed from other fragment
+        serviceUuids = ScannerFragmentArgs.fromBundle(getArguments()).getServiceUuids();
+        deviceType = ScannerFragmentArgs.fromBundle(getArguments()).getDeviceType();
+
+    }
+
+    private void setupViews() {
+        buttonStopScan = (Button) view.findViewById(R.id.buttonStopScan);
         textViewScanTitle = view.findViewById(R.id.textViewScanTitle);
         progressBarScan = view.findViewById(R.id.progressBarScan);
         buttonAddToMyDevices = view.findViewById(R.id.button_scanner_add_to_my_devices);
+    }
 
-        //creates recyclerView but does not show until there is data in it
-        recyclerView = view.findViewById(R.id.recyclerViewScanner);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setHasFixedSize(true);
-
-        if (scanResults != null){
-            scanResults.clear();
-            updateRecycleViewer(scanResults);
-        }
-
+    private void setOnClickListeners(){
         //set scan button onclick listener
         buttonStopScan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,35 +138,23 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
 
     }
 
-    // saves characteristics when user clicks on a scan result
-    @Override
-    public void onItemClick(int position) {
+    //Sets up RecyclerViewer and starts observing data to go in it
+    private void setupRecyclerViewer(){
+        //creates recyclerView but does not show until there is data in it
+        recyclerView = view.findViewById(R.id.recyclerViewScanner);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
 
-        //Get device info when clicked
-        ScannerAdapter scannerAdapter = new ScannerAdapter(scanResults, this);
-        deviceName = scannerAdapter.scanResultsArrayList.get(position).getDeviceName();
-        deviceMacAddress = scannerAdapter.scanResultsArrayList.get(position).getDeviceMacAddress();
-        deviceType = scannerAdapter.scanResultsArrayList.get(position).getDeviceType();
-
+        if (scanResults != null){
+            scanResults.clear();
+            updateRecycleViewer(scanResults);
+        }
     }
-
-    @Override
-    public void onButtonClick(int position) {
+    public void updateRecycleViewer(ArrayList scanResults){
         ScannerAdapter scannerAdapter = new ScannerAdapter(scanResults, this);
-        String deviceName = scannerAdapter.scanResultsArrayList.get(position).getDeviceName();
-        String deviceMacAddress = scannerAdapter.scanResultsArrayList.get(position).getDeviceMacAddress();
-        String deviceType = scannerAdapter.scanResultsArrayList.get(position).getDeviceType();
-        Device newDevice = new Device(deviceName, deviceName, deviceMacAddress, deviceType);
-
-        DeviceRepository deviceRepository = new DeviceRepository((Application) getActivity().getApplicationContext());
-        deviceRepository.insert(newDevice);
-
-        NavDirections action = ScannerFragmentDirections.actionNavScannerToNavMyDevices();
-        Navigation.findNavController(getView()).navigate(action);
-
+        recyclerView.setAdapter(scannerAdapter);
+        this.scanResults = scanResults;
     }
-
-
     private void observeLiveData(){
         //Setup observer of livedata for recyclerView, calls updateRecyclerView when data changes
         final Observer<ArrayList<ScanResults>> observerScanResults;
@@ -166,10 +169,32 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
     }
 
 
-    public void updateRecycleViewer(ArrayList scanResults){
+    // Saves characteristics when user clicks on a scan result
+    @Override
+    public void onItemClick(int position) {
+
+        //Get device info when clicked
         ScannerAdapter scannerAdapter = new ScannerAdapter(scanResults, this);
-        recyclerView.setAdapter(scannerAdapter);
-        this.scanResults = scanResults;
+        deviceName = scannerAdapter.scanResultsArrayList.get(position).getDeviceName();
+        deviceMacAddress = scannerAdapter.scanResultsArrayList.get(position).getDeviceMacAddress();
+        deviceType = scannerAdapter.scanResultsArrayList.get(position).getDeviceType();
+    }
+
+    //Adds device to MyDevices database then navigates to MyDevices frag
+    @Override
+    public void onButtonClick(int position) {
+        ScannerAdapter scannerAdapter = new ScannerAdapter(scanResults, this);
+        String deviceName = scannerAdapter.scanResultsArrayList.get(position).getDeviceName();
+        String deviceMacAddress = scannerAdapter.scanResultsArrayList.get(position).getDeviceMacAddress();
+        String deviceType = scannerAdapter.scanResultsArrayList.get(position).getDeviceType();
+
+
+        Device newDevice = new Device(deviceName, deviceName, deviceMacAddress, deviceType);
+        LiveData<List<Device>> allDevices = myDevicesViewModel.getAllDevices();
+        myDevicesViewModel.insert(newDevice);
+
+        NavDirections action = ScannerFragmentDirections.actionNavScannerToNavMyDevices();
+        Navigation.findNavController(getView()).navigate(action);
     }
 
 
@@ -186,7 +211,6 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
         requireContext().startService(bleServiceIntent);
         Log.d(TAG, "Sent intent to " + serviceClass + " " + action);
     }
-
 
     private void registerBroadcastReceiver(){
         //Set intent filters and register receiver to listen for updates

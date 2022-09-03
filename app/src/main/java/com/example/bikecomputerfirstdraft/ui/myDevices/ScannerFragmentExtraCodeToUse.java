@@ -1,47 +1,8 @@
 package com.example.bikecomputerfirstdraft.ui.myDevices;
 
-import android.app.Application;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.navigation.NavDirections;
-import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.bikecomputerfirstdraft.R;
-import com.example.bikecomputerfirstdraft.ble.BleConnectionService;
-import com.example.bikecomputerfirstdraft.ble.BleScannerService;
-import com.example.bikecomputerfirstdraft.constants.Constants;
-import com.example.bikecomputerfirstdraft.deviceTypes.GenericDevice;
 import com.example.bikecomputerfirstdraft.ui.scanner.RecyclerViewInterface;
-import com.example.bikecomputerfirstdraft.ui.scanner.ScanResults;
-import com.example.bikecomputerfirstdraft.ui.scanner.ScannerAdapter;
-import com.example.bikecomputerfirstdraft.ui.scanner.ScannerFragmentArgs;
-import com.example.bikecomputerfirstdraft.ui.scanner.ScannerFragmentDirections;
-
-import java.util.ArrayList;
-
-import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_DATA_AVAILABLE;
-import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_GATT_CONNECTED;
-import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_GATT_DISCONNECTED;
-import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_GATT_SERVICES_DISCOVERED;
 
 public class ScannerFragmentExtraCodeToUse extends Fragment implements RecyclerViewInterface {
     @Override

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerViewHolder> {
 
 
+
     ArrayList<ScanResults> scanResultsArrayList;
     public RecyclerViewInterface recyclerViewInterface;
 

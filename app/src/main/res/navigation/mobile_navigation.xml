@@ -65,6 +65,7 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@android:anim/slide_in_left"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+
     </fragment>
 
 </navigation>

@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
 
-import java.nio.channels.AsynchronousChannelGroup;
 import java.util.List;
 
 public class DeviceRepository {
@@ -84,7 +83,7 @@ public class DeviceRepository {
         }
     }
 
-    private static class DeleteAllDevicesAsyncTask extends AsyncTask<Void, Void, Void>{
+    private static class DeleteAllDevicesAsyncTask extends android.os.AsyncTask<Void, Void, Void> {
         private DeviceDao deviceDao;
 
         private DeleteAllDevicesAsyncTask(DeviceDao deviceDao){
@@ -97,6 +96,7 @@ public class DeviceRepository {
             return null;
         }
     }
+
 
 
 

@@ -16,7 +16,7 @@ import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.bikecomputerfirstdraft.ble.FormatBleData;
+import com.example.bikecomputerfirstdraft.ui.home.ble.FormatBleData;
 import com.example.bikecomputerfirstdraft.ui.scanner.ScanResults;
 
 import java.util.ArrayList;

@@ -16,7 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.bikecomputerfirstdraft.R;
-import com.example.bikecomputerfirstdraft.ble.BleConnectionService;
+import com.example.bikecomputerfirstdraft.ui.home.ble.BleConnectionService;
 import com.example.bikecomputerfirstdraft.databinding.FragmentHomeBinding;
 
 public class HomeFragment extends Fragment {

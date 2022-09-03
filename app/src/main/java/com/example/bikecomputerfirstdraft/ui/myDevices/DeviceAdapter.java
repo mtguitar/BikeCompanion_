@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecomputerfirstdraft.R;
-import com.example.bikecomputerfirstdraft.ui.scanner.RecyclerViewInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,15 +17,13 @@ import java.util.List;
 
 public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceViewHolder>{
 
-
     private List<Device> devices = new ArrayList<>();
+    private RecyclerViewListenerMyDevices listener;
 
-    public RecyclerViewInterface recyclerViewInterface;
 
-    public DeviceAdapter() {
-
+    public DeviceAdapter(RecyclerViewListenerMyDevices listener) {
+        this.listener = listener;
     }
-
 
 
     @NonNull
@@ -36,23 +33,9 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
         return new DeviceViewHolder(itemView);
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull DeviceViewHolder holder, int position) {
-        Device currentDevice = devices.get(position);
-        holder.textViewDeviceName.setText(currentDevice.getAssignedName());
-        holder.textViewMacAddress.setText(currentDevice.getMacAddress());
 
-    }
 
-    @Override
-    public int getItemCount() {
-        return devices.size();
-    }
 
-    public void setDevices(List<Device> devices){
-        this.devices = devices;
-        notifyDataSetChanged();
-    }
 
     class DeviceViewHolder extends RecyclerView.ViewHolder{
         private TextView textViewDeviceBattery;
@@ -65,6 +48,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
         private TextView textViewDeviceName;
         private TextView textViewMacAddress;
         private View constraintLayoutDeviceInfo;
+        private Device currentDevice;
 
 
         public DeviceViewHolder(@NonNull View itemView) {
@@ -83,18 +67,11 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (recyclerViewInterface != null) {
+                    if (listener != null) {
                         int position = getAbsoluteAdapterPosition();
 
                         if (position != RecyclerView.NO_POSITION){
-                            recyclerViewInterface.onItemClick(position);
-                            if(constraintLayoutDeviceInfo.getVisibility() == View.GONE){
-                                constraintLayoutDeviceInfo.setVisibility(View.VISIBLE);
-                            }
-                            else {
-                                constraintLayoutDeviceInfo.setVisibility(View.GONE);
-
-                            }
+                            listener.onItemClick(position, constraintLayoutDeviceInfo);
 
                         }
                     }
@@ -105,11 +82,11 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
                 @Override
                 public void onClick(View view) {
 
-                    if (recyclerViewInterface != null) {
+                    if (listener != null) {
                         int position = getAbsoluteAdapterPosition();
 
                         if (position != RecyclerView.NO_POSITION){
-                            recyclerViewInterface.onButtonClick(position);
+                            listener.onButtonClick(position, devices);
                         }
                     }
 
@@ -120,5 +97,22 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
         }
     }
 
+    @Override
+    public void onBindViewHolder(@NonNull DeviceViewHolder holder, int position) {
+        Device currentDevice = devices.get(position);
+        holder.textViewDeviceName.setText(currentDevice.getAssignedName());
+        holder.textViewMacAddress.setText(currentDevice.getMacAddress());
+
+    }
+
+    public void setDevices(List<Device> devices){
+        this.devices = devices;
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public int getItemCount() {
+        return devices.size();
+    }
 
 }

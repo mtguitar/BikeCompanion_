@@ -1,4 +1,4 @@
-package com.example.bikecomputerfirstdraft.ble;
+package com.example.bikecomputerfirstdraft.ui.home.ble;
 
 public class FormatBleData {
 
