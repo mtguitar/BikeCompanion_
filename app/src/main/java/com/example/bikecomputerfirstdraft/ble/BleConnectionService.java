@@ -11,6 +11,7 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -21,7 +22,14 @@ import com.example.bikecomputerfirstdraft.constants.Constants;
 
 import java.util.UUID;
 
-import static com.example.bikecomputerfirstdraft.constants.Constants.*;
+import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_CONNECT_TO_DEVICE;
+import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_GATT_CONNECTED;
+import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_GATT_DISCONNECTED;
+import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_GATT_SERVICES_DISCOVERED;
+import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_READ_CHARACTERISTIC;
+import static com.example.bikecomputerfirstdraft.constants.Constants.STATE_CONNECTED;
+import static com.example.bikecomputerfirstdraft.constants.Constants.STATE_CONNECTING;
+import static com.example.bikecomputerfirstdraft.constants.Constants.STATE_DISCONNECTED;
 
 @SuppressLint("MissingPermission")
 
@@ -135,19 +143,21 @@ public class BleConnectionService extends LifecycleService {
     }
 
     // Read characteristic
-    public void readCharacteristic(UUID service, UUID characteristic, String dataType) {
+    public void readCharacteristic(UUID service, UUID characteristic) {
+        Log.w(TAG, "Received request to read characteristic");
         if (mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothGatt not initialized");
             return;
         }
-        this.dataType = dataType;
         BluetoothGattCharacteristic characteristicToRead = mBluetoothGatt.getService(service).getCharacteristic(characteristic);
+        Log.d(TAG, String.valueOf(characteristicToRead));
         mBluetoothGatt.readCharacteristic(characteristicToRead);
         Log.w(TAG, "Reading characteristic");
+
     }
 
     // Subscribe to characteristic notifications
-    public void setCharacteristicNotification(UUID service, UUID characteristic, boolean enabled, String dataType){
+    public void setCharacteristicNotification(UUID service, UUID characteristic, boolean enabled){
         if (mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothGatt not initialized");
             return;
@@ -171,7 +181,7 @@ public class BleConnectionService extends LifecycleService {
                 intentConnectionState = ACTION_GATT_CONNECTED;
                 connectionState = STATE_CONNECTED;
                 mBluetoothGatt = gatt;
-                broadcastUpdate(intentConnectionState);
+                broadcastUpdateState(intentConnectionState);
 
                 Log.d(TAG, "Device Connected");
 
@@ -182,7 +192,7 @@ public class BleConnectionService extends LifecycleService {
             else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 intentConnectionState = ACTION_GATT_DISCONNECTED;
                 connectionState = STATE_DISCONNECTED;
-                broadcastUpdate(intentConnectionState);
+                broadcastUpdateState(intentConnectionState);
                 Log.d(TAG, "Device Disconnected");
             }
 
@@ -196,30 +206,58 @@ public class BleConnectionService extends LifecycleService {
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
+                broadcastUpdateState(ACTION_GATT_SERVICES_DISCOVERED);
                 Log.w(TAG, "onServicesDiscovered received: " + status);
             } else {
                 Log.w(TAG, "onServicesDiscovered received: " + status);
             }
         }
 
-        @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicRead(gatt, characteristic, status);
-
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+                Log.w(TAG, "Received characteristic" + characteristic);
+                broadcastUpdateCharacteristic(gatt, characteristic);
             }
         }
 
-        @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-            broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
-            Log.w(TAG, "Characteristic changed");
+            Log.w(TAG, "Received changed characteristic" + characteristic + " " + characteristic.getValue());
+            broadcastUpdateCharacteristic(gatt, characteristic);
         }
+
 
     };
 
+
+    // Broadcast updates to connection state changes
+    private void broadcastUpdateState (final String intentConnectionState) {
+        final Intent intent = new Intent(intentConnectionState);
+        sendBroadcast(intent);
+    }
+    // Broadcast updates to characteristics
+    private void broadcastUpdateCharacteristic(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+        String action = Constants.ACTION_DATA_AVAILABLE;
+        String characteristicMacAddress = gatt.getDevice().getAddress();
+        String characteristicUUID = (characteristic.getUuid()).toString();
+        String characteristicValueString = characteristic.getStringValue(0);
+        byte[] characteristicValue = characteristic.getValue();
+
+        Log.d(TAG, "Bundle: " + characteristicMacAddress + " " + characteristicUUID + " " + characteristicValueString + " " + characteristicValue[0]);
+
+
+        Bundle characteristicBundle = new Bundle();
+        characteristicBundle.putString(Constants.CHARACTERISTIC_MAC_ADDRESS,characteristicMacAddress);
+        characteristicBundle.putString(Constants.CHARACTERISTIC_UUID, characteristicUUID);
+        characteristicBundle.putString(Constants.CHARACTERISTIC_VALUE_STRING, characteristicValueString);
+        characteristicBundle.putByte(Constants.CHARACTERISTIC_VALUE_BYTE, characteristicValue[0]);
+
+
+
+        final Intent intent = new Intent(action);
+        intent.putExtra(Constants.EXTRA_DATA, characteristicBundle);
+        sendBroadcast(intent);
+    }
 
     //Allows fragments to bind to this service
     public class LocalBinder extends Binder {
@@ -234,25 +272,6 @@ public class BleConnectionService extends LifecycleService {
     public IBinder onBind(Intent intent) {
         super.onBind(intent);
         return binder;
-    }
-
-
-    // Broadcast updates to connection state changes
-    private void broadcastUpdate(final String intentConnectionState) {
-        final Intent intent = new Intent(intentConnectionState);
-        sendBroadcast(intent);
-    }
-    // Broadcast updates to characteristics
-    private void broadcastUpdate(final String action, final BluetoothGattCharacteristic characteristic) {
-        byte[] characteristicValue = characteristic.getValue();
-
-        byte[] characteristicTest = characteristic.getValue();
-        String charValue = String.valueOf(characteristicTest[0]);
-        Log.d(TAG, "read character " + charValue);
-
-        final Intent intent = new Intent(action);
-        intent.putExtra(Constants.EXTRA_DATA, charValue);
-        sendBroadcast(intent);
     }
 
 

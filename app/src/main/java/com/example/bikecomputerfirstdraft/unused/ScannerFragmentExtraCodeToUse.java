@@ -1,8 +1,8 @@
-package com.example.bikecomputerfirstdraft.ui.myDevices;
+package com.example.bikecomputerfirstdraft.unused;
 
 import androidx.fragment.app.Fragment;
 
-import com.example.bikecomputerfirstdraft.ui.scanner.RecyclerViewInterface;
+import com.example.bikecomputerfirstdraft.adapters.RecyclerViewInterface;
 
 public class ScannerFragmentExtraCodeToUse extends Fragment implements RecyclerViewInterface {
     @Override

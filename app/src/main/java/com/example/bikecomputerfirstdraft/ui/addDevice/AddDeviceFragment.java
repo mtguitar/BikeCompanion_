@@ -13,8 +13,8 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 
 import com.example.bikecomputerfirstdraft.R;
-import com.example.bikecomputerfirstdraft.deviceTypes.FlareRT;
-import com.example.bikecomputerfirstdraft.deviceTypes.SpeedCadence;
+import com.example.bikecomputerfirstdraft.deviceTypes.FlareRTDeviceType;
+import com.example.bikecomputerfirstdraft.deviceTypes.SpeedCadenceDeviceType;
 import com.google.android.material.snackbar.Snackbar;
 
 public class AddDeviceFragment extends Fragment {
@@ -40,8 +40,8 @@ public class AddDeviceFragment extends Fragment {
             public void onClick(View view) {
                 name = null;
                 macAddress = null;
-                serviceUuids = FlareRT.STRING_SERVICE_ADVERTISED_1;
-                deviceType = FlareRT.DEVICE_TYPE;
+                serviceUuids = FlareRTDeviceType.STRING_SERVICE_ADVERTISED_1;
+                deviceType = FlareRTDeviceType.DEVICE_TYPE;
                 click();
             }
         });
@@ -50,8 +50,8 @@ public class AddDeviceFragment extends Fragment {
             public void onClick(View view) {
                 name = null;
                 macAddress = null;
-                serviceUuids = SpeedCadence.STRING_SERVICE_ADVERTISED_1;
-                deviceType = SpeedCadence.DEVICE_TYPE;
+                serviceUuids = SpeedCadenceDeviceType.STRING_SERVICE_ADVERTISED_1;
+                deviceType = SpeedCadenceDeviceType.DEVICE_TYPE;
                 click();
 
             }

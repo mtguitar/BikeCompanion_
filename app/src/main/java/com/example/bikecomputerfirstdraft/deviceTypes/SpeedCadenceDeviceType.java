@@ -4,7 +4,7 @@ import android.os.ParcelUuid;
 
 import java.util.UUID;
 
-public class SpeedCadence {
+public class SpeedCadenceDeviceType {
 
     public final static String DEVICE_TYPE = "Speed/Cadence";
 

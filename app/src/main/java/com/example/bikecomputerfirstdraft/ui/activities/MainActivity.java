@@ -1,9 +1,8 @@
-package com.example.bikecomputerfirstdraft;
+package com.example.bikecomputerfirstdraft.ui.activities;
 
 import android.Manifest;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -13,9 +12,9 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.bikecomputerfirstdraft.R;
 import com.example.bikecomputerfirstdraft.databinding.ActivityMainBinding;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 
 public class MainActivity extends AppCompatActivity {
 

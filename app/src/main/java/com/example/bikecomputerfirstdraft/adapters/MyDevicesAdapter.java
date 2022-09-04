@@ -1,4 +1,4 @@
-package com.example.bikecomputerfirstdraft.ui.myDevices;
+package com.example.bikecomputerfirstdraft.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,18 +10,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecomputerfirstdraft.R;
+import com.example.bikecomputerfirstdraft.ui.myDevices.MyDevice;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceViewHolder>{
+public class MyDevicesAdapter extends RecyclerView.Adapter<MyDevicesAdapter.DeviceViewHolder>{
 
-    private List<Device> devices = new ArrayList<>();
-    private RecyclerViewListenerMyDevices listener;
+    private List<MyDevice> devices = new ArrayList<>();
+    private MyDevicesListenerInterface listener;
 
 
-    public DeviceAdapter(RecyclerViewListenerMyDevices listener) {
+    public MyDevicesAdapter(MyDevicesListenerInterface listener) {
         this.listener = listener;
     }
 
@@ -48,7 +49,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
         private TextView textViewDeviceName;
         private TextView textViewMacAddress;
         private View constraintLayoutDeviceInfo;
-        private Device currentDevice;
+        private MyDevice currentDevice;
 
 
         public DeviceViewHolder(@NonNull View itemView) {
@@ -71,7 +72,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
                         int position = getAbsoluteAdapterPosition();
 
                         if (position != RecyclerView.NO_POSITION){
-                            listener.onItemClick(position, constraintLayoutDeviceInfo);
+                            listener.onItemClick(position, itemView, devices);
 
                         }
                     }
@@ -99,13 +100,13 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
 
     @Override
     public void onBindViewHolder(@NonNull DeviceViewHolder holder, int position) {
-        Device currentDevice = devices.get(position);
+        MyDevice currentDevice = devices.get(position);
         holder.textViewDeviceName.setText(currentDevice.getAssignedName());
         holder.textViewMacAddress.setText(currentDevice.getMacAddress());
 
     }
 
-    public void setDevices(List<Device> devices){
+    public void setDevices(List<MyDevice> devices){
         this.devices = devices;
         notifyDataSetChanged();
     }

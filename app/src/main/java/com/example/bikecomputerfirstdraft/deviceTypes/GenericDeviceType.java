@@ -1,18 +1,22 @@
 package com.example.bikecomputerfirstdraft.deviceTypes;
 
-import android.os.ParcelUuid;
-
-import com.example.bikecomputerfirstdraft.R;
-
 import java.util.UUID;
 
-public class GenericDevice {
+public class GenericDeviceType {
 
     public final static String DATA_TYPE_BYTE_ARRAY = "DATA_TYPE_BYTE_ARRAY";
     public final static String DATA_TYPE_STRING = "DATA_TYPE_STRING";
 
     public final static String DEVICE_TYPE = "Unknown";
 
+
+    // Device Manufacturer UUIDs
+    public final static String STRING_SERVICE_MANUFACTURER= "0000180a-0000-1000-8000-00805f9b34fb";
+    public final static String STRING_CHARACTERISTIC_MANUFACTURER = "00002a24-0000-1000-8000-00805f9b34fb";
+    public final static UUID UUID_SERVICE_MANUFACTURER = UUID.fromString(STRING_SERVICE_MANUFACTURER);
+    public final static UUID UUID_CHARACTERISTIC_MANUFACTURER = UUID.fromString(STRING_SERVICE_MANUFACTURER);
+    public final static String DATA_TYPE_MANUFACTURER = DATA_TYPE_STRING;
+    public final static String[] ARRAY_CHARACTERISTIC_MANUFACTURER = {STRING_SERVICE_MANUFACTURER, STRING_CHARACTERISTIC_MANUFACTURER};
 
 
     // Battery UUIDs
@@ -28,15 +32,6 @@ public class GenericDevice {
     public final static UUID UUID_SERVICE_DEVICE_NAME = UUID.fromString("00001800-0000-1000-8000-00805f9b34fb");
     public final static UUID UUID_CHARACTERISTIC_DEVICE_NAME = UUID.fromString("00002a00-0000-1000-8000-00805f9b34fb");
     public final static String DATA_TYPE_DEVICE_NAME = DATA_TYPE_STRING;
-
-    // Device Manufacturer UUIDs
-
-    public final static String STRING_SERVICE_MANUFACTURER= "0000180a-0000-1000-8000-00805f9b34fb";
-    public final static String STRING_CHARACTERISTIC_MANUFACTURER = "00002a29-0000-1000-8000-00805f9b34fb";
-    public final static UUID UUID_SERVICE_MANUFACTURER = UUID.fromString(STRING_SERVICE_MANUFACTURER);
-    public final static UUID UUID_CHARACTERISTIC_MANUFACTURER = UUID.fromString(STRING_SERVICE_MANUFACTURER);
-    public final static String DATA_TYPE_MANUFACTURER = DATA_TYPE_STRING;
-    public final static String[] ARRAY_CHARACTERISTIC_MANUFACTURER = {STRING_SERVICE_MANUFACTURER, STRING_CHARACTERISTIC_MANUFACTURER};
 
 
 

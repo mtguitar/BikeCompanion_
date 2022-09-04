@@ -34,7 +34,7 @@
             android:foregroundServiceType="connectedDevice" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.activities.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.BikeComputerFirstDraft.NoActionBar" >

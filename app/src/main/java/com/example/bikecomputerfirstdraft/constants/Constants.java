@@ -64,4 +64,9 @@ public class Constants {
     public static final String EXTRA_DATA_MANUFACTURER =
             "com.example.bluetooth.le.EXTRA_DATA_MANUFACTURER";
 
+
+    public static final String CHARACTERISTIC_MAC_ADDRESS = "CHARACTERISTIC_MAC_ADDRESS";
+    public static final String CHARACTERISTIC_UUID = "CHARACTERISTIC_UUID";
+    public static final String CHARACTERISTIC_VALUE_BYTE = "CHARACTERISTIC_VALUE_BYTE";
+    public static final String CHARACTERISTIC_VALUE_STRING = "CHARACTERISTIC_VALUE_STRING";
 }

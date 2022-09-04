@@ -1,4 +1,4 @@
-package com.example.bikecomputerfirstdraft.ui.scanner;
+package com.example.bikecomputerfirstdraft.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecomputerfirstdraft.R;
+import com.example.bikecomputerfirstdraft.ui.scanner.ScanResults;
 
 import java.util.ArrayList;
 
@@ -18,7 +19,7 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
 
 
 
-    ArrayList<ScanResults> scanResultsArrayList;
+    public ArrayList<ScanResults> scanResultsArrayList;
     public RecyclerViewInterface recyclerViewInterface;
 
     public ScannerAdapter(ArrayList<ScanResults> scanResultsArrayList, RecyclerViewInterface recyclerViewInterface) {
