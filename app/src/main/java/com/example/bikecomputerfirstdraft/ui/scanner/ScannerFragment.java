@@ -3,7 +3,6 @@ package com.example.bikecomputerfirstdraft.ui.scanner;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,8 +23,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecomputerfirstdraft.R;
+import com.example.bikecomputerfirstdraft.ble.BleScannerService;
+import com.example.bikecomputerfirstdraft.ble.RegisterBroadcastReceiver;
 import com.example.bikecomputerfirstdraft.constants.Constants;
-import com.example.bikecomputerfirstdraft.ui.home.ble.BleScannerService;
 import com.example.bikecomputerfirstdraft.ui.myDevices.Device;
 import com.example.bikecomputerfirstdraft.ui.myDevices.MyDevicesViewModel;
 
@@ -55,12 +55,17 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
     private MyDevicesViewModel myDevicesViewModel;
 
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         myDevicesViewModel = new ViewModelProvider(this).get(MyDevicesViewModel.class);
 
         getVarsFromPreviousFragment();
+
+
+
 
         //SendCommand to BleScannerService to start scanning
         sendCommandToService(BleScannerService.class, Constants.ACTION_START_OR_RESUME_SERVICE);
@@ -103,6 +108,11 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
     }
 
 
+   void registerBroadcastReceiver(){
+        String[] filters = {Constants.ACTION_BLE_SCANNING_STOPPED, Constants.ACTION_BLE_SCANNING_STARTED};
+        RegisterBroadcastReceiver r = new RegisterBroadcastReceiver(getActivity(), scannerUpdateReceiver, filters);
+
+    }
 
     private void getVarsFromPreviousFragment(){
         //vars passed from other fragment
@@ -211,12 +221,14 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
         requireContext().startService(bleServiceIntent);
         Log.d(TAG, "Sent intent to " + serviceClass + " " + action);
     }
-
+/*
     private void registerBroadcastReceiver(){
         //Set intent filters and register receiver to listen for updates
         scannerUpdateIntentFilter();
         getActivity().registerReceiver(scannerUpdateReceiver, scannerUpdateIntentFilter());
     }
+
+
 
     //Intent filters for receiving intents
     private static IntentFilter scannerUpdateIntentFilter () {
@@ -225,6 +237,8 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
         intentFilter.addAction(Constants.ACTION_BLE_SCANNING_STOPPED);
         return intentFilter;
     }
+
+ */
 
 
     //Broadcast receiver that changes buttons and textview upon receiving intents from service

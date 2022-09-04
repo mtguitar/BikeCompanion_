@@ -23,12 +23,12 @@
         android:theme="@style/Theme.BikeComputerFirstDraft"
         tools:targetApi="31" >
         <service
-            android:name=".ui.home.ble.BleConnectionService"
+            android:name=".ble.BleConnectionService"
             android:enabled="true"
             android:exported="true" >
         </service>
         <service
-            android:name=".ui.home.ble.BleScannerService"
+            android:name=".ble.BleScannerService"
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="connectedDevice" />

@@ -38,7 +38,6 @@ public class MyDevicesFragment extends Fragment implements RecyclerViewListenerM
 
         myDevicesViewModel = new ViewModelProvider(this).get(MyDevicesViewModel.class);
 
-
     }
     @SuppressLint("MissingInflatedId")
     @Override
@@ -83,6 +82,14 @@ public class MyDevicesFragment extends Fragment implements RecyclerViewListenerM
         }
         else {
             constraintLayoutDeviceInfo.setVisibility(View.GONE);
+            Device currentDevice = devices.get(position);
+            String deviceMacAddress = currentDevice.getMacAddress();
+
+
+
+
+
+
         }
 
     }

@@ -1,4 +1,4 @@
-package com.example.bikecomputerfirstdraft.ui.home.ble;
+package com.example.bikecomputerfirstdraft.ble;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
