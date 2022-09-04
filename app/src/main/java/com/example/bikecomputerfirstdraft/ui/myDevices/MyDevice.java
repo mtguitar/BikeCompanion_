@@ -1,12 +1,10 @@
 package com.example.bikecomputerfirstdraft.ui.myDevices;
 
-import android.os.ParcelUuid;
-
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "device_table")
-public class Device {
+public class MyDevice {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -17,7 +15,7 @@ public class Device {
     private String deviceType;
 
 
-    public Device(String assignedName, String bleName, String macAddress, String deviceType) {
+    public MyDevice(String assignedName, String bleName, String macAddress, String deviceType) {
         this.assignedName = assignedName;
         this.bleName = bleName;
         this.macAddress = macAddress;

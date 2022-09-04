@@ -17,6 +17,10 @@ public class Constants {
     public final static int STATE_CONNECTING = 1;
     public final static int STATE_CONNECTED = 2;
 
+    public final static String STATE_DISCONNECTED_STRING = "Disconnected";
+    public final static String STATE_CONNECTING_STRING = "Connecting";
+    public final static String STATE_CONNECTED_STRING = "Connected";
+
 
     public final static String ACTION_SHOW_SCANNING_FRAGMENT = "ACTION_SHOW_SCANNING_FRAGMENT";
     public final static String ACTION_SHOW_CONNECTION_FRAGMENT = "ACTION_SHOW_CONNECTION_FRAGMENT";
@@ -38,12 +42,18 @@ public class Constants {
             "com.example.bluetooth.le.ACTION_GATT_CONNECTED";
     public final static String ACTION_GATT_DISCONNECTED =
             "com.example.bluetooth.le.ACTION_GATT_DISCONNECTED";
+    public static final String ACTION_GATT_STATE_CHANGE =
+            "com.example.bluetooth.le.ACTION_GATT_STATE_CHANGED";
+
     public final static String ACTION_GATT_SERVICES_DISCOVERED =
             "com.example.bluetooth.le.ACTION_SERVICES_DISCOVERED";
     public final static String ACTION_DATA_AVAILABLE =
             "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
     public final static String ACTION_CONNECT_TO_DEVICE =
             "com.example.bluetooth.le.CONNECT_TO_DEVICE";
+    public static final String ACTION_DISCONNECT_DEVICE = "com.example.bluetooth.le.ACTION_DISCONNECT_DEVICE";;
+
+
     public static final String ACTION_READ_CHARACTERISTIC =
             "com.example.bluetooth.le.ACTION_READ_CHARACTERISTIC";
     public static final String ACTION_WRITE_CHARACTERISTIC =
@@ -64,4 +74,18 @@ public class Constants {
     public static final String EXTRA_DATA_MANUFACTURER =
             "com.example.bluetooth.le.EXTRA_DATA_MANUFACTURER";
 
+
+
+
+
+    public static final String GATT_MAC_ADDRESS = "GATT_MAC_ADDRESS";
+    public static final String CHARACTERISTIC_UUID = "CHARACTERISTIC_UUID";
+    public static final String CHARACTERISTIC_VALUE_BYTE = "CHARACTERISTIC_VALUE_BYTE";
+    public static final String CHARACTERISTIC_VALUE_STRING = "CHARACTERISTIC_VALUE_STRING";
+
+
+    public final static String GATT_CONNECTED = "Connected";
+    public final static String GATT_DISCONNECTED = "Disconnected";
+    public static final String GATT_SERVICES_DISCOVERED = "Ready to Read/Write";
+    public static final String GATT_CONNECTION_STATE = "GATT_CONNECTION_STATE";
 }

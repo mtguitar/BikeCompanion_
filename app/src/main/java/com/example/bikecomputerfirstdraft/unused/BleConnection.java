@@ -93,17 +93,7 @@ public class BleConnection {
     // Checks if BluetoothLeService is bound
     // If not bound, binds to BluetoothLeService and calls serviceConnection
     // If bound, call BluetoothLeService's connected method directly, passing deviceMacAddress
-    public void connectDevice(String deviceMacAddress){
-        if (!boundToService) {
-            gattServiceIntent = new Intent(mContext, BleConnectionServiceOLD.class);
-            mContext.bindService(gattServiceIntent, serviceConnection, mContext.BIND_AUTO_CREATE);
-        }
-        else {
-            bleService.connectDevice(deviceMacAddress);
-            logMessages("Trying to connect to " + deviceName);
-        }
 
-    }
 
     //subscribe to characteristic notification
     public void subscribeToNotification(){
@@ -116,6 +106,18 @@ public class BleConnection {
         FormatBleData formatBleData = new FormatBleData();
         byte[] payloadToWrite = formatBleData.convertStingtoByte(payload);
         bleService.writeCharacteristic(SERVICE_UUID, CHARACTERISTIC_UUID, payloadToWrite);
+    }
+
+    public void connectDevice(String deviceMacAddress){
+        if (!boundToService) {
+            gattServiceIntent = new Intent(mContext, BleConnectionServiceOLD.class);
+            mContext.bindService(gattServiceIntent, serviceConnection, mContext.BIND_AUTO_CREATE);
+        }
+        else {
+            bleService.connectDevice(deviceMacAddress);
+            logMessages("Trying to connect to " + deviceName);
+        }
+
     }
 
     // serviceConnection object to connect to BluetoothLeService

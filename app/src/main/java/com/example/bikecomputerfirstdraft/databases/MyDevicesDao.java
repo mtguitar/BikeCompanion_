@@ -1,4 +1,4 @@
-package com.example.bikecomputerfirstdraft.ui.myDevices;
+package com.example.bikecomputerfirstdraft.databases;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -7,24 +7,26 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import com.example.bikecomputerfirstdraft.ui.myDevices.MyDevice;
+
 import java.util.List;
 
 @Dao
-public interface DeviceDao {
+public interface MyDevicesDao {
 
     @Insert
-    void insert(Device device);
+    void insert(MyDevice device);
 
     @Update
-    void update(Device device);
+    void update(MyDevice device);
 
     @Delete
-    void delete(Device device);
+    void delete(MyDevice device);
 
     @Query("DELETE FROM device_table")
     void deleteAllDevices();
 
     @Query("SELECT * FROM device_table ORDER BY id DESC")
-    LiveData<List<Device>> getAllDevices();
+    LiveData<List<MyDevice>> getAllDevices();
 
 }

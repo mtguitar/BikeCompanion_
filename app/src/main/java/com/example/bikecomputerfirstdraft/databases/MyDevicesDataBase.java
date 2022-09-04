@@ -1,4 +1,4 @@
-package com.example.bikecomputerfirstdraft.ui.myDevices;
+package com.example.bikecomputerfirstdraft.databases;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -9,18 +9,20 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = Device.class, version = 1)
-public abstract class DeviceDataBase extends RoomDatabase {
+import com.example.bikecomputerfirstdraft.ui.myDevices.MyDevice;
+
+@Database(entities = MyDevice.class, version = 1)
+public abstract class MyDevicesDataBase extends RoomDatabase {
 
 
-    private static DeviceDataBase instance;
+    private static MyDevicesDataBase instance;
 
-    public abstract DeviceDao deviceDao();
+    public abstract MyDevicesDao deviceDao();
 
-    public static synchronized DeviceDataBase getInstance(Context context){
+    public static synchronized MyDevicesDataBase getInstance(Context context){
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(),
-                    DeviceDataBase.class, "device_database")
+                    MyDevicesDataBase.class, "device_database")
                     .fallbackToDestructiveMigration()
                     .addCallback(roomCallback)
                     .build();
@@ -39,17 +41,17 @@ public abstract class DeviceDataBase extends RoomDatabase {
 
     private static class PopulateDBAsyncTask extends AsyncTask<Void, Void, Void>{
 
-        DeviceDao deviceDao;
+        MyDevicesDao deviceDao;
 
-        private PopulateDBAsyncTask(DeviceDataBase db){
+        private PopulateDBAsyncTask(MyDevicesDataBase db){
             deviceDao = db.deviceDao();
         }
         @Override
         protected Void doInBackground(Void... voids) {
-            deviceDao.insert(new Device("Name 1", "Ble Name 1", "MAC 1", "Type 1"));
-            deviceDao.insert(new Device("Name 2", "Ble Name 2", "MAC 2", "Type 2"));
-            deviceDao.insert(new Device("Name 3", "Ble Name 3", "MAC 3", "Type 3"));
-            deviceDao.insert(new Device("Name 4", "Ble Name 4", "MAC 4", "Type 4"));
+            deviceDao.insert(new MyDevice("Name 1", "Ble Name 1", "MAC 1", "Type 1"));
+            deviceDao.insert(new MyDevice("Name 2", "Ble Name 2", "MAC 2", "Type 2"));
+            deviceDao.insert(new MyDevice("Name 3", "Ble Name 3", "MAC 3", "Type 3"));
+            deviceDao.insert(new MyDevice("Name 4", "Ble Name 4", "MAC 4", "Type 4"));
 
             return null;
         }

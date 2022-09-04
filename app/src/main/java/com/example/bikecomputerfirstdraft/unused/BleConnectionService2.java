@@ -1,33 +1,5 @@
 package com.example.bikecomputerfirstdraft.unused;
 
-import android.annotation.SuppressLint;
-import android.app.Service;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCallback;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothManager;
-import android.bluetooth.BluetoothProfile;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Binder;
-import android.os.IBinder;
-import android.util.Log;
-
-import com.example.bikecomputerfirstdraft.constants.Constants;
-import com.example.bikecomputerfirstdraft.deviceTypes.FlareRT;
-import com.example.bikecomputerfirstdraft.deviceTypes.GenericDevice;
-
-import java.util.UUID;
-
-import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_DATA_AVAILABLE;
-import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_GATT_CONNECTED;
-import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_GATT_DISCONNECTED;
-import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_GATT_SERVICES_DISCOVERED;
-import static com.example.bikecomputerfirstdraft.constants.Constants.STATE_CONNECTED;
-import static com.example.bikecomputerfirstdraft.constants.Constants.STATE_CONNECTING;
-import static com.example.bikecomputerfirstdraft.constants.Constants.STATE_DISCONNECTED;
 /*
 @SuppressLint("MissingPermission")
 public class BleConnectionService2 extends Service {

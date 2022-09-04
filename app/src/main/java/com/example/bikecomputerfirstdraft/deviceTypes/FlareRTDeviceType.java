@@ -7,7 +7,7 @@ import com.example.bikecomputerfirstdraft.R;
 
 import java.util.UUID;
 
-public class FlareRT{
+public class FlareRTDeviceType {
 
     public final static String DEVICE_TYPE = "Light";
 
@@ -27,8 +27,12 @@ public class FlareRT{
     public final static ParcelUuid PARCELUUID_ADVERTISED_SERVICE_3 = new ParcelUuid(UUID_SERVICE_ADVERTISED_3);
 
     // Light mode UUIDs
-    public final static UUID UUID_SERVICE_LIGHT_MODE = UUID.fromString("71261000-3692-ae93-e711-472ba41689c9");
-    public final static UUID UUID_CHARACTERISTIC_LIGHT_MODE = UUID.fromString("71261001-3692-ae93-e711-472ba41689c9");
+    public final static String STRING_SERVICE_LIGHT_MODE = "71261000-3692-ae93-e711-472ba41689c9";
+    public final static String STRING_CHARACTERISTIC_LIGHT_MODE = "71261001-3692-ae93-e711-472ba41689c9";
+
+
+    public final static UUID UUID_SERVICE_LIGHT_MODE = UUID.fromString(STRING_SERVICE_LIGHT_MODE);
+    public final static UUID UUID_CHARACTERISTIC_LIGHT_MODE = UUID.fromString(STRING_CHARACTERISTIC_LIGHT_MODE);
     public final static String DATA_TYPE_LIGHT_MODE = "byte[]";
 
     // Battery UUIDs

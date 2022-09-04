@@ -1,4 +1,4 @@
-package com.example.bikecomputerfirstdraft.ui.myDevices;
+package com.example.bikecomputerfirstdraft.unused;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.bikecomputerfirstdraft.databinding.FragmentSlideshowBinding;
+import com.example.bikecomputerfirstdraft.ui.myDevices.MyDevicesViewModel;
 
 public class OLDMyDevicesFragment extends Fragment {
 

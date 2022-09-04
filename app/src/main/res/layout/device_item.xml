@@ -195,16 +195,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="MacAddress"
+                        android:text="State"
                         android:textColor="@color/cardview_light_background"
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/text_view_device_mac_address"
+                        android:id="@+id/text_view_device_state"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="4"
-                        android:text="Connecting . . . "
                         android:textColor="@color/cardview_light_background" />
                 </TableRow>
 
@@ -228,6 +227,17 @@
 
                 </TableRow>
             </TableLayout>
+
+            <Button
+                android:id="@+id/button_device_disconnect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="Disconnect"
+                android:textColor="@color/cardview_light_background"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/button_device_remove"
+                app:layout_constraintTop_toBottomOf="@+id/tableLayout2" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>

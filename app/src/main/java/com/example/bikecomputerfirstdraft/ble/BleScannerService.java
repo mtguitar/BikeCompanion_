@@ -184,7 +184,7 @@ public class BleScannerService extends LifecycleService {
     /**
      * LiveData code
      */
-    public  static MutableLiveData<ArrayList<ScanResults>> scannerLiveDataList = new MutableLiveData<>();
+    public static MutableLiveData<ArrayList<ScanResults>> scannerLiveDataList = new MutableLiveData<>();
 
     public static MutableLiveData<ArrayList<ScanResults>> getScanResults() {
         return scannerLiveDataList;
@@ -216,7 +216,6 @@ public class BleScannerService extends LifecycleService {
         }
         scanResults.add(new ScanResults(image, deviceName, deviceMacAddress, deviceType));
         scannerLiveDataList.postValue(scanResults);
-        //Log.d(TAG, "Posted scan result " + deviceName + deviceMacAddress);
     }
 
 

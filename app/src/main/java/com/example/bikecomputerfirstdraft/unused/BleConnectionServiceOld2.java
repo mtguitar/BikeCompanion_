@@ -1,35 +1,19 @@
-package com.example.bikecomputerfirstdraft.ble;
+package com.example.bikecomputerfirstdraft.unused;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCallback;
-import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothManager;
-import android.bluetooth.BluetoothProfile;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Binder;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.util.Log;
 
-import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleService;
 
-import com.example.bikecomputerfirstdraft.constants.Constants;
-
-import java.util.HashMap;
 import java.util.UUID;
 
-import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_CONNECT_TO_DEVICE;
-import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_DISCONNECT_DEVICE;
-import static com.example.bikecomputerfirstdraft.constants.Constants.ACTION_READ_CHARACTERISTIC;
+import static com.example.bikecomputerfirstdraft.constants.Constants.STATE_DISCONNECTED;
 
 @SuppressLint("MissingPermission")
 
-public class BleConnectionService extends LifecycleService {
+public class BleConnectionServiceOld2 extends LifecycleService {
 
 
     public boolean isFirstRun = true;
@@ -40,23 +24,20 @@ public class BleConnectionService extends LifecycleService {
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothGatt mBluetoothGatt;
     private String deviceMacAddress;
+    public int connectionState = STATE_DISCONNECTED;
     private String action;
     private UUID characteristicToRead;
     private UUID serviceToRead;
     private String dataType;
     private String deviceName;
 
-    HashMap<String, BluetoothGatt> bluetoothDevicesMap;
-
+    /*
+    //liveData
+    MutableLiveData<String[]> connectedDevicesData = new MutableLiveData<>();
+    MutableLiveData<Integer> connectionStateData = new MutableLiveData<Integer>(connectionState);
 
     @Override
     public int onStartCommand (@Nullable Intent intent, int flags, int startId){
-
-
-        if(bluetoothDevicesMap == null){
-            bluetoothDevicesMap = new HashMap<>();
-        }
-
         action = intent.getAction();
         Log.d(TAG, "Received intent from fragment: " + action);
 
@@ -65,22 +46,22 @@ public class BleConnectionService extends LifecycleService {
             connectDevice(deviceMacAddress);
             Log.d(TAG, "Received intent extra: " + deviceMacAddress);
         }
-        if (action.equals(ACTION_DISCONNECT_DEVICE) && intent.hasExtra("deviceMacAddress")) {
-            deviceMacAddress = intent.getStringExtra("deviceMacAddress");
-            disconnectDevice(deviceMacAddress);
-            Log.d(TAG, "Received intent extra: " + deviceMacAddress);
-        }
         if (action.contains(ACTION_READ_CHARACTERISTIC)){
 
             String characteristic = intent.getStringExtra(Constants.EXTRA_DATA);
-            //readCharacteristic(characteristic);
+            readCharacteristic(characteristic);
             Log.d(TAG, characteristic);
 
         }
 
+
         return super.onStartCommand(intent, flags, startId);
     }
 
+
+
+    // This is the object that receives interactions from clients.
+    private final IBinder mBinder = new LocalBinder();
 
     //Initializes a reference to the local Bluetooth adapter.
     public boolean initialize() {
@@ -108,65 +89,65 @@ public class BleConnectionService extends LifecycleService {
             Log.w(TAG, "Device not found.  Unable to connect.");
             return false;
         }
-
+        // We want to directly connect to the device, so we are setting the autoConnect
+        // parameter to false.
         mBluetoothGatt = device.connectGatt(this, false, mBluetoothGattCallback);
         Log.d(TAG, "Connecting . . .");
+        connectionState = STATE_CONNECTING;
         return true;
     }
 
 
     // Disconnect from the device
     public void disconnectDevice(String deviceMacAddress) {
-        BluetoothGatt gatt = bluetoothDevicesMap.get(deviceMacAddress);
-        if (mBluetoothAdapter == null || gatt == null) {
-            Log.w(TAG, "BluetoothAdapter or gatt not initialized. Gatt: " + gatt);
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
-        gatt.disconnect();
-        gatt.close();
-        Log.d(TAG, "Device disconnected " + deviceMacAddress);
+        mBluetoothGatt.disconnect();
+        mBluetoothGatt.close();
+        Log.d(TAG, "Device disconnected");
     }
 
     // Write characteristic
-    public void writeCharacteristic(BluetoothGatt gatt, UUID service, UUID characteristic, byte[] payload) {
-        if (gatt == null) {
+    public void writeCharacteristic(UUID service, UUID characteristic, byte[] payload) {
+        if (mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothGatt not initialized");
             return;
         }
         Log.w(TAG, "Trying to write: " + payload[0]);
         int writeType = BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE;
 
-        BluetoothGattCharacteristic characteristicToWrite = gatt.getService(service).getCharacteristic(characteristic);
+        BluetoothGattCharacteristic characteristicToWrite = mBluetoothGatt.getService(service).getCharacteristic(characteristic);
 
         characteristicToWrite.setWriteType(writeType);
         characteristicToWrite.setValue(payload);
-        gatt.writeCharacteristic(characteristicToWrite);
+        mBluetoothGatt.writeCharacteristic(characteristicToWrite);
     }
 
     // Read characteristic
-    public void readCharacteristic(String deviceMacAddress, UUID service, UUID characteristic) {
-        BluetoothGatt gatt = bluetoothDevicesMap.get(deviceMacAddress);
+    public void readCharacteristic(UUID service, UUID characteristic) {
         Log.w(TAG, "Received request to read characteristic");
-        if (gatt == null) {
+        if (mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothGatt not initialized");
             return;
         }
-        BluetoothGattCharacteristic characteristicToRead = gatt.getService(service).getCharacteristic(characteristic);
+        BluetoothGattCharacteristic characteristicToRead = mBluetoothGatt.getService(service).getCharacteristic(characteristic);
         Log.d(TAG, String.valueOf(characteristicToRead));
-        gatt.readCharacteristic(characteristicToRead);
+        mBluetoothGatt.readCharacteristic(characteristicToRead);
         Log.w(TAG, "Reading characteristic");
 
     }
 
     // Subscribe to characteristic notifications
-    public void setCharacteristicNotification(BluetoothGatt gatt, UUID service, UUID characteristic, boolean enabled){
-        if (gatt == null) {
+    public void setCharacteristicNotification(UUID service, UUID characteristic, boolean enabled){
+        if (mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothGatt not initialized");
             return;
         }
         this.dataType = dataType;
-        BluetoothGattCharacteristic characteristicToSubscribe = gatt.getService(service).getCharacteristic(characteristic);
-        gatt.setCharacteristicNotification(characteristicToSubscribe, enabled);
+        BluetoothGattCharacteristic characteristicToSubscribe = mBluetoothGatt.getService(service).getCharacteristic(characteristic);
+        mBluetoothGatt.setCharacteristicNotification(characteristicToSubscribe, enabled);
         Log.w(TAG, "Subscribed to characteristic " + characteristic);
     }
 
@@ -176,37 +157,35 @@ public class BleConnectionService extends LifecycleService {
         @SuppressLint("MissingPermission")
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-            String gattMacAddress = gatt.getDevice().getAddress();
-            Log.w(TAG, "New State: " + newState);
+            String intentConnectionState;
+            String newStateString = String.valueOf(newState);
+            Log.w(TAG, newStateString);
             if(newState == BluetoothProfile.STATE_CONNECTED){
-                broadcastUpdateState(Constants.GATT_CONNECTED, gatt);
-                bluetoothDevicesMap.put(gattMacAddress, gatt);
-                Log.d(TAG, "Put in map: " + gattMacAddress);
-                Log.d(TAG, "Device Connected " + gattMacAddress);
+                connectionState = STATE_CONNECTED;
+                mBluetoothGatt = gatt;
+                Log.d(TAG, "Device Connected");
 
-
-                gatt.discoverServices();
-                Log.i(TAG, "Start service discovery " + gattMacAddress);
+                mBluetoothGatt.discoverServices();
+                Log.i(TAG, "Start service discovery ");
 
             }
             else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                bluetoothDevicesMap.remove(gattMacAddress);
-                broadcastUpdateState(Constants.GATT_DISCONNECTED, gatt);
-                Log.d(TAG, "Device disconnected " + gattMacAddress);
-
+                connectionState = STATE_DISCONNECTED;
+                Log.d(TAG, "Device Disconnected");
             }
 
         }
+
+
+        String state_disconnected = ACTION_GATT_CONNECTED;
 
 
         @SuppressLint("MissingPermission")
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                broadcastUpdateState(Constants.GATT_SERVICES_DISCOVERED, gatt);
+                broadcastUpdateState(ACTION_GATT_SERVICES_DISCOVERED);
                 Log.w(TAG, "onServicesDiscovered received: " + status);
-
-
             } else {
                 Log.w(TAG, "onServicesDiscovered received: " + status);
             }
@@ -230,18 +209,8 @@ public class BleConnectionService extends LifecycleService {
 
 
     // Broadcast updates to connection state changes
-    private void broadcastUpdateState (final String connectionState, BluetoothGatt gatt) {
-        String action = Constants.ACTION_GATT_STATE_CHANGE;
-        String gattMacAddress = gatt.getDevice().getAddress();
-
-        Bundle bundle = new Bundle();
-        bundle.putString(Constants.GATT_MAC_ADDRESS, gattMacAddress);
-        bundle.putString(Constants.GATT_CONNECTION_STATE, connectionState);
-
-
-
-        final Intent intent = new Intent(action);
-        intent.putExtra(Constants.EXTRA_DATA, bundle);
+    private void broadcastUpdateState (final String intentConnectionState) {
+        final Intent intent = new Intent(intentConnectionState);
         sendBroadcast(intent);
     }
     // Broadcast updates to characteristics
@@ -256,7 +225,7 @@ public class BleConnectionService extends LifecycleService {
 
 
         Bundle characteristicBundle = new Bundle();
-        characteristicBundle.putString(Constants.GATT_MAC_ADDRESS,characteristicMacAddress);
+        characteristicBundle.putString(Constants.CHARACTERISTIC_MAC_ADDRESS,characteristicMacAddress);
         characteristicBundle.putString(Constants.CHARACTERISTIC_UUID, characteristicUUID);
         characteristicBundle.putString(Constants.CHARACTERISTIC_VALUE_STRING, characteristicValueString);
         characteristicBundle.putByte(Constants.CHARACTERISTIC_VALUE_BYTE, characteristicValue[0]);
@@ -270,8 +239,8 @@ public class BleConnectionService extends LifecycleService {
 
     //Allows fragments to bind to this service
     public class LocalBinder extends Binder {
-        public BleConnectionService getService() {
-            return BleConnectionService.this;
+        public BleConnectionServiceOld2 getService() {
+            return BleConnectionServiceOld2.this;
         }
     }
 
@@ -338,7 +307,6 @@ public class BleConnectionService extends LifecycleService {
     }
 
  */
-
 
 
 
