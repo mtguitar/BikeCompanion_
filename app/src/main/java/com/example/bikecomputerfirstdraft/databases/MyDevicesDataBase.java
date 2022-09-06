@@ -48,10 +48,6 @@ public abstract class MyDevicesDataBase extends RoomDatabase {
         }
         @Override
         protected Void doInBackground(Void... voids) {
-            deviceDao.insert(new MyDevice("Name 1", "Ble Name 1", "MAC 1", "Type 1"));
-            deviceDao.insert(new MyDevice("Name 2", "Ble Name 2", "MAC 2", "Type 2"));
-            deviceDao.insert(new MyDevice("Name 3", "Ble Name 3", "MAC 3", "Type 3"));
-            deviceDao.insert(new MyDevice("Name 4", "Ble Name 4", "MAC 4", "Type 4"));
 
             return null;
         }

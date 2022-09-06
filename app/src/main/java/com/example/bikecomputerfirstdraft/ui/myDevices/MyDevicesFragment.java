@@ -86,14 +86,14 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
 
         textViewDeviceTest = view.findViewById(R.id.text_view_devices_test);
 
-        setupFAB();
-        setupRecyclerViewer();
-        setupObservers();
+        initFAB();
+        initRecyclerViewer();
+        initObservers();
 
         return view;
     }
 
-    private void setupFAB(){
+    private void initFAB(){
         FloatingActionButton fabNewDevice = view.findViewById(R.id.floating_action_button_my_devices);
         fabNewDevice.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,7 +104,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         });
     }
 
-    private void setupRecyclerViewer(){
+    private void initRecyclerViewer(){
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view_my_devices);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
@@ -112,7 +112,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         recyclerView.setAdapter(deviceAdapter);
     }
 
-    private void setupObservers(){
+    private void initObservers(){
         myDevicesViewModel.getAllDevices().observe(getViewLifecycleOwner(), new Observer<List<MyDevice>>() {
             @Override
             public void onChanged(List<MyDevice> devices) {
@@ -145,8 +145,10 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         textViewDeviceMode = itemView.findViewById(R.id.text_view_device_mode);
         textViewDeviceManufacturer = itemView.findViewById(R.id.text_view_device_manufacturer);
         textViewDeviceState = itemView.findViewById(R.id.text_view_device_state);
+
         switchAutoConnect = itemView.findViewById(R.id.switch_auto_connect);
         buttonRemoveDevice = itemView.findViewById(R.id.button_device_remove);
+
         constraintLayoutDeviceInfo = itemView.findViewById(R.id.constraint_layout_device_info);
 
 
@@ -197,7 +199,6 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         extras.putString("deviceMacAddress", macAddress);
         myDevicesViewModel.sendCommandToService(BleConnectionService.class, Constants.ACTION_DISCONNECT_DEVICE, extras);
         Log.d(TAG, "Button Clicked, sent disconnect command");
-
 
     }
 

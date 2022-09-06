@@ -64,7 +64,8 @@ public class MyDevicesViewModel extends AndroidViewModel {
 
     }
 
-    public MutableLiveData<HashMap> getConnectionStateHashMapLive (){
+
+    public LiveData<HashMap> getConnectionStateHashMapLive (){
         return repository.getConnectionStateHashMapLive();
     }
 

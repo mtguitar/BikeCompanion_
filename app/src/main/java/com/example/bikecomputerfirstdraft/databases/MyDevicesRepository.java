@@ -152,7 +152,6 @@ public class MyDevicesRepository {
             bleConnectionService = ((BleConnectionService.LocalBinder) service).getService();
             boundToService = true;
             Log.d(TAG, "Bound to service from repository");
-            bleConnectionService.connectDevice("F8:EF:93:1C:EC:DB");
         }
         @Override
         public void onServiceDisconnected(ComponentName name) {
@@ -179,9 +178,7 @@ public class MyDevicesRepository {
         return intentFilter;
     }
 
-
-
-    //Broadcast receiver that changes buttons and textview upon receiving intents from service
+    //Broadcast receiver
     public BroadcastReceiver gattUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -190,15 +187,17 @@ public class MyDevicesRepository {
 
             final String action = intent.getAction();
             Bundle extras = intent.getBundleExtra(Constants.EXTRA_DATA);
+
             if(action.equals(Constants.ACTION_GATT_STATE_CHANGE)){
+                //get connectionState and macAddress from intent extras
                 connectionState = extras.getString(Constants.GATT_CONNECTION_STATE);
                 gattMacAddress = extras.getString(Constants.GATT_MAC_ADDRESS);
+                //put connectionState and macAddress into hashmap
                 getConnectionStateHashMap().put(Constants.GATT_CONNECTION_STATE, connectionState);
                 getConnectionStateHashMap().put(Constants.GATT_MAC_ADDRESS, gattMacAddress);
-
+                //put hashmap into MutableLiveData
                 getConnectionStateHashMapLive().postValue(getConnectionStateHashMap());
             }
-
         }
     };
 
@@ -214,7 +213,6 @@ public class MyDevicesRepository {
 
 
     //liveData
-
     public HashMap<String, String> getConnectionStateHashMap(){
         if (connectionStateHashMap == null) {
             connectionStateHashMap = new HashMap<String, String>();
@@ -229,16 +227,6 @@ public class MyDevicesRepository {
         return connectionStateHashMapLive;
     }
 
-    /*
-    public static MutableLiveData<String> getConnectionState(){
-        if (connectionState == null) {
-            connectionState = new MutableLiveData<String>("No device connected");
-        }
-        Log.d(TAG, "getConnectionState " + connectionState.getValue());
-        return connectionState;
-    }
-
-     */
 
 
 }

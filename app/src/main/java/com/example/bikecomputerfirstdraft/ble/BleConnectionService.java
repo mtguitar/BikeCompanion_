@@ -123,7 +123,6 @@ public class BleConnectionService extends LifecycleService {
             return;
         }
         gatt.disconnect();
-        gatt.close();
         Log.d(TAG, "Device disconnected " + deviceMacAddress);
     }
 
