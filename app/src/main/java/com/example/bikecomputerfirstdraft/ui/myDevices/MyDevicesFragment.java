@@ -76,7 +76,6 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         myDevicesViewModel = new ViewModelProvider(this).get(MyDevicesViewModel.class);
         myDevicesViewModel.bindService();
 
-
     }
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,

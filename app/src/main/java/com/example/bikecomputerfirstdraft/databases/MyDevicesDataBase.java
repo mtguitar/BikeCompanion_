@@ -14,7 +14,6 @@ import com.example.bikecomputerfirstdraft.ui.myDevices.MyDevice;
 @Database(entities = MyDevice.class, version = 1)
 public abstract class MyDevicesDataBase extends RoomDatabase {
 
-
     private static MyDevicesDataBase instance;
 
     public abstract MyDevicesDao deviceDao();

@@ -127,12 +127,13 @@ public class BleConnectionService extends LifecycleService {
     }
 
     // Write characteristic
-    public void writeCharacteristic(BluetoothGatt gatt, UUID service, UUID characteristic, byte[] payload) {
+    public void writeCharacteristic(String deviceMacAddress, UUID service, UUID characteristic, byte[] payload) {
+        Log.w(TAG, "Received request to write: " + payload[0]);
+        BluetoothGatt gatt = bluetoothDevicesMap.get(deviceMacAddress);
         if (gatt == null) {
             Log.w(TAG, "BluetoothGatt not initialized");
             return;
         }
-        Log.w(TAG, "Trying to write: " + payload[0]);
         int writeType = BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE;
 
         BluetoothGattCharacteristic characteristicToWrite = gatt.getService(service).getCharacteristic(characteristic);
@@ -144,8 +145,8 @@ public class BleConnectionService extends LifecycleService {
 
     // Read characteristic
     public void readCharacteristic(String deviceMacAddress, UUID service, UUID characteristic) {
-        BluetoothGatt gatt = bluetoothDevicesMap.get(deviceMacAddress);
         Log.w(TAG, "Received request to read characteristic");
+        BluetoothGatt gatt = bluetoothDevicesMap.get(deviceMacAddress);
         if (gatt == null) {
             Log.w(TAG, "BluetoothGatt not initialized");
             return;
@@ -158,7 +159,9 @@ public class BleConnectionService extends LifecycleService {
     }
 
     // Subscribe to characteristic notifications
-    public void setCharacteristicNotification(BluetoothGatt gatt, UUID service, UUID characteristic, boolean enabled){
+    public void setCharacteristicNotification(String deviceMacAddress, UUID service, UUID characteristic, boolean enabled){
+        BluetoothGatt gatt = bluetoothDevicesMap.get(deviceMacAddress);
+        Log.w(TAG, "Received request to read characteristic");
         if (gatt == null) {
             Log.w(TAG, "BluetoothGatt not initialized");
             return;

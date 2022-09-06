@@ -23,6 +23,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * This repo holds all the data used to populate MyDevicesFragment.
+ * It puts the data in LiveData.
+ * It manages a database (using Room) of ble devices the user has added to myDevices.
+ * It binds to BleConnectionService.
+ * It uses BleConnectionService to check connection, read, write, setNotify for devices in myDevices database.
+ * It receives info updates from BleConnectionService via a broadcastReceiver.
+ * MyDevicesFragment interacts with this repo entirely through MyDevicesViewModel.
+ */
+
 public class MyDevicesRepository {
 
     private MyDevicesDao deviceDao;
@@ -136,6 +146,26 @@ public class MyDevicesRepository {
         Log.d(TAG, "Sent intent to " + serviceClass + " " + action);
     }
 
+    public void connectDevice(String deviceMacAddress) {
+        bleConnectionService.connectDevice(deviceMacAddress);
+    }
+
+    public void disconnectDevice(String deviceMacAddress) {
+        bleConnectionService.disconnectDevice(deviceMacAddress);
+    }
+
+    public void readCharacteristic(String deviceMacAddress, UUID service, UUID characteristic){
+        bleConnectionService.readCharacteristic(deviceMacAddress, service, characteristic);
+    }
+
+    public void writeCharacteristic(String deviceMacAddress, UUID service, UUID characteristic, byte[] payload){
+        bleConnectionService.writeCharacteristic(deviceMacAddress, service, characteristic, payload);
+    }
+
+    public void setCharacteristicNotification(String deviceMacAddress, UUID service, UUID characteristic, boolean enabled){
+        bleConnectionService.setCharacteristicNotification(deviceMacAddress, service, characteristic, enabled);
+    }
+
 
     public void bindService(){
         if (!boundToService) {
@@ -158,8 +188,6 @@ public class MyDevicesRepository {
             bleConnectionService = null;
         }
     };
-
-
 
     public void registerBroadcastReceiver(Context context){
         //Set intent filters and register receiver to listen for updates
