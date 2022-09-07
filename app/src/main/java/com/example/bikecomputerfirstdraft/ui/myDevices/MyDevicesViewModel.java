@@ -6,7 +6,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.example.bikecomputerfirstdraft.databases.MyDevicesRepository;
 
@@ -51,6 +50,14 @@ public class MyDevicesViewModel extends AndroidViewModel {
         return allDevices;
     }
 
+
+    /**
+     * BleConnection methods
+     *
+     */
+
+
+
     public void sendCommandToService (Class serviceClass, String action, Bundle extras) {
         repository.sendCommandToService(serviceClass, action, extras);
     }
@@ -59,14 +66,35 @@ public class MyDevicesViewModel extends AndroidViewModel {
         repository.bindService();
     }
 
+    public void connectDevice(String deviceMacAddress){
+        repository.connectDevice(deviceMacAddress);
+    }
+
+    public void disconnectDevice(String deviceMacAddress){
+        repository.disconnectDevice(deviceMacAddress);
+    }
+
     public void readCharacteristics(String deviceMacAddress, UUID serviceUUID, UUID characteristicUUID){
-        repository.readCharacteristics(deviceMacAddress, serviceUUID, characteristicUUID);
+        repository.readCharacteristic(deviceMacAddress, serviceUUID, characteristicUUID);
+
+    }
+
+    public void writeCharacteristics(String deviceMacAddress, UUID serviceUUID, UUID characteristicUUID, byte[] payload){
+        repository.writeCharacteristic(deviceMacAddress, serviceUUID, characteristicUUID, payload);
 
     }
 
 
+    /**
+     * LiveData getters
+     */
+
     public LiveData<HashMap> getConnectionStateHashMapLive (){
         return repository.getConnectionStateHashMapLive();
+    }
+
+    public LiveData<Boolean> getIsConnected (){
+        return repository.getIsConnected();
     }
 
 

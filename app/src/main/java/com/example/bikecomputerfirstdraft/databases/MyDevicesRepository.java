@@ -41,9 +41,11 @@ public class MyDevicesRepository {
     private BleConnectionService bleConnectionService;
     private HashMap<String, String> connectionStateHashMap;
     private static MutableLiveData<HashMap> connectionStateHashMapLive;
+    private MutableLiveData<Boolean> isConnected;
 
     private boolean boundToService;
     private final static String TAG = "FlareLog Repo";
+
 
     private Context context;
 
@@ -225,19 +227,17 @@ public class MyDevicesRepository {
                 getConnectionStateHashMap().put(Constants.GATT_MAC_ADDRESS, gattMacAddress);
                 //put hashmap into MutableLiveData
                 getConnectionStateHashMapLive().postValue(getConnectionStateHashMap());
+                if(connectionState.equals(Constants.GATT_CONNECTED)){
+                    getIsConnected().postValue(true);
+                }
+                if(connectionState.equals(Constants.GATT_DISCONNECTED)){
+                    getIsConnected().postValue(false);
+                }
             }
         }
     };
 
 
-    public void readCharacteristics(String deviceMacAddress, UUID serviceUUID, UUID characteristicUUID){
-        bleConnectionService.readCharacteristic
-                (deviceMacAddress, serviceUUID, characteristicUUID);
-    }
-
-    public void disconnectDevice(){
-        bleConnectionService.stopSelf();
-    }
 
 
     //liveData
@@ -253,6 +253,13 @@ public class MyDevicesRepository {
             connectionStateHashMapLive = new MutableLiveData<>();
         }
         return connectionStateHashMapLive;
+    }
+
+    public MutableLiveData<Boolean> getIsConnected(){
+        if (isConnected == null) {
+            isConnected = new MutableLiveData<>();
+        }
+        return isConnected;
     }
 
 

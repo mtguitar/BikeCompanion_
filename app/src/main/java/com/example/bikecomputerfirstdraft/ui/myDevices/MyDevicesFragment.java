@@ -33,6 +33,8 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     private final static String TAG = "FlareLog MyDevicesFrag";
 
     private boolean boundToService = false;
+    private boolean isConnected = false;
+
 
     private View lastItemOpen;
     private int itemsOpen = 0;
@@ -41,6 +43,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     private MyDevicesViewModel myDevicesViewModel;
     private List<MyDevice> devices;
     private View constraintLayoutDeviceInfo;
+
 
     private String gattMacAddress;
     private String connectionState;
@@ -51,6 +54,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     private TextView textViewDeviceManufacturer;
     private Button switchAutoConnect;
     private Button buttonRemoveDevice;
+    private Button buttonDisconnectDevice;
     private TextView textViewDeviceState;
     private TextView textViewDeviceName;
     private TextView textViewMacAddress;
@@ -120,6 +124,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             }
 
         });
+
         myDevicesViewModel.getConnectionStateHashMapLive().observe(getActivity(), new Observer<HashMap>() {
             @Override
             public void onChanged(HashMap connectionStateHashMap) {
@@ -130,6 +135,18 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
                 textViewDeviceTest.setText(gattMacAddress + ": " + connectionState);
             }
         });
+
+        myDevicesViewModel.getIsConnected().observe(getActivity(), new Observer<Boolean>(){
+            @Override
+            public void onChanged(Boolean isConnectedBoolean) {
+                isConnected = isConnectedBoolean;
+
+            }
+        }
+
+
+        );
+
 
     }
 
@@ -147,18 +164,20 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
 
         switchAutoConnect = itemView.findViewById(R.id.switch_auto_connect);
         buttonRemoveDevice = itemView.findViewById(R.id.button_device_remove);
+        buttonDisconnectDevice = itemView.findViewById(R.id.button_device_disconnect);
 
         constraintLayoutDeviceInfo = itemView.findViewById(R.id.constraint_layout_device_info);
 
 
         if(constraintLayoutDeviceInfo.getVisibility() == View.GONE){
             if(itemsOpen >= 1){
-                lastItemOpen.setVisibility(View.GONE);
+                //lastItemOpen.setVisibility(View.GONE);
                 itemsOpen--;
 
                 Bundle extras = new Bundle();
                 extras.putString("deviceMacAddress", lastDeviceConnected);
-                myDevicesViewModel.sendCommandToService(BleConnectionService.class, Constants.ACTION_DISCONNECT_DEVICE, extras);
+                myDevicesViewModel.disconnectDevice(lastDeviceConnected);
+                //myDevicesViewModel.sendCommandToService(BleConnectionService.class, Constants.ACTION_DISCONNECT_DEVICE, extras);
             }
             if (itemsOpen == 0){
                 constraintLayoutDeviceInfo.setVisibility(View.VISIBLE);
@@ -191,20 +210,21 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     @Override
     public void onButtonClickDisconnect(int position, List<MyDevice> devices) {
         MyDevice currentDevice = devices.get(position);
-        String macAddress = currentDevice.getMacAddress();
-        Bundle extras = new Bundle();
-        extras.putString("deviceMacAddress", macAddress);
-        myDevicesViewModel.sendCommandToService(BleConnectionService.class, Constants.ACTION_DISCONNECT_DEVICE, extras);
+        String deviceMacAddress = currentDevice.getMacAddress();
+        myDevicesViewModel.disconnectDevice(deviceMacAddress);
         Log.d(TAG, "Button Clicked, sent disconnect command");
+
     }
 
 
     public void updateCards(){
-        if (textViewDeviceState != null && gattMacAddress.equals(textViewMacAddress.getText())){
+        if (textViewDeviceState != null && gattMacAddress.equals(textViewMacAddress.getText())) {
             textViewDeviceState.setText(connectionState);
         }
 
+
     }
+
 
 
 
