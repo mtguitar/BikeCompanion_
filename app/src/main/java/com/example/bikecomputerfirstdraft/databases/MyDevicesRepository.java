@@ -39,9 +39,14 @@ public class MyDevicesRepository {
     private LiveData<List<MyDevice>> allDevices;
 
     private BleConnectionService bleConnectionService;
+
     private HashMap<String, String> connectionStateHashMap;
     private static MutableLiveData<HashMap> connectionStateHashMapLive;
     private MutableLiveData<Boolean> isConnected;
+
+    private HashMap<String, String> deviceDataHashMap;
+    private static MutableLiveData<HashMap> deviceDataHashMapLive;
+
 
     private boolean boundToService;
     private final static String TAG = "FlareLog Repo";
@@ -137,6 +142,9 @@ public class MyDevicesRepository {
         }
     }
 
+
+
+    /*
     //Sends intents to BleConnectionService
     public void sendCommandToService(Class serviceClass, String action, Bundle extras) {
         Intent bleServiceIntent = new Intent(context, serviceClass);
@@ -147,6 +155,8 @@ public class MyDevicesRepository {
         context.startService(bleServiceIntent);
         Log.d(TAG, "Sent intent to " + serviceClass + " " + action);
     }
+
+     */
 
     public void connectDevice(String deviceMacAddress) {
         bleConnectionService.connectDevice(deviceMacAddress);
@@ -234,6 +244,27 @@ public class MyDevicesRepository {
                     getIsConnected().postValue(false);
                 }
             }
+            if(action.equals(Constants.ACTION_DATA_AVAILABLE)){
+                //get data and macAddress from intent extras
+                gattMacAddress = extras.getString(Constants.GATT_MAC_ADDRESS);
+                String characteristicUUID = extras.getString(Constants.CHARACTERISTIC_UUID);
+                String characteristicValueString = extras.getString(Constants.CHARACTERISTIC_VALUE_STRING);
+                byte characteristicValueByte = extras.getByte(Constants.CHARACTERISTIC_VALUE_BYTE);
+
+                //put connectionState and macAddress into hashmap
+                getDeviceDataHashMap().put(Constants.GATT_MAC_ADDRESS, gattMacAddress);
+                getDeviceDataHashMap().put(Constants.CHARACTERISTIC_UUID, characteristicUUID);
+                getDeviceDataHashMap().put(Constants.CHARACTERISTIC_VALUE_STRING, characteristicValueString);
+                getDeviceDataHashMap().put(Constants.CHARACTERISTIC_VALUE_BYTE, String.valueOf(characteristicValueByte));
+
+                //put hashmap into MutableLiveData
+                getDeviceDataHashMapLive().postValue(getDeviceDataHashMap());
+
+
+
+
+            }
+
         }
     };
 
@@ -260,6 +291,21 @@ public class MyDevicesRepository {
             isConnected = new MutableLiveData<>();
         }
         return isConnected;
+    }
+
+
+    public HashMap<String, String> getDeviceDataHashMap(){
+        if (deviceDataHashMap == null) {
+            deviceDataHashMap = new HashMap<String, String>();
+        }
+        return deviceDataHashMap;
+    }
+
+    public static MutableLiveData<HashMap> getDeviceDataHashMapLive(){
+        if (deviceDataHashMapLive == null) {
+            deviceDataHashMapLive = new MutableLiveData<>();
+        }
+        return deviceDataHashMapLive;
     }
 
 

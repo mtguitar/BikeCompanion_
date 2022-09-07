@@ -23,6 +23,7 @@ import com.example.bikecomputerfirstdraft.adapters.MyDevicesAdapter;
 import com.example.bikecomputerfirstdraft.adapters.MyDevicesListenerInterface;
 import com.example.bikecomputerfirstdraft.ble.BleConnectionService;
 import com.example.bikecomputerfirstdraft.constants.Constants;
+import com.example.bikecomputerfirstdraft.deviceTypes.GenericDeviceType;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.HashMap;
@@ -47,6 +48,12 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
 
     private String gattMacAddress;
     private String connectionState;
+    private String characteristicUUID;
+    private String characteristicValueString;
+    private String characteristicValueByte;
+
+
+
 
     private TextView textViewDeviceBattery;
     private TextView textViewDeviceType;
@@ -130,7 +137,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             public void onChanged(HashMap connectionStateHashMap) {
                 connectionState = (String) connectionStateHashMap.get(Constants.GATT_CONNECTION_STATE);
                 gattMacAddress = (String) connectionStateHashMap.get(Constants.GATT_MAC_ADDRESS);
-                updateCards();
+                updateConnectionState();
 
                 textViewDeviceTest.setText(gattMacAddress + ": " + connectionState);
             }
@@ -142,10 +149,23 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
                 isConnected = isConnectedBoolean;
 
             }
-        }
+        });
+
+        myDevicesViewModel.getDeviceDataHashMapLive().observe(getActivity(), new Observer<HashMap>() {
+            @Override
+            public void onChanged(HashMap deviceDataHashMap) {
+                gattMacAddress = (String) deviceDataHashMap.get(Constants.GATT_MAC_ADDRESS);
+                characteristicUUID = (String) deviceDataHashMap.get(Constants.CHARACTERISTIC_UUID);
+                characteristicValueString = (String) deviceDataHashMap.get(Constants.CHARACTERISTIC_VALUE_STRING);
+                characteristicValueByte = (String) deviceDataHashMap.get(Constants.CHARACTERISTIC_VALUE_BYTE);
+
+                Log.d(TAG, "Received device data: " + gattMacAddress + " " + characteristicUUID + " " + characteristicValueString + " " + characteristicValueByte);
+
+            }
+        });
 
 
-        );
+
 
 
     }
@@ -156,6 +176,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
 
         textViewDeviceName = itemView.findViewById(R.id.text_view_my_device_name);
         textViewMacAddress = itemView.findViewById(R.id.text_view_my_device_mac_address);
+
         textViewDeviceBattery = itemView.findViewById(R.id.text_view_device_battery);
         textViewDeviceType = itemView.findViewById(R.id.text_view_device_type);
         textViewDeviceMode = itemView.findViewById(R.id.text_view_device_mode);
@@ -171,21 +192,21 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
 
         if(constraintLayoutDeviceInfo.getVisibility() == View.GONE){
             if(itemsOpen >= 1){
-                //lastItemOpen.setVisibility(View.GONE);
+                lastItemOpen.setVisibility(View.GONE);
                 itemsOpen--;
 
-                Bundle extras = new Bundle();
-                extras.putString("deviceMacAddress", lastDeviceConnected);
-                myDevicesViewModel.disconnectDevice(lastDeviceConnected);
-                //myDevicesViewModel.sendCommandToService(BleConnectionService.class, Constants.ACTION_DISCONNECT_DEVICE, extras);
+                Log.d(TAG, "isConnected: " + String.valueOf(isConnected));
+                if(isConnected) {
+                    myDevicesViewModel.disconnectDevice(lastDeviceConnected);
+                    Log.d(TAG, "Item clicked, trying to disconnect: " + lastDeviceConnected);
+                }
             }
             if (itemsOpen == 0){
                 constraintLayoutDeviceInfo.setVisibility(View.VISIBLE);
+
                 MyDevice currentDevice = devices.get(position);
                 String deviceMacAddress = currentDevice.getMacAddress();
-                Bundle extras = new Bundle();
-                extras.putString("deviceMacAddress", deviceMacAddress);
-                myDevicesViewModel.sendCommandToService(BleConnectionService.class, Constants.ACTION_CONNECT_TO_DEVICE, extras);
+                myDevicesViewModel.connectDevice(deviceMacAddress);
 
                 lastDeviceConnected = deviceMacAddress;
                 lastItemOpen = constraintLayoutDeviceInfo;
@@ -195,9 +216,13 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         }
         else {
             constraintLayoutDeviceInfo.setVisibility(View.GONE);
+            Log.d(TAG, "isConnected: " + String.valueOf(isConnected));
+            if(isConnected) {
+                Log.d(TAG, "Item clicked, trying to disconnect: " + lastDeviceConnected);
+                myDevicesViewModel.disconnectDevice(lastDeviceConnected);
+            }
         }
     }
-
 
     @Override
     public void onButtonClickRemove(int position, List<MyDevice> devices) {
@@ -212,18 +237,25 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         MyDevice currentDevice = devices.get(position);
         String deviceMacAddress = currentDevice.getMacAddress();
         myDevicesViewModel.disconnectDevice(deviceMacAddress);
-        Log.d(TAG, "Button Clicked, sent disconnect command");
+        Log.d(TAG, "Button Clicked, sent disconnect command" + deviceMacAddress);
 
     }
 
 
-    public void updateCards(){
+    private void updateConnectionState(){
         if (textViewDeviceState != null && gattMacAddress.equals(textViewMacAddress.getText())) {
             textViewDeviceState.setText(connectionState);
+            if (connectionState.equals(Constants.GATT_SERVICES_DISCOVERED)){
+                myDevicesViewModel.readCharacteristics(gattMacAddress, GenericDeviceType.UUID_SERVICE_BATTERY, GenericDeviceType.UUID_CHARACTERISTIC_BATTERY);
+            }
         }
 
 
+
     }
+
+
+
 
 
 

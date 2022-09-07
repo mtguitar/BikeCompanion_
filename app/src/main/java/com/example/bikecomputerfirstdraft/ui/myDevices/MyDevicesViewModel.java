@@ -57,10 +57,12 @@ public class MyDevicesViewModel extends AndroidViewModel {
      */
 
 
-
+/*
     public void sendCommandToService (Class serviceClass, String action, Bundle extras) {
         repository.sendCommandToService(serviceClass, action, extras);
     }
+
+ */
 
     public void bindService(){
         repository.bindService();
@@ -89,12 +91,16 @@ public class MyDevicesViewModel extends AndroidViewModel {
      * LiveData getters
      */
 
-    public LiveData<HashMap> getConnectionStateHashMapLive (){
+    public LiveData<HashMap> getConnectionStateHashMapLive(){
         return repository.getConnectionStateHashMapLive();
     }
 
-    public LiveData<Boolean> getIsConnected (){
+    public LiveData<Boolean> getIsConnected(){
         return repository.getIsConnected();
+    }
+
+    public LiveData<HashMap> getDeviceDataHashMapLive(){
+        return repository.getDeviceDataHashMapLive();
     }
 
 
