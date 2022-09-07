@@ -177,8 +177,6 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         else {
             constraintLayoutDeviceInfo.setVisibility(View.GONE);
         }
-
-
     }
 
 
@@ -198,9 +196,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         extras.putString("deviceMacAddress", macAddress);
         myDevicesViewModel.sendCommandToService(BleConnectionService.class, Constants.ACTION_DISCONNECT_DEVICE, extras);
         Log.d(TAG, "Button Clicked, sent disconnect command");
-
     }
-
 
 
     public void updateCards(){
