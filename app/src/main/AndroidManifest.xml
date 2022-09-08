@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.bikecomputerfirstdraft" >
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -23,18 +22,18 @@
         android:theme="@style/Theme.BikeComputerFirstDraft"
         tools:targetApi="31" >
         <service
-            android:name=".ble.BleConnectionService"
+            android:name="com.example.bikecompanion.ble.BleConnectionService"
             android:enabled="true"
             android:exported="true" >
         </service>
         <service
-            android:name=".ble.BleScannerService"
+            android:name="com.example.bikecompanion.ble.BleScannerService"
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="connectedDevice" />
 
         <activity
-            android:name=".ui.activities.MainActivity"
+            android:name="com.example.bikecompanion.ui.activities.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.BikeComputerFirstDraft.NoActionBar" >
