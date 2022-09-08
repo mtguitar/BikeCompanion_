@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.example.bikecomputerfirstdraft.ui.home.HomeFragment"
+        android:name="com.example.bikecompanion.ui.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" >
         <action
@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/nav_add_device"
-        android:name="com.example.bikecomputerfirstdraft.ui.addDevice.AddDeviceFragment"
+        android:name="com.example.bikecompanion.ui.addDevice.AddDeviceFragment"
         android:label="@string/menu_add_device"
         tools:layout="@layout/fragment_add_device" >
         <action
@@ -30,7 +30,7 @@
     </fragment>
     <fragment
         android:id="@+id/nav_scanner"
-        android:name="com.example.bikecomputerfirstdraft.ui.scanner.ScannerFragment"
+        android:name="com.example.bikecompanion.ui.scanner.ScannerFragment"
         android:label="@string/menu_scanner"
         tools:layout="@layout/fragment_scanner" >
         <argument
@@ -55,7 +55,7 @@
     </fragment>
     <fragment
         android:id="@+id/nav_my_devices"
-        android:name="com.example.bikecomputerfirstdraft.ui.myDevices.MyDevicesFragment"
+        android:name="com.example.bikecompanion.ui.myDevices.MyDevicesFragment"
         android:label="@string/nav_add_device"
         tools:layout="@layout/fragment_my_devices" >
         <action

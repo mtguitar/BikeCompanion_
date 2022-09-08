@@ -99,6 +99,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TableRow
+                    android:id="@+id/row_battery"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
@@ -121,28 +122,7 @@
                 </TableRow>
 
                 <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <TextView
-                        android:id="@+id/textView9"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Device Type"
-                        android:textColor="@color/cardview_light_background"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/text_view_device_type"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="4"
-                        android:text="Connecting . . . "
-                        android:textColor="@color/cardview_light_background" />
-                </TableRow>
-
-                <TableRow
+                    android:id="@+id/row_mode"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
@@ -165,6 +145,7 @@
                 </TableRow>
 
                 <TableRow
+                    android:id="@+id/row_manufacturer"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
@@ -184,9 +165,34 @@
                         android:layout_weight="4"
                         android:text="Connecting . . . "
                         android:textColor="@color/cardview_light_background" />
+
                 </TableRow>
 
                 <TableRow
+                    android:id="@+id/row_model"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/textView9"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Model"
+                        android:textColor="@color/cardview_light_background"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/text_view_device_model"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="4"
+                        android:text="Connecting . . . "
+                        android:textColor="@color/cardview_light_background" />
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/row_connection_state"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
@@ -208,6 +214,7 @@
                 </TableRow>
 
                 <TableRow
+                    android:id="@+id/row_auto_connect"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
