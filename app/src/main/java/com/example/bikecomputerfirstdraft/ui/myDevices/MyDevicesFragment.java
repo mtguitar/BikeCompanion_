@@ -251,8 +251,9 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         }
 
 
-
     }
+
+
 
 
 
