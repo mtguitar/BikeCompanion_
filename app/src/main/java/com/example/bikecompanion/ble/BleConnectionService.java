@@ -31,7 +31,6 @@ import static com.example.bikecompanion.constants.Constants.ACTION_READ_CHARACTE
 
 public class BleConnectionService extends LifecycleService {
 
-
     public boolean isFirstRun = true;
     private final static String TAG = "FlareLog ConnectService";
 
@@ -47,7 +46,6 @@ public class BleConnectionService extends LifecycleService {
     private String deviceName;
 
     HashMap<String, BluetoothGatt> bluetoothDevicesMap;
-
 
     @Override
     public int onStartCommand (@Nullable Intent intent, int flags, int startId){
@@ -232,7 +230,6 @@ public class BleConnectionService extends LifecycleService {
             broadcastUpdateCharacteristic(gatt, characteristic);
         }
 
-
     };
 
 
@@ -244,7 +241,6 @@ public class BleConnectionService extends LifecycleService {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.GATT_MAC_ADDRESS, gattMacAddress);
         bundle.putString(Constants.GATT_CONNECTION_STATE, connectionState);
-
 
 
         final Intent intent = new Intent(action);

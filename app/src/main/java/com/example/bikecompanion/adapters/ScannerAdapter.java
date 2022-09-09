@@ -17,8 +17,6 @@ import java.util.ArrayList;
 
 public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerViewHolder> {
 
-
-
     public ArrayList<ScanResults> scanResultsArrayList;
     public RecyclerViewInterface recyclerViewInterface;
 
@@ -32,9 +30,6 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
         public ImageView imageViewScanResults;
         public TextView textViewScannerDeviceName;
         public TextView textViewScannerDeviceMacAddress;
-        public TextView textViewScannerDeviceType;
-        public TextView textViewScannerBattery;
-        public TextView textViewScannerDeviceManufacturer;
         public Button buttonAddToMyDevices;
 
         public Button buttonScannerConnect;
@@ -50,8 +45,6 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
             textViewScannerDeviceMacAddress = itemView.findViewById(R.id.text_view_scanner_device_mac_address);
             buttonAddToMyDevices = itemView.findViewById(R.id.button_scanner_add_to_my_devices);
             constraintLayoutScanResult = itemView.findViewById(R.id.constraint_layout_device_info);
-
-
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

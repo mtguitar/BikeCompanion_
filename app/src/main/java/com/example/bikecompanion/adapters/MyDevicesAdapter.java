@@ -34,10 +34,6 @@ public class MyDevicesAdapter extends RecyclerView.Adapter<MyDevicesAdapter.Devi
         return new DeviceViewHolder(itemView);
     }
 
-
-
-
-
     class DeviceViewHolder extends RecyclerView.ViewHolder{
         private TextView textViewDeviceBattery;
         private TextView textViewDeviceType;

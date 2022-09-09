@@ -52,4 +52,5 @@
     <string name="scan_status">Scan Status</string>
     <string name="linear_layout_manager" />
     <string name="grid_layout_manager" />
+    <string name="button_connect">Connect</string>
 </resources>

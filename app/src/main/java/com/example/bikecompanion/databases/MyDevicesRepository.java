@@ -232,9 +232,11 @@ public class MyDevicesRepository {
                 //get connectionState and macAddress from intent extras
                 connectionState = extras.getString(Constants.GATT_CONNECTION_STATE);
                 gattMacAddress = extras.getString(Constants.GATT_MAC_ADDRESS);
-                //put connectionState and macAddress into hashmap
-                getConnectionStateHashMap().put(Constants.GATT_CONNECTION_STATE, connectionState);
+                // this indicates which device's characteristic changed
                 getConnectionStateHashMap().put(Constants.GATT_MAC_ADDRESS, gattMacAddress);
+                //put connectionState and macAddress into hashmap
+                getConnectionStateHashMap().put(gattMacAddress, connectionState);
+
                 //put hashmap into MutableLiveData
                 getConnectionStateHashMapLive().postValue(getConnectionStateHashMap());
                 if(connectionState.equals(Constants.GATT_CONNECTED)){

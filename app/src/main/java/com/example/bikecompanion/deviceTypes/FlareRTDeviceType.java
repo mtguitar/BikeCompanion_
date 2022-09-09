@@ -5,6 +5,8 @@ import android.os.ParcelUuid;
 
 import com.example.bikecompanion.R;
 
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class FlareRTDeviceType {
@@ -51,9 +53,51 @@ public class FlareRTDeviceType {
     public final static String DATA_TYPE_DEVICE_MANUFACTURER = "String";
 
 
-    public static ParcelUuid getServiceUUID(){
+    public final static ParcelUuid getServiceUUID(){
         return PARCELUUID_ADVERTISED_SERVICE_1;
     }
+
+
+
+    public final static byte DAY_SOLID_MODE_STRING = 1;
+    public final static byte DAY_BLINK_MODE_STRING = 7;
+    public final static byte DAY_BLINK_MODE_2_STRING = 8;
+    public final static byte NIGHT_SOLID_MODE_STRING = 5;
+    public final static byte NIGHT_BLINK_MODE_STRING = 63;
+    public final static byte OFF_MODE_STRING = 0;
+
+    public final static byte[] DAY_SOLID_MODE_BYTE = {1};
+    public final static byte[] DAY_BLINK_MODE_BYTE = {7};
+    public final static byte[] DAY_BLINK_MODE_2_BYTE = {8};
+    public final static byte[] NIGHT_SOLID_MODE_BYTE = {5};
+    public final static byte[] NIGHT_BLINK_MODE_BYTE = {63};
+    public final static byte[] OFF_MODE_BYTE = {0};
+
+    public final static String DAY_SOLID_MODE_NAME = "Day Solid";
+    public final static String DAY_BLINK_MODE_NAME = "Day Blink";
+    public final static String DAY_BLINK_MODE_2_NAME = "Day Blink";
+    public final static String NIGHT_SOLID_MODE_NAME = "Night Solid";
+    public final static String NIGHT_BLINK_MODE_NAME = "Night Blink";
+    public final static String OFF_MODE_NAME = "Off";
+
+    public HashMap<String, byte[]> lightModeHashMap;
+
+    public HashMap<String, byte[]> getLightModeHashMap(){
+        if (lightModeHashMap == null) {
+            lightModeHashMap = new HashMap<>();
+        }
+        lightModeHashMap.put(DAY_SOLID_MODE_NAME, DAY_SOLID_MODE_BYTE);
+        lightModeHashMap.put(DAY_BLINK_MODE_NAME, DAY_BLINK_MODE_BYTE);
+        lightModeHashMap.put(DAY_BLINK_MODE_2_NAME, DAY_BLINK_MODE_2_BYTE);
+        lightModeHashMap.put(NIGHT_SOLID_MODE_NAME, NIGHT_SOLID_MODE_BYTE);
+        lightModeHashMap.put(NIGHT_BLINK_MODE_NAME, NIGHT_BLINK_MODE_BYTE);
+        lightModeHashMap.put(OFF_MODE_NAME, OFF_MODE_BYTE);
+
+        return lightModeHashMap;
+
+    }
+
+
 
 
 }
