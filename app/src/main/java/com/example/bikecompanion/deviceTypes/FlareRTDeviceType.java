@@ -5,6 +5,7 @@ import android.os.ParcelUuid;
 
 import com.example.bikecompanion.R;
 
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class FlareRTDeviceType {
@@ -51,9 +52,30 @@ public class FlareRTDeviceType {
     public final static String DATA_TYPE_DEVICE_MANUFACTURER = "String";
 
 
-    public static ParcelUuid getServiceUUID(){
+    public final static ParcelUuid getServiceUUID(){
         return PARCELUUID_ADVERTISED_SERVICE_1;
     }
+
+    public final static String DAY_SOLID_MODE = "1";
+    public final static String DAY_BLINK_MODE = "7";
+    public final static String DAY_BLINK_MODE_2 = "8";
+    public final static String NIGHT_SOLID_MODE = "5";
+    public final static String NIGHT_BLINK_MODE = "63";
+    public final static String OFF_MODE = "0";
+
+    public final static byte[] DAY_SOLID_MODE_BYTE = "1".getBytes(StandardCharsets.UTF_8);
+    public final static byte[] DAY_BLINK_MODE_BYTE = "7".getBytes(StandardCharsets.UTF_8);
+    public final static byte[] DAY_BLINK_MODE_2_BYTE = "8".getBytes(StandardCharsets.UTF_8);
+    public final static byte[] NIGHT_SOLID_MODE_BYTE = "5".getBytes(StandardCharsets.UTF_8);
+    public final static byte[] NIGHT_BLINK_MODE_BYTE = "63".getBytes(StandardCharsets.UTF_8);
+    public final static byte[] OFF_MODE_BYTE = "0".getBytes(StandardCharsets.UTF_8);
+
+    public final static String DAY_SOLID_MODE_STRING = "Day Solid";
+    public final static String DAY_BLINK_MODE_STRING = "Day Blink";
+    public final static String DAY_BLINK_MODE_STRING_2 = "Day Blink";
+    public final static String NIGHT_SOLID_MODE_STRING = "Night Solid";
+    public final static String NIGHT_BLINK_MODE_STRING = "Night Blink";
+    public final static String OFF_MODE_STRING = "Off";
 
 
 }
