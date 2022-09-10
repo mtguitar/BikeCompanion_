@@ -90,8 +90,6 @@ public class HomeFragment extends Fragment {
         Button buttonNightSolid = view.findViewById(R.id.buttonNightSolid);
         Button buttonOff = view.findViewById(R.id.buttonOff);
 
-        FormatBleData format = new FormatBleData();
-
         String macAddress = Constants.AVENTON_FLARE_MAC_ADDRESS;
 
         buttonConnect.setOnClickListener(new View.OnClickListener() {
