@@ -37,8 +37,10 @@ dependencies {
 
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
     def lifecycle_version = "2.6.0-alpha01"
     def room_version = "2.4.3"
+    def fragment_version = "1.5.2"
 
     implementation 'com.google.android.material:material:<version>'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
@@ -63,6 +65,11 @@ dependencies {
     //Room deps
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
+
+
+
+    //Fragment
+    //implementation "androidx.fragment:fragment:$fragment_version"
 
 
 

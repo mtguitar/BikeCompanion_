@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.deviceDisplays.FlareRTDisplayFragment">
+
+    <Button
+        android:id="@+id/buttonDaySolid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Solid"
+        tools:layout_editor_absoluteX="24dp"
+        tools:layout_editor_absoluteY="256dp" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="219dp"
+        android:layout_height="58dp"
+        android:text="Day Lights"
+        android:textSize="24sp"
+        tools:layout_editor_absoluteX="153dp"
+        tools:layout_editor_absoluteY="230dp" />
+
+    <Button
+        android:id="@+id/buttonNightBlink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Blink"
+        tools:layout_editor_absoluteX="24dp"
+        tools:layout_editor_absoluteY="528dp" />
+
+    <Button
+        android:id="@+id/buttonConnect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hapticFeedbackEnabled="true"
+        android:text="@string/connect"
+        tools:layout_editor_absoluteX="24dp"
+        tools:layout_editor_absoluteY="56dp" />
+
+    <Button
+        android:id="@+id/button_home_blink_solid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Solid"
+        tools:layout_editor_absoluteX="24dp"
+        tools:layout_editor_absoluteY="456dp" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="0dp"
+        android:layout_height="58dp"
+        android:hapticFeedbackEnabled="false"
+        android:text="Flare RT"
+        android:textSize="34sp"
+        tools:layout_editor_absoluteX="153dp"
+        tools:layout_editor_absoluteY="48dp" />
+
+    <TextView
+        android:id="@+id/textViewNightLights"
+        android:layout_width="0dp"
+        android:layout_height="58dp"
+        android:text="Night Lights"
+        android:textSize="24sp"
+        tools:layout_editor_absoluteX="136dp"
+        tools:layout_editor_absoluteY="432dp" />
+
+    <Button
+        android:id="@+id/button_home_day_night"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Blink"
+        tools:layout_editor_absoluteX="24dp"
+        tools:layout_editor_absoluteY="328dp" />
+
+    <Button
+        android:id="@+id/button_home_off"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Off"
+        tools:layout_editor_absoluteX="24dp"
+        tools:layout_editor_absoluteY="128dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

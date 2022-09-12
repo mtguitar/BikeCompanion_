@@ -40,8 +40,8 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
 
         public ScannerViewHolder(@NonNull View itemView, RecyclerViewInterface recyclerViewInterface) {
             super(itemView);
-            imageViewScanResults = itemView.findViewById(R.id.image_view_scan_results);
-            textViewScannerDeviceName = itemView.findViewById(R.id.text_view_scanner_device_name);
+            imageViewScanResults = itemView.findViewById(R.id.image_view_home_light_mode);
+            textViewScannerDeviceName = itemView.findViewById(R.id.text_view_home_flare_name);
             textViewScannerDeviceMacAddress = itemView.findViewById(R.id.text_view_scanner_device_mac_address);
             buttonAddToMyDevices = itemView.findViewById(R.id.button_scanner_add_to_my_devices);
             constraintLayoutScanResult = itemView.findViewById(R.id.constraint_layout_device_info);

@@ -19,7 +19,7 @@
             android:layout_marginTop="24dp"
             android:text="Blink"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/buttonNightSolid" />
+            app:layout_constraintTop_toBottomOf="@+id/button_home_blink_solid" />
 
         <TextView
             android:id="@+id/textViewNightLights"
@@ -32,7 +32,7 @@
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/buttonNightSolid"
+            app:layout_constraintStart_toEndOf="@+id/button_home_blink_solid"
             app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
         <TextView
@@ -51,7 +51,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/buttonOff"
+            android:id="@+id/button_home_off"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -86,17 +86,17 @@
             app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
         <Button
-            android:id="@+id/buttonNightSolid"
+            android:id="@+id/button_home_blink_solid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="80dp"
             android:text="Solid"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/buttonDayBlink" />
+            app:layout_constraintTop_toBottomOf="@+id/button_home_day_night" />
 
         <Button
-            android:id="@+id/buttonDayBlink"
+            android:id="@+id/button_home_day_night"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -113,7 +113,7 @@
             android:layout_marginTop="80dp"
             android:text="Solid"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/buttonOff" />
+            app:layout_constraintTop_toBottomOf="@+id/button_home_off" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
