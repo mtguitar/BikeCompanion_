@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardView5"
+            android:id="@+id/card_view_speed_cadence"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
@@ -30,7 +30,7 @@
                 android:layout_height="match_parent"
                 app:layout_constraintBottom_toTopOf="@+id/constraintLayout3"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintTop_toBottomOf="@+id/cardView5">
+                app:layout_constraintTop_toBottomOf="@+id/card_view_speed_cadence">
 
                 <View
                     android:layout_width="1dp"
@@ -122,7 +122,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardView2"
+            android:id="@+id/card_view_lights"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
@@ -139,39 +139,140 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
 
-                <View
-                    android:id="@+id/view"
-                    android:layout_width="1dp"
-                    android:layout_height="150dp"
-                    android:background="@android:color/darker_gray"
+                <Button
+                    android:id="@+id/button_home_blink_solid4"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Solid"
+                    app:layout_constraintBottom_toTopOf="@+id/button_home_day_night3"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="@+id/guideline13"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/button_home_off3"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Off"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline8"
-                    app:layout_constraintStart_toStartOf="@+id/guideline8"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="@+id/guideline13"
+                    app:layout_constraintTop_toBottomOf="@+id/button_home_day_night3" />
+
+                <Button
+                    android:id="@+id/button_home_day_night3"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Day"
+                    app:layout_constraintBottom_toTopOf="@+id/button_home_off3"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="@+id/guideline13"
+                    app:layout_constraintTop_toBottomOf="@+id/button_home_blink_solid4" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline13"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.75" />
+
+                <TextView
+                    android:id="@+id/textView29"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Front"
+                    android:textSize="25sp"
+                    app:layout_constraintBottom_toTopOf="@+id/image_view_home_light_mode"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline12"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
-                    android:id="@+id/image_view_home_battery"
+                    android:id="@+id/image_view_home_light_mode3"
                     android:layout_width="75dp"
                     android:layout_height="75dp"
-                    android:layout_marginTop="10dp"
-                    android:src="@drawable/ic_battery_full"
-                    app:layout_constraintBottom_toTopOf="@+id/text_view_home_battery"
-                    app:layout_constraintEnd_toEndOf="@+id/text_view_home_battery"
+                    android:padding="2dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline12"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toStartOf="@+id/text_view_home_battery"
-                    app:layout_constraintTop_toBottomOf="@+id/text_view_home_flare_name" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView26"
+                    app:srcCompat="@drawable/ic_device_type_light"
+                    app:tint="#ff0000" />
+
+                <TextView
+                    android:id="@+id/textView27"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rear"
+                    android:textColor="@color/primaryTextColor"
+                    android:textSize="25sp"
+                    app:layout_constraintBottom_toTopOf="@+id/image_view_home_light_mode4"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline13"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="@+id/guideline8"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.25" />
+
+                <TextView
+                    android:id="@+id/textView26"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Front"
+                    android:textColor="@color/primaryTextColor"
+                    android:textSize="25sp"
+                    app:layout_constraintBottom_toTopOf="@+id/image_view_home_light_mode"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline12"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:id="@+id/view"
+                    android:layout_width="1dp"
+                    android:layout_height="110dp"
+                    android:background="@android:color/darker_gray"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:id="@+id/image_view_home_light_mode"
                     android:layout_width="75dp"
                     android:layout_height="75dp"
-                    android:layout_marginTop="10dp"
                     android:padding="2dp"
-                    app:layout_constraintBottom_toTopOf="@+id/text_view_home_light_mode"
-                    app:layout_constraintEnd_toEndOf="@+id/text_view_home_light_mode"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline12"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toStartOf="@+id/text_view_home_light_mode"
-                    app:layout_constraintTop_toBottomOf="@+id/text_view_home_flare_name"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView26"
+                    app:srcCompat="@drawable/ic_device_type_light"
+                    app:tint="@color/light_on" />
+
+                <ImageView
+                    android:id="@+id/image_view_home_light_mode4"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:padding="2dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline13"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="@+id/guideline8"
+                    app:layout_constraintTop_toBottomOf="@+id/textView27"
                     app:srcCompat="@drawable/ic_device_type_light"
                     app:tint="#ff0000" />
 
@@ -182,8 +283,9 @@
                     android:layout_height="wrap_content"
                     android:text="Solid"
                     app:layout_constraintBottom_toTopOf="@+id/button_home_day_night"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/guideline8"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline8"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="@+id/guideline12"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <Button
@@ -193,8 +295,9 @@
                     android:layout_height="wrap_content"
                     android:text="Off"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/guideline8"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline8"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="@+id/guideline12"
                     app:layout_constraintTop_toBottomOf="@+id/button_home_day_night" />
 
                 <Button
@@ -204,63 +307,17 @@
                     android:layout_height="wrap_content"
                     android:text="Day"
                     app:layout_constraintBottom_toTopOf="@+id/button_home_off"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/guideline8"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline8"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="@+id/guideline12"
                     app:layout_constraintTop_toBottomOf="@+id/button_home_blink_solid" />
-
-                <TextView
-                    android:id="@+id/text_view_home_flare_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:fontFamily="sans-serif"
-                    android:text="Flare RT"
-                    android:textColor="@android:color/black"
-                    android:textSize="45sp"
-                    android:textStyle="normal"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline8"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/text_view_home_battery"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:text="100%"
-                    android:textColor="@color/secondaryTextColor"
-                    android:textSize="24sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline8"
-                    app:layout_constraintStart_toStartOf="@+id/guideline9"
-                    app:layout_constraintTop_toBottomOf="@+id/image_view_home_battery" />
-
-                <TextView
-                    android:id="@+id/text_view_home_light_mode"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:text="Off"
-                    android:textColor="@color/secondaryTextColor"
-                    android:textSize="24sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline9"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/image_view_home_light_mode" />
 
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/guideline8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    app:layout_constraintGuide_percent="0.6666666666666" />
-
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/guideline9"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_percent=".333333333333333" />
+                    app:layout_constraintGuide_percent="0.5" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -268,7 +325,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardView6"
+            android:id="@+id/card_view_distance_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
@@ -280,31 +337,54 @@
                 android:layout_height="match_parent"
                 android:backgroundTint="#ECEAEA">
 
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline14"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent=".3333333333333333" />
+
                 <TextView
                     android:id="@+id/textViewHome"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Distance"
+                    android:text="Trip Time"
                     android:textSize="25sp"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/textViewHome3"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintStart_toStartOf="@+id/guideline14" />
 
                 <TextView
                     android:id="@+id/text_view_home_distance"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="-10dp"
-                    android:text="7.1"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:text="10.1"
+                    android:textAlignment="center"
                     android:textColor="@color/primaryTextColor"
-                    android:textSize="100sp"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:autoSizeMaxTextSize="70sp"
+                    app:autoSizeMinTextSize="14sp"
+                    app:autoSizeTextType="uniform"
+                    app:layout_constraintBottom_toTopOf="@+id/textView31"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline14"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textViewHome" />
+                    app:layout_constraintTop_toBottomOf="@+id/textViewHome3" />
 
                 <TextView
-                    android:id="@+id/textView25"
+                    android:id="@+id/textViewHome3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="-10dp"
+                    android:text="Distance"
+                    android:textSize="25sp"
+                    app:layout_constraintBottom_toTopOf="@+id/text_view_home_distance"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline14"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed" />
+
+                <TextView
+                    android:id="@+id/textView31"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="-10dp"
@@ -312,9 +392,88 @@
                     android:text="miles"
                     android:textSize="25sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline14"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/text_view_home_distance" />
+
+                <EditText
+                    android:id="@+id/editTextTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:ems="10"
+                    android:inputType="time"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/guideline14"
+                    app:layout_constraintTop_toBottomOf="@+id/textViewHome" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_view_distance_time"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_margin="10dp"
+            android:backgroundTint="#FFFFFF"
+            app:cardElevation="8dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:backgroundTint="#ECEAEA">
+
+                <TextView
+                    android:id="@+id/textViewHome6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Cadence"
+                    android:textSize="20sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/textViewHome5"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textViewHome5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Speed"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textViewHome6"
+                    app:layout_constraintEnd_toStartOf="@+id/textViewHome6"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/text_view_front"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textViewHome3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Rear Light"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/text_view_front"
+                    app:layout_constraintEnd_toStartOf="@+id/text_view_front"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/text_view_front"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Front Light"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textViewHome5"
+                    app:layout_constraintEnd_toStartOf="@+id/textViewHome5"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/textViewHome3"
+                    app:layout_constraintTop_toTopOf="parent" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
 
