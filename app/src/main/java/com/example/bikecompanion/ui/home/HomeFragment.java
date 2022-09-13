@@ -84,7 +84,7 @@ public class HomeFragment extends Fragment {
         myDevicesViewModel = new ViewModelProvider(this).get(MyDevicesViewModel.class);
         myDevicesViewModel.bindService();
 
-        initOnClickListeners();
+        //initOnClickListeners();
 
 
         return view;
@@ -104,7 +104,7 @@ public class HomeFragment extends Fragment {
         myDevicesViewModel.connectDevice(deviceMacAddress);
     }
 
-
+/*
     private void initOnClickListeners(){
         Button buttonDayNight = view.findViewById(R.id.button_home_day_night);
         Button buttonBlinkSolid = view.findViewById(R.id.button_home_blink_solid);

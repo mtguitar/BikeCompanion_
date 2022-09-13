@@ -19,6 +19,39 @@
             android:orientation="vertical">
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/card_view_home_bike_name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="5dp"
+                android:backgroundTint="#FFFFFF"
+                app:cardElevation="0dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout5"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintBottom_toTopOf="@+id/constraintLayout3"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintTop_toBottomOf="@+id/card_view_speed_cadence">
+
+                <TextView
+                    android:id="@+id/text_view_home_bike_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Bike Name"
+                    android:textColor="#000000"
+                    android:textSize="35sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
                 android:id="@+id/card_view_speed_cadence"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -126,112 +159,6 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/card_view_lights_front"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginVertical="5dp"
-                android:backgroundTint="#FFFFFF"
-                app:cardCornerRadius="0dp"
-                app:cardElevation="2dp">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/constraintLayout3_front"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:layout_constraintBottom_toTopOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
-
-                    <androidx.constraintlayout.widget.Guideline
-                        android:id="@+id/guideline13_front"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        app:layout_constraintGuide_percent="0.75" />
-
-                    <androidx.constraintlayout.widget.Guideline
-                        android:id="@+id/guideline12_front"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        app:layout_constraintGuide_percent="0.25" />
-
-                    <TextView
-                        android:id="@+id/textView26_front"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="Front"
-                        android:textColor="@color/primaryTextColor"
-                        android:textSize="25sp"
-                        app:layout_constraintBottom_toTopOf="@+id/image_view_home_light_mode_front"
-                        app:layout_constraintEnd_toStartOf="@+id/guideline12_front"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <ImageView
-                        android:id="@+id/image_view_home_light_mode_front"
-                        android:layout_width="75dp"
-                        android:layout_height="75dp"
-                        android:padding="2dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/guideline12_front"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView26_front"
-                        app:srcCompat="@drawable/ic_device_type_light"
-                        app:tint="@color/light_on" />
-
-                    <Button
-                        android:id="@+id/button_home_blink_solid_front"
-                        style="?attr/materialButtonOutlinedStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Solid"
-                        app:layout_constraintBottom_toTopOf="@+id/button_home_day_night_front"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <Button
-                        android:id="@+id/button_home_off_front"
-                        style="?attr/materialButtonOutlinedStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Off"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/button_home_day_night_front" />
-
-                    <Button
-                        android:id="@+id/button_home_day_night_front"
-                        style="?attr/materialButtonOutlinedStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Day"
-                        app:layout_constraintBottom_toTopOf="@+id/button_home_off_front"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/button_home_blink_solid_front" />
-
-                    <TextView
-                        android:id="@+id/textView5"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Light Mode"
-                        android:textColor="@color/primaryTextColor"
-                        android:textSize="30sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/guideline13_front"
-                        app:layout_constraintStart_toStartOf="@+id/guideline12_front"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
                 android:id="@+id/card_view_lights"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -250,19 +177,19 @@
                     app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
 
                     <Button
-                        android:id="@+id/button_home_blink_solid4"
+                        android:id="@+id/button_home_blink_solid_rear"
                         style="?attr/materialButtonOutlinedStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Solid"
-                        app:layout_constraintBottom_toTopOf="@+id/button_home_day_night3"
+                        app:layout_constraintBottom_toTopOf="@+id/button_home_day_night_rear"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="@+id/guideline13"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <Button
-                        android:id="@+id/button_home_off3"
+                        android:id="@+id/button_home_off_rear"
                         style="?attr/materialButtonOutlinedStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -271,19 +198,19 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="@+id/guideline13"
-                        app:layout_constraintTop_toBottomOf="@+id/button_home_day_night3" />
+                        app:layout_constraintTop_toBottomOf="@+id/button_home_day_night_rear" />
 
                     <Button
-                        android:id="@+id/button_home_day_night3"
+                        android:id="@+id/button_home_day_night_rear"
                         style="?attr/materialButtonOutlinedStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Day"
-                        app:layout_constraintBottom_toTopOf="@+id/button_home_off3"
+                        app:layout_constraintBottom_toTopOf="@+id/button_home_off_rear"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="@+id/guideline13"
-                        app:layout_constraintTop_toBottomOf="@+id/button_home_blink_solid4" />
+                        app:layout_constraintTop_toBottomOf="@+id/button_home_blink_solid_rear" />
 
                     <androidx.constraintlayout.widget.Guideline
                         android:id="@+id/guideline13"
@@ -293,38 +220,13 @@
                         app:layout_constraintGuide_percent="0.75" />
 
                     <TextView
-                        android:id="@+id/textView29"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Front"
-                        android:textSize="25sp"
-                        app:layout_constraintBottom_toTopOf="@+id/image_view_home_light_mode"
-                        app:layout_constraintEnd_toStartOf="@+id/guideline12"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <ImageView
-                        android:id="@+id/image_view_home_light_mode3"
-                        android:layout_width="75dp"
-                        android:layout_height="75dp"
-                        android:padding="2dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/guideline12"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView26"
-                        app:srcCompat="@drawable/ic_device_type_light"
-                        app:tint="#ff0000" />
-
-                    <TextView
                         android:id="@+id/textView27"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Rear"
                         android:textColor="@color/primaryTextColor"
                         android:textSize="25sp"
-                        app:layout_constraintBottom_toTopOf="@+id/image_view_home_light_mode4"
+                        app:layout_constraintBottom_toTopOf="@+id/image_view_home_mode_rear"
                         app:layout_constraintEnd_toStartOf="@+id/guideline13"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="@+id/guideline8"
@@ -344,11 +246,37 @@
                         android:text="Front"
                         android:textColor="@color/primaryTextColor"
                         android:textSize="25sp"
-                        app:layout_constraintBottom_toTopOf="@+id/image_view_home_light_mode"
+                        app:layout_constraintBottom_toTopOf="@+id/image_view_home_mode_front"
                         app:layout_constraintEnd_toStartOf="@+id/guideline12"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/text_view_home_mode_front"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Night Blink"
+                        android:textColor="@color/primaryTextColor"
+                        android:textSize="15sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline12"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/image_view_home_mode_front" />
+
+                    <TextView
+                        android:id="@+id/text_view_home_mode_rear"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Night Blink"
+                        android:textColor="@color/primaryTextColor"
+                        android:textSize="15sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline13"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toStartOf="@+id/guideline8"
+                        app:layout_constraintTop_toBottomOf="@+id/image_view_home_mode_rear" />
 
                     <View
                         android:id="@+id/view"
@@ -361,24 +289,25 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <ImageView
-                        android:id="@+id/image_view_home_light_mode"
+                        android:id="@+id/image_view_home_mode_front"
                         android:layout_width="75dp"
                         android:layout_height="75dp"
                         android:padding="2dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintBottom_toTopOf="@+id/text_view_home_mode_front"
                         app:layout_constraintEnd_toStartOf="@+id/guideline12"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textView26"
+                        app:layout_constraintVertical_bias="0.637"
                         app:srcCompat="@drawable/ic_device_type_light"
                         app:tint="@color/light_on" />
 
                     <ImageView
-                        android:id="@+id/image_view_home_light_mode4"
+                        android:id="@+id/image_view_home_mode_rear"
                         android:layout_width="75dp"
                         android:layout_height="75dp"
                         android:padding="2dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintBottom_toTopOf="@+id/text_view_home_mode_rear"
                         app:layout_constraintEnd_toStartOf="@+id/guideline13"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="@+id/guideline8"
@@ -387,19 +316,19 @@
                         app:tint="#ff0000" />
 
                     <Button
-                        android:id="@+id/button_home_blink_solid"
+                        android:id="@+id/button_home_blink_solid_front"
                         style="?attr/materialButtonOutlinedStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Solid"
-                        app:layout_constraintBottom_toTopOf="@+id/button_home_day_night"
+                        app:layout_constraintBottom_toTopOf="@+id/button_home_day_night_front"
                         app:layout_constraintEnd_toStartOf="@+id/guideline8"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="@+id/guideline12"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <Button
-                        android:id="@+id/button_home_off"
+                        android:id="@+id/button_home_off_front"
                         style="?attr/materialButtonOutlinedStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -408,19 +337,19 @@
                         app:layout_constraintEnd_toStartOf="@+id/guideline8"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="@+id/guideline12"
-                        app:layout_constraintTop_toBottomOf="@+id/button_home_day_night" />
+                        app:layout_constraintTop_toBottomOf="@+id/button_home_day_night_front" />
 
                     <Button
-                        android:id="@+id/button_home_day_night"
+                        android:id="@+id/button_home_day_night_front"
                         style="?attr/materialButtonOutlinedStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Day"
-                        app:layout_constraintBottom_toTopOf="@+id/button_home_off"
+                        app:layout_constraintBottom_toTopOf="@+id/button_home_off_front"
                         app:layout_constraintEnd_toStartOf="@+id/guideline8"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="@+id/guideline12"
-                        app:layout_constraintTop_toBottomOf="@+id/button_home_blink_solid" />
+                        app:layout_constraintTop_toBottomOf="@+id/button_home_blink_solid_front" />
 
                     <androidx.constraintlayout.widget.Guideline
                         android:id="@+id/guideline8"
@@ -453,7 +382,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        app:layout_constraintGuide_percent=".3333333333333333" />
+                        app:layout_constraintGuide_begin="131dp" />
 
                     <TextView
                         android:id="@+id/textViewHome"
@@ -538,7 +467,7 @@
                     android:backgroundTint="#ECEAEA">
 
                     <ImageView
-                        android:id="@+id/imageView11"
+                        android:id="@+id/image_view_home_battery_front"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_marginBottom="10dp"
@@ -550,7 +479,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/textViewHome3" />
 
                     <ImageView
-                        android:id="@+id/imageView12"
+                        android:id="@+id/image_view_home_battery_cadence"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_marginBottom="10dp"
@@ -562,7 +491,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/textViewHome6" />
 
                     <ImageView
-                        android:id="@+id/imageView13"
+                        android:id="@+id/image_view_home_battery_rear"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_marginBottom="10dp"
@@ -574,7 +503,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/text_view_front" />
 
                     <ImageView
-                        android:id="@+id/imageView10"
+                        android:id="@+id/image_view_home_battery_speed"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_marginBottom="10dp"
