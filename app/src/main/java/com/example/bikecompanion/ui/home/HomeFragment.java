@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -16,13 +18,58 @@ import com.example.bikecompanion.databinding.FragmentHomeBinding;
 import com.example.bikecompanion.deviceTypes.FlareRTDeviceType;
 import com.example.bikecompanion.ui.myDevices.MyDevicesViewModel;
 
+import java.util.HashMap;
+
 public class HomeFragment extends Fragment {
 
+    private final static String TAG = "FlareLog Home";
     private FragmentHomeBinding binding;
     private MyDevicesViewModel myDevicesViewModel;
 
-    private String deviceToConnect = Constants.AVENTON_FLARE_MAC_ADDRESS;
+
     private View view;
+
+
+    private String deviceToConnect = Constants.AVENTON_FLARE_MAC_ADDRESS;
+    private String gattMacAddress;
+    private String connectionState;
+    private HashMap<String, String> connectionStateHashMap;
+    private String characteristicUUID;
+    private String characteristicValueString;
+    private String characteristicValueByte;
+
+    //Front Light
+    Button buttonHomeBlinkSolidFront;
+    Button buttonHomeDayNightFront;
+    Button buttonHomeOffFront;
+    ImageView imageViewHomeModeFront;
+    TextView textViewFrontMode;
+    ImageView imageViewFrontBattery;
+    boolean frontLightConnected = false;
+
+
+    //Rear Light
+    Button buttonHomeBlinkSolidRear;
+    Button buttonHomeDayNightRear;
+    Button buttonHomeOffRear;
+    TextView textViewRearMode;
+    ImageView imageViewHomeModeRear;
+    ImageView imageViewRearBattery;
+    boolean rearLightConnected = false;
+
+    //Distance
+    TextView textViewHomeDistance;
+
+    //Speed
+    TextView textViewHomeSpeed;
+    boolean speedConnected = false;
+
+    //Cadence
+    TextView textViewHomeCadence;
+    boolean cadenceConnected = false;
+
+    //Bike Name
+    TextView textViewHomeBikeName;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
