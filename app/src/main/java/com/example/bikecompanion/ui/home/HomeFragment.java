@@ -137,6 +137,103 @@ public class HomeFragment extends Fragment {
 
 
     }
+    /*
+
+
+    private void initOnClickListeners() {
+        Button buttonDayNight = view.findViewById(R.id.button_home_day_night_front);
+        Button buttonBlinkSolid = view.findViewById(R.id.button_home_blink_solid_front);
+        Button buttonOff = view.findViewById(R.id.button_home_off_front);
+
+        String macAddress = Constants.AVENTON_FLARE_MAC_ADDRESS;
+
+
+        buttonDayNight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                connectDevice(deviceToConnect);
+                myDevicesViewModel.writeCharacteristics(macAddress, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, FlareRTDeviceType.DAY_BLINK_MODE_BYTE);
+            }
+        });
+
+        buttonBlinkSolid.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                myDevicesViewModel.writeCharacteristics(macAddress, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, FlareRTDeviceType.NIGHT_SOLID_MODE_BYTE);
+            }
+        });
+        buttonOff.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                myDevicesViewModel.writeCharacteristics(macAddress, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, FlareRTDeviceType.OFF_MODE_BYTE);
+            }
+        });
+
+    }
+
+
+    private void initObservers() {
+
+        //This observes changes to BLE device connection state.
+        myDevicesViewModel.getConnectionStateHashMapLive().observe(getActivity(), new Observer<HashMap>() {
+            @Override
+            public void onChanged(HashMap connectionStateHashMapArg) {
+                connectionStateHashMap = connectionStateHashMapArg;
+                gattMacAddress = connectionStateHashMap.get(Constants.GATT_MAC_ADDRESS);
+                connectionState = connectionStateHashMap.get(gattMacAddress);
+
+                //If services discovered, calls read characteristic method
+                if (connectionState.equals(Constants.GATT_SERVICES_DISCOVERED)) {
+
+                }
+
+            }
+        });
+
+        myDevicesViewModel.getDeviceDataHashMapLive().observe(getActivity(), new Observer<HashMap>() {
+            @Override
+            public void onChanged(HashMap deviceDataHashMap) {
+                gattMacAddress = (String) deviceDataHashMap.get(Constants.GATT_MAC_ADDRESS);
+                characteristicUUID = (String) deviceDataHashMap.get(Constants.CHARACTERISTIC_UUID);
+                characteristicValueString = (String) deviceDataHashMap.get(Constants.CHARACTERISTIC_VALUE_STRING);
+                characteristicValueByte = (String) deviceDataHashMap.get(Constants.CHARACTERISTIC_VALUE_BYTE);
+                Log.d(TAG, "Received device data: " + gattMacAddress + " " + characteristicUUID + " " + characteristicValueString + " " + characteristicValueByte);
+
+            }
+        });
+    }
+
+    public void initViews() {
+        //Front Light
+        buttonHomeBlinkSolidFront = view.findViewById(R.id.button_home_blink_solid_front);
+        buttonHomeDayNightFront = (Button) view.findViewById(R.id.button_home_day_night_front);
+        buttonHomeOffFront = view.findViewById(R.id.button_home_off_front);
+        imageViewHomeModeFront = view.findViewById(R.id.image_view_home_mode_front);
+        textViewFrontMode = view.findViewById(R.id.text_view_home_mode_front);
+        imageViewFrontBattery = view.findViewById(R.id.image_view_home_battery_front);
+
+        //Rear Light
+        buttonHomeBlinkSolidRear = view.findViewById(R.id.button_home_blink_solid_rear);
+        buttonHomeDayNightRear = view.findViewById(R.id.button_home_day_night_rear);
+        buttonHomeOffRear = view.findViewById(R.id.button_home_off_rear);
+        textViewRearMode = view.findViewById(R.id.image_view_home_mode_rear);
+        imageViewHomeModeRear = view.findViewById(R.id.text_view_home_mode_rear);
+        imageViewRearBattery = view.findViewById(R.id.image_view_home_battery_rear);
+
+        //Distance
+        textViewHomeDistance = view.findViewById(R.id.text_view_home_distance);
+
+        //Speed
+        textViewHomeSpeed = view.findViewById(R.id.text_view_home_speed);
+
+        //Cadence
+        textViewHomeCadence = view.findViewById(R.id.text_view_home_cadence);
+
+        //Bike Name
+        textViewHomeBikeName = view.findViewById(R.id.text_view_home_bike_name);
+    }
+
+    */
 
 
 }
