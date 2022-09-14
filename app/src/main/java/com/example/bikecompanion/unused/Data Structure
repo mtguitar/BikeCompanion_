@@ -1,0 +1,98 @@
+List<Bike> bikeList;
+    bikeList[1];
+        String name (e.g., Aventon);
+        List<Device> deviceList;
+            deviceList[1];
+                boolean isConnected;
+                string connectionState (e.g., connecting, connected, servicesDiscovered, disconnected);
+                string name (e.g., FlareRT);
+                string macAddress;
+                String type (e.g., rearLight, frontLight, speed, cadence, heart);
+                List<Characteristics> characteristicList;
+                    characteristicList[1];
+                        UUID serviceUUID;
+                        UUID characteristicUUID;
+                        string name;
+                        boolean read;
+                        boolean notify;
+                        boolean write;
+                        byte[] value;
+                    characteristicList[2];
+                        UUID serviceUUID;
+                        UUID characteristicUUID;
+                        string name;
+                        boolean read;
+                        boolean notify;
+                        boolean write;
+                        byte[] value;
+
+
+Bike aventon = new Bike;
+    name = Aventon;
+    Devices[] = {frontLight, rearLight, speed, cadence}
+
+
+
+SensorDevice rearLight = new SensorDevice;
+    rearLight.name = Flare RT
+    rearLight.macAddress = "F8:"
+    rearLight.connected = true;
+    rearLight.connectionState = "connected"
+    rearLight.deviceType = "light";
+    rearLight.characteristics[] = {battery, lightMode}
+
+
+Characteristic battery = new Characteristic;
+    battery.read = true;
+    battery.notify = true;
+    battery.value = 50;
+
+
+//Loop bikeList
+for (int i = 0; i < bikeList.size(); i++
+{
+    //return bike.name
+    bikeName = getBikeName(i);
+
+}
+
+
+//Loop deviceList
+    for (int j = 0; j <deviceList.size(); j++)
+    {
+        deviceConnectionState = getDeviceConnectionState(j);
+        deviceName = getDeviceConnectionState(j);
+        deviceMacAddress = getDeviceConnectionState(j);
+    }
+
+
+return device.connectionState
+        return device.name
+        return device.macAddress
+        return device.type
+        loop characteristicsList
+            return characteristic.read
+            return characteristic.notify
+            return characteristic.value
+
+
+TODO: MyDevices
+Add option to assign devices to bikes (check boxes so they can be assigned to multiple bikes)
+Remove unnecessary information?
+prevent duplicates
+allow user to edit information - name, deviceType (give options:  frontLight, rearLight, speed, cadence, heart?)
+
+TODO: Scanner
+don't display devices that are in myDevices
+
+TODO: Home layout
+add option to select bike
+
+
+
+
+
+
+
+
+
