@@ -13,6 +13,10 @@
             android:icon="@drawable/ic_device_type_other_sensor"
             android:title="@string/menu_my_devices" />
         <item
+            android:id="@+id/nav_my_bikes"
+            android:icon="@drawable/ic_menu_add_device"
+            android:title="@string/my_bikes" />
+        <item
             android:id="@+id/nav_add_device"
             android:icon="@drawable/ic_menu_add_device"
             android:title="@string/menu_add_device" />

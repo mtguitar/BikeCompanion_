@@ -2,7 +2,7 @@ package com.example.bikecompanion.unused;
 
 import androidx.fragment.app.Fragment;
 
-import com.example.bikecompanion.adapters.RecyclerViewInterface;
+import com.example.bikecompanion.adapters.scanner.RecyclerViewInterface;
 
 public class ScannerFragmentExtraCodeToUse extends Fragment implements RecyclerViewInterface {
     @Override

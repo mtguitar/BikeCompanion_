@@ -1,4 +1,4 @@
-package com.example.bikecompanion.adapters;
+package com.example.bikecompanion.adapters.scanner;
 
 public interface RecyclerViewInterface {
     void onItemClick(int position);

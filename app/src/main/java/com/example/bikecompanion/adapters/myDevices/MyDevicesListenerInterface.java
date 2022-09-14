@@ -1,8 +1,8 @@
-package com.example.bikecompanion.adapters;
+package com.example.bikecompanion.adapters.myDevices;
 
 import android.view.View;
 
-import com.example.bikecompanion.ui.myDevices.MyDevice;
+import com.example.bikecompanion.databases.devices.MyDevice;
 
 import java.util.List;
 

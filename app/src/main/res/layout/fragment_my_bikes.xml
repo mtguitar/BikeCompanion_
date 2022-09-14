@@ -11,7 +11,7 @@
         android:id="@+id/text_view_my_bikes_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Click a device for details"
+        android:text="My Bikes"
         android:textAlignment="center"
         android:textSize="25sp"
         android:textStyle="bold"
@@ -55,15 +55,5 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_end="80dp" />
-
-    <TextView
-        android:id="@+id/text_view_devices_test"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="TextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recycler_view_my_bikes" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

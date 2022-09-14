@@ -1,4 +1,4 @@
-package com.example.bikecompanion.databases;
+package com.example.bikecompanion.databases.devices;
 
 import android.app.Application;
 import android.content.BroadcastReceiver;
@@ -17,7 +17,6 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.bikecompanion.ble.BleConnectionService;
 import com.example.bikecompanion.constants.Constants;
-import com.example.bikecompanion.ui.myDevices.MyDevice;
 
 import java.util.HashMap;
 import java.util.List;

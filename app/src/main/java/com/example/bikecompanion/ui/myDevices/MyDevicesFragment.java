@@ -20,17 +20,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecompanion.R;
-import com.example.bikecompanion.adapters.MyDevicesAdapter;
-import com.example.bikecompanion.adapters.MyDevicesListenerInterface;
-import com.example.bikecompanion.ble.BleConnectionService;
+import com.example.bikecompanion.adapters.myDevices.MyDevicesAdapter;
+import com.example.bikecompanion.adapters.myDevices.MyDevicesListenerInterface;
 import com.example.bikecompanion.constants.Constants;
+import com.example.bikecompanion.databases.devices.MyDevice;
 import com.example.bikecompanion.deviceTypes.FlareRTDeviceType;
 import com.example.bikecompanion.deviceTypes.GenericDeviceType;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 public class MyDevicesFragment extends Fragment implements MyDevicesListenerInterface {
 
@@ -100,7 +99,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     }
 
     private void initFAB(){
-        FloatingActionButton fabNewDevice = view.findViewById(R.id.floating_action_button_my_devices);
+        FloatingActionButton fabNewDevice = view.findViewById(R.id.floating_action_button_my_bikes);
         fabNewDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -111,7 +110,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     }
 
     private void initRecyclerViewer(){
-        RecyclerView recyclerView = view.findViewById(R.id.recycler_view_my_devices);
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_view_my_bikes);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         deviceAdapter = new MyDevicesAdapter(this);
@@ -175,7 +174,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     @Override
     public void onItemClick(int position, View itemView, List<MyDevice> devices) {
 
-        textViewDeviceName = itemView.findViewById(R.id.text_view_my_device_name);
+        textViewDeviceName = itemView.findViewById(R.id.text_view_my_bike_name);
         textViewMacAddress = itemView.findViewById(R.id.text_view_my_device_mac_address);
 
         textViewDeviceBattery = itemView.findViewById(R.id.text_view_device_battery);
@@ -185,9 +184,9 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         textViewDeviceState = itemView.findViewById(R.id.text_view_device_state);
         clearTextViews();
 
-        switchAutoConnect = itemView.findViewById(R.id.switch_auto_connect);
-        buttonRemoveDevice = itemView.findViewById(R.id.button_device_remove);
-        buttonDisconnectDevice = itemView.findViewById(R.id.button_device_disconnect);
+        switchAutoConnect = itemView.findViewById(R.id.switch_primary_bike);
+        buttonRemoveDevice = itemView.findViewById(R.id.button_device_edit);
+        buttonDisconnectDevice = itemView.findViewById(R.id.button_add_devices);
         imageViewArrow = itemView.findViewById(R.id.image_view_arrow);
 
         constraintLayoutDeviceInfo = itemView.findViewById(R.id.constraint_layout_device_info);

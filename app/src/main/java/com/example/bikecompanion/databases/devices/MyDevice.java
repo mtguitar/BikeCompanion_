@@ -1,4 +1,4 @@
-package com.example.bikecompanion.ui.myDevices;
+package com.example.bikecompanion.databases.devices;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;

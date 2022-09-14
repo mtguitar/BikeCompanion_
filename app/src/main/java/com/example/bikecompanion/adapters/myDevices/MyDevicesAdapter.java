@@ -1,4 +1,4 @@
-package com.example.bikecompanion.adapters;
+package com.example.bikecompanion.adapters.myDevices;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecompanion.R;
-import com.example.bikecompanion.ui.myDevices.MyDevice;
+import com.example.bikecompanion.databases.devices.MyDevice;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,16 +52,16 @@ public class MyDevicesAdapter extends RecyclerView.Adapter<MyDevicesAdapter.Devi
 
         public DeviceViewHolder(@NonNull View itemView) {
             super(itemView);
-            textViewDeviceName = itemView.findViewById(R.id.text_view_my_device_name);
+            textViewDeviceName = itemView.findViewById(R.id.text_view_my_bike_name);
             textViewMacAddress = itemView.findViewById(R.id.text_view_my_device_mac_address);
             textViewDeviceBattery = itemView.findViewById(R.id.text_view_device_battery);
             textViewDeviceType = itemView.findViewById(R.id.text_view_device_model);
             textViewDeviceMode = itemView.findViewById(R.id.text_view_device_mode);
             textViewDeviceManufacturer = itemView.findViewById(R.id.text_view_device_manufacturer);
             textViewDeviceMacAddress = itemView.findViewById(R.id.text_view_scanner_device_mac_address);
-            switchAutoConnect = itemView.findViewById(R.id.switch_auto_connect);
-            buttonRemoveDevice = itemView.findViewById(R.id.button_device_remove);
-            buttonDisconnectDevice = itemView.findViewById(R.id.button_device_disconnect);
+            switchAutoConnect = itemView.findViewById(R.id.switch_primary_bike);
+            buttonRemoveDevice = itemView.findViewById(R.id.button_device_edit);
+            buttonDisconnectDevice = itemView.findViewById(R.id.button_add_devices);
             constraintLayoutDeviceInfo = itemView.findViewById(R.id.constraint_layout_device_info);
 
             itemView.setOnClickListener(new View.OnClickListener() {

@@ -1,14 +1,13 @@
 package com.example.bikecompanion.ui.myDevices;
 
 import android.app.Application;
-import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.example.bikecompanion.databases.MyDevicesRepository;
+import com.example.bikecompanion.databases.devices.MyDevice;
+import com.example.bikecompanion.databases.devices.MyDevicesRepository;
 
 import java.util.HashMap;
 import java.util.List;

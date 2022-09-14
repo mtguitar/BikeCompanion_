@@ -73,7 +73,7 @@
             android:id="@+id/constraint_layout_device_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <Button
                 android:id="@+id/button_device_edit"
@@ -82,7 +82,7 @@
                 android:layout_marginStart="70dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
-                android:text="Remove"
+                android:text="Edit"
                 android:textColor="@color/cardview_light_background"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -108,7 +108,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Battery"
+                        android:text="Device1"
                         android:textColor="@color/cardview_light_background"
                         android:textStyle="bold" />
 
@@ -131,7 +131,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Mode"
+                        android:text="Device2"
                         android:textColor="@color/cardview_light_background"
                         android:textStyle="bold" />
 
@@ -154,7 +154,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Manufacturer"
+                        android:text="Device4"
                         android:textColor="@color/cardview_light_background"
                         android:textStyle="bold" />
 
@@ -223,7 +223,7 @@
                         android:layout_width="74dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Auto Connect"
+                        android:text="Primary Bike"
                         android:textColor="@color/cardview_light_background" />
 
                     <TextView
@@ -240,7 +240,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:text="Connecting"
+                android:text="Add Devices"
                 android:textColor="@color/cardview_light_background"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/button_device_edit"

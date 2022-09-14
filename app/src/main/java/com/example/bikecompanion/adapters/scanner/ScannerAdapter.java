@@ -1,4 +1,4 @@
-package com.example.bikecompanion.adapters;
+package com.example.bikecompanion.adapters.scanner;
 
 import android.view.LayoutInflater;
 import android.view.View;

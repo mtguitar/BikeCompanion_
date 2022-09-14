@@ -23,12 +23,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecompanion.R;
-import com.example.bikecompanion.adapters.RecyclerViewInterface;
-import com.example.bikecompanion.adapters.ScannerAdapter;
+import com.example.bikecompanion.adapters.scanner.RecyclerViewInterface;
+import com.example.bikecompanion.adapters.scanner.ScannerAdapter;
 import com.example.bikecompanion.ble.BleScannerService;
 import com.example.bikecompanion.ble.RegisterBroadcastReceiver;
 import com.example.bikecompanion.constants.Constants;
-import com.example.bikecompanion.ui.myDevices.MyDevice;
+import com.example.bikecompanion.databases.devices.MyDevice;
 import com.example.bikecompanion.ui.myDevices.MyDevicesViewModel;
 
 import java.util.ArrayList;
