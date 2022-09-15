@@ -48,6 +48,8 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
     private MyBikesAdapter bikeAdapter;
     private View cardViewAddBike;
 
+    private List<Device> deviceList;
+
     private SharedEntitiesViewModel sharedEntitiesViewModel;
 
     public static MyBikesFragment newInstance() {
@@ -97,6 +99,16 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
             }
 
         });
+
+        sharedEntitiesViewModel.getAllDevices().observe(getViewLifecycleOwner(), new Observer<List<Device>>() {
+            @Override
+            public void onChanged(List<Device> devices) {
+                Log.d(TAG, "Received devices live data");
+                deviceList = devices;
+            }
+
+        });
+
     }
 
     private void initOnClickListeners(){
@@ -122,6 +134,7 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
                 else{
                     return;
                 }
+                editTextBikeName.getText().clear();
 
 
             }
@@ -131,6 +144,7 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
             @Override
             public void onClick(View v) {
                 cardViewAddBike.setVisibility(View.GONE);
+                editTextBikeName.getText().clear();
             }
         });
     }
@@ -158,6 +172,43 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
 
     @Override
     public void onButtonClickEdit(int position, List<Bike> bike) {
+        // setup the alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Choose devices to add to bike");
+        // add a checkbox list
+        if (deviceList == null) {
+            return;
+        }
+        Log.d(TAG, String.valueOf(deviceList.size()));
+        String[] deviceNames = new String[2];
+
+        for (int i = 0; i < deviceList.size(); i++)
+        {
+            deviceNames[i] = deviceList.get(i).getDeviceBleName() + " " + "(" + deviceList.get(i).getDeviceMacAddress() + ")";
+        }
+
+
+        boolean[] checkedItems = {true, true};
+        builder.setMultiChoiceItems(deviceNames, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                // user checked or unchecked a box
+            }
+        });
+
+
+
+        // add OK and Cancel buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // user clicked OK
+            }
+        });
+        builder.setNegativeButton("Cancel", null);
+        // create and show the alert dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
 
 
     }

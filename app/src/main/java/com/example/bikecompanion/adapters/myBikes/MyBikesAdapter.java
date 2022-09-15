@@ -45,7 +45,7 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
             super(itemView);
 
             textViewBikeName = itemView.findViewById(R.id.text_view_my_bike_name);
-            textViewBikeId = itemView.findViewById(R.id.text_view_my_bike_id);
+            textViewBikeId = itemView.findViewById(R.id.text_view_my_bike_make);
             buttonBikeEdit = itemView.findViewById(R.id.button_bike_edit);
             buttonBikeRemove = itemView.findViewById(R.id.button_bike_remove);
 

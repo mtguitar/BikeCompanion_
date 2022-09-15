@@ -22,6 +22,8 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
     private LiveData<List<Device>> allDevices;
     private LiveData<String> connectionState;
     private LiveData<List<Bike>> allBikes;
+    private List<Bike> bikeList;
+    private List<Device> deviceList;
 
 
 
@@ -54,6 +56,10 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
         return allBikes;
     }
 
+    public List<Bike> getBikeList(){
+        return bikeList;
+    }
+
 
 
 
@@ -77,6 +83,11 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
 
     public LiveData<List<Device>> getAllDevices(){
         return allDevices;
+    }
+
+    public List<Device> getDeviceList(){
+        deviceList = repository.getDeviceList();
+        return deviceList;
     }
 
 

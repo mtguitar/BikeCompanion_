@@ -22,6 +22,7 @@ import com.example.bikecompanion.databases.entities.Device;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.Vector;
 
 /**
  * This repo holds all the data used to populate MyDevicesFragment.
@@ -87,6 +88,11 @@ public class EntitiesRepository {
         return allBikes;
     }
 
+    public List<Bike> getBikeList(){
+        List<Bike> bikeList = entitiesDao.getBikeList();
+        return bikeList;
+    }
+
 
 
 
@@ -111,6 +117,37 @@ public class EntitiesRepository {
     }
 
 
+    public List<Device> getDeviceList(){
+        List<Device> deviceList = new Vector<>();
+        GetDeviceListAsyncTask getDeviceListAsyncTask = new GetDeviceListAsyncTask(entitiesDao);
+        getDeviceListAsyncTask.execute();
+        return deviceList;
+    }
+
+
+    private static class GetDeviceListAsyncTask extends android.os.AsyncTask<Void, Void, List<Device>> {
+        private EntitiesDao entitiesDao;
+        private List<Device> deviceList;
+
+        private GetDeviceListAsyncTask(EntitiesDao entitiesDao){
+            this.entitiesDao = entitiesDao;
+        }
+
+
+        @Override
+        protected List<Device> doInBackground(Void... voids) {
+            deviceList = entitiesDao.getDeviceList();
+            return deviceList;
+
+        }
+        protected void onPostExecute(List<Device> deviceList) {
+            this.deviceList = deviceList;
+        }
+
+    }
+
+
+
     /**
      * AsyncTasks for writing/reading to/from db to ensure that we are not working on the main thread
      */
@@ -129,6 +166,8 @@ public class EntitiesRepository {
             return null;
         }
     }
+
+
 
 
     private static class UpdateBikeAsyncTask extends android.os.AsyncTask<Bike, Void, Void> {
@@ -172,6 +211,10 @@ public class EntitiesRepository {
             return null;
         }
     }
+
+
+
+
 
     //Devices
     private static class InsertDeviceAsyncTask extends android.os.AsyncTask<Device, Void, Void> {

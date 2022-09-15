@@ -11,8 +11,9 @@
         android:id="@+id/card_view_add_bike"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="0dp"
         android:layout_marginBottom="10dp"
+        android:backgroundTint="#ECEBEB"
         android:visibility="gone"
         app:cardElevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -28,7 +29,7 @@
                 style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="20dp"
                 android:layout_marginBottom="10dp"
                 android:text="Cancel"
                 android:textColor="@color/primaryColor"
@@ -40,25 +41,98 @@
                 style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="70dp"
                 android:layout_marginBottom="10dp"
                 android:text="Add"
                 android:textColor="@color/primaryColor"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="@+id/recyclerView" />
 
             <EditText
                 android:id="@+id/edit_text_bike_name"
-                android:layout_width="247dp"
-                android:layout_height="41dp"
-                android:layout_marginStart="70dp"
-                android:layout_marginTop="40dp"
-                android:layout_marginBottom="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="30dp"
+                android:autoText="false"
                 android:ems="10"
-                android:hint="Enter bike name"
-                app:layout_constraintBottom_toTopOf="@+id/button_add_bike_cancel"
+                android:hint="Bike name (required)"
+                android:inputType="textCapSentences"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView16" />
+
+            <EditText
+                android:id="@+id/edit_text_bike_make"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="30dp"
+                android:autoText="false"
+                android:ems="10"
+                android:hint="Make (optional)"
+                android:inputType="textCapSentences"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edit_text_bike_name" />
+
+            <EditText
+                android:id="@+id/edit_text_bike_model"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="30dp"
+                android:autoText="false"
+                android:ems="10"
+                android:hint="Model (optional)"
+                android:inputType="textCapSentences"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edit_text_bike_make" />
+
+            <TextView
+                android:id="@+id/textView16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Add New Bike"
+                android:textColor="@color/primaryTextColor"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView20"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="10dp"
+                android:text="Select devices (optional)"
+                android:textSize="20dp"
+                app:layout_constraintStart_toStartOf="@+id/edit_text_bike_name"
+                app:layout_constraintTop_toBottomOf="@+id/edit_text_bike_model" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="249dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp"
+                app:layout_constraintBottom_toTopOf="@+id/button_add_bike"
+                app:layout_constraintStart_toStartOf="@+id/textView20"
+                app:layout_constraintTop_toBottomOf="@+id/textView20" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="35dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

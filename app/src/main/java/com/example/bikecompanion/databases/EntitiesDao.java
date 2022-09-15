@@ -35,6 +35,9 @@ public interface EntitiesDao {
     @Query("SELECT * FROM device_table ORDER BY deviceMacAddress DESC")
     LiveData<List<Device>> getAllDevices();
 
+    @Query("SELECT * FROM device_table ORDER BY deviceMacAddress DESC")
+    List<Device> getDeviceList();
+
     //bikes
     @Insert (onConflict = OnConflictStrategy.REPLACE)
     void insertBike(Bike bike);
@@ -51,6 +54,9 @@ public interface EntitiesDao {
     @Query("SELECT * FROM bike_table ORDER BY bikeName DESC")
     LiveData<List<Bike>> getAllBikes();
 
+    @Query("SELECT * FROM bike_table ORDER BY bikeName DESC")
+    List<Bike> getBikeList();
+
     @Insert
     void insertDeviceToBike(Device device);
 
@@ -65,11 +71,11 @@ public interface EntitiesDao {
 
     @Transaction
     @Query("SELECT * FROM bike_table WHERE bikeName = bikeName ")
-    LiveData<List<Bike>> getDevicesofBike();
+    LiveData<List<Bike>> getDevicesOfBike();
 
     @Transaction
     @Query("SELECT * FROM device_table WHERE deviceMacAddress = deviceMacAddress")
-    LiveData<List<Device>> getBikesofDevice();
+    LiveData<List<Device>> getBikesOfDevice();
 
 
     /*
