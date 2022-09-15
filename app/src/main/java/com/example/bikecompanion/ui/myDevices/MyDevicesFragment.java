@@ -23,7 +23,7 @@ import com.example.bikecompanion.R;
 import com.example.bikecompanion.adapters.myDevices.MyDevicesAdapter;
 import com.example.bikecompanion.adapters.myDevices.MyDevicesListenerInterface;
 import com.example.bikecompanion.constants.Constants;
-import com.example.bikecompanion.databases.devices.MyDevice;
+import com.example.bikecompanion.databases.entities.Device;
 import com.example.bikecompanion.deviceTypes.FlareRTDeviceType;
 import com.example.bikecompanion.deviceTypes.GenericDeviceType;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -47,7 +47,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     private String visibleDeviceMacAddress;
 
     private MyDevicesViewModel myDevicesViewModel;
-    private List<MyDevice> devices;
+    private List<Device> devices;
     private View constraintLayoutDeviceInfo;
 
     private String gattMacAddress;
@@ -118,9 +118,9 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     }
 
     private void initObservers(){
-        myDevicesViewModel.getAllDevices().observe(getViewLifecycleOwner(), new Observer<List<MyDevice>>() {
+        myDevicesViewModel.getAllDevices().observe(getViewLifecycleOwner(), new Observer<List<Device>>() {
             @Override
-            public void onChanged(List<MyDevice> devices) {
+            public void onChanged(List<Device> devices) {
                 Log.d(TAG, "Received devices live data");
                 deviceAdapter.setDevices(devices);
             }
@@ -172,7 +172,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
 
 
     @Override
-    public void onItemClick(int position, View itemView, List<MyDevice> devices) {
+    public void onItemClick(int position, View itemView, List<Device> devices) {
 
         textViewDeviceName = itemView.findViewById(R.id.text_view_my_bike_name);
         textViewMacAddress = itemView.findViewById(R.id.text_view_my_device_mac_address);
@@ -209,8 +209,8 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
                 constraintLayoutDeviceInfo.setVisibility(View.VISIBLE);
                 imageViewArrow.setRotation(180);
 
-                MyDevice currentDevice = devices.get(position);
-                visibleDeviceMacAddress = currentDevice.getMacAddress();
+                Device currentDevice = devices.get(position);
+                visibleDeviceMacAddress = currentDevice.getDeviceMacAddress();
                 myDevicesViewModel.connectDevice(visibleDeviceMacAddress);
 
                 lastDeviceConnected = visibleDeviceMacAddress;
@@ -233,18 +233,18 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     }
 
     @Override
-    public void onButtonClickRemove(int position, List<MyDevice> devices) {
+    public void onButtonClickRemove(int position, List<Device> devices) {
         myDevicesViewModel.disconnectDevice(connectedDeviceMacAddress);
-        MyDevice currentDevice = devices.get(position);
+        Device currentDevice = devices.get(position);
         myDevicesViewModel.delete(currentDevice);
 
         constraintLayoutDeviceInfo.setVisibility(View.GONE);
     }
 
     @Override
-    public void onButtonClickDisconnect(int position, List<MyDevice> devices) {
-        MyDevice currentDevice = devices.get(position);
-        String deviceMacAddress = currentDevice.getMacAddress();
+    public void onButtonClickDisconnect(int position, List<Device> devices) {
+        Device currentDevice = devices.get(position);
+        String deviceMacAddress = currentDevice.getDeviceMacAddress();
         if (connectionStateHashMap.get(deviceMacAddress).equals(Constants.GATT_DISCONNECTED)){
             myDevicesViewModel.connectDevice(deviceMacAddress);
             Log.d(TAG, "Button Clicked, sent connect command to: " + deviceMacAddress);

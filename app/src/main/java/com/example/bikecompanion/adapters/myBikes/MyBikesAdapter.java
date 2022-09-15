@@ -10,8 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecompanion.R;
-import com.example.bikecompanion.databases.bike.MyBike;
-import com.example.bikecompanion.databases.devices.MyDevice;
+import com.example.bikecompanion.databases.entities.Bike;
+import com.example.bikecompanion.databases.entities.Device;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
 
 public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeViewHolder>{
 
-    private List<MyBike> bike = new ArrayList<>();
+    private List<Bike> bike = new ArrayList<>();
     private MyBikesListenerInterface listener;
 
 
@@ -44,7 +44,7 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
         private TextView textViewDeviceName;
         private TextView textViewMacAddress;
         private View constraintLayoutDeviceInfo;
-        private MyDevice currentDevice;
+        private Device currentDevice;
 
         private Button switchPrimaryBike;
         private Button buttonEdit;
@@ -109,12 +109,12 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
 
     @Override
     public void onBindViewHolder(@NonNull BikeViewHolder holder, int position) {
-        MyBike currentBike = bike.get(position);
+        Bike currentBike = bike.get(position);
         //holder.textViewDeviceName.setText(currentBike.getName());
 
     }
 
-    public void setBikes(List<MyBike> bike){
+    public void setBikes(List<Bike> bike){
         this.bike = bike;
         notifyDataSetChanged();
     }

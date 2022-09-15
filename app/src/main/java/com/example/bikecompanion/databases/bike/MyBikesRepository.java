@@ -1,26 +1,15 @@
 package com.example.bikecompanion.databases.bike;
 
 import android.app.Application;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 
+import com.example.bikecompanion.databases.entities.Bike;
 
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * This repo holds all the data for each bike .
@@ -32,7 +21,7 @@ import java.util.UUID;
 public class MyBikesRepository {
 
     private MyBikesDao myBikesDao;
-    private LiveData<List<MyBike>> allBikes;
+    private LiveData<List<Bike>> allBikes;
 
     private final static String TAG = "FlareLog Repo";
 
@@ -47,15 +36,15 @@ public class MyBikesRepository {
         context = application.getApplicationContext();
     }
 
-    public void insert (MyBike bike){
+    public void insert (Bike bike){
         new InsertBikeAsyncTask(myBikesDao).execute(bike);
     }
 
-    public void update (MyBike bike){
+    public void update (Bike bike){
         new UpdateBikeAsyncTask(myBikesDao).execute(bike);
     }
 
-    public void delete (MyBike bike){
+    public void delete (Bike bike){
         new DeleteBikeAsyncTask(myBikesDao).execute(bike);
 
     }
@@ -65,12 +54,12 @@ public class MyBikesRepository {
 
     }
 
-    public LiveData<List<MyBike>> getAllBikes(){
+    public LiveData<List<Bike>> getAllBikes(){
         return allBikes;
     }
 
     //AsyncTasks to ensure that we are not working on the main thread
-    private static class InsertBikeAsyncTask extends AsyncTask<MyBike, Void, Void>{
+    private static class InsertBikeAsyncTask extends AsyncTask<Bike, Void, Void>{
         private MyBikesDao myBikesDao;
 
         private InsertBikeAsyncTask(MyBikesDao myBikeDao){
@@ -78,13 +67,13 @@ public class MyBikesRepository {
         }
 
         @Override
-        protected Void doInBackground(MyBike... bike) {
+        protected Void doInBackground(Bike... bike) {
             myBikesDao.insert(bike[0]);
             return null;
         }
     }
 
-    private static class UpdateBikeAsyncTask extends AsyncTask<MyBike, Void, Void>{
+    private static class UpdateBikeAsyncTask extends AsyncTask<Bike, Void, Void>{
         private MyBikesDao myBikesDao;
 
         private UpdateBikeAsyncTask(MyBikesDao myBikeDao){
@@ -92,13 +81,13 @@ public class MyBikesRepository {
         }
 
         @Override
-        protected Void doInBackground(MyBike... bike) {
+        protected Void doInBackground(Bike... bike) {
             myBikesDao.update(bike[0]);
             return null;
         }
     }
 
-    private static class DeleteBikeAsyncTask extends AsyncTask<MyBike, Void, Void>{
+    private static class DeleteBikeAsyncTask extends AsyncTask<Bike, Void, Void>{
         private MyBikesDao myBikesDao;
 
         private DeleteBikeAsyncTask(MyBikesDao myBikesDao){
@@ -106,7 +95,7 @@ public class MyBikesRepository {
         }
 
         @Override
-        protected Void doInBackground(MyBike... bike) {
+        protected Void doInBackground(Bike... bike) {
             myBikesDao.delete(bike[0]);
             return null;
         }

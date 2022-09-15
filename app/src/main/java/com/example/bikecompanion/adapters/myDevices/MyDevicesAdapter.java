@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecompanion.R;
-import com.example.bikecompanion.databases.devices.MyDevice;
+import com.example.bikecompanion.databases.entities.Device;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.List;
 
 public class MyDevicesAdapter extends RecyclerView.Adapter<MyDevicesAdapter.DeviceViewHolder>{
 
-    private List<MyDevice> devices = new ArrayList<>();
+    private List<Device> devices = new ArrayList<>();
     private MyDevicesListenerInterface listener;
 
 
@@ -43,7 +43,7 @@ public class MyDevicesAdapter extends RecyclerView.Adapter<MyDevicesAdapter.Devi
         private TextView textViewDeviceName;
         private TextView textViewMacAddress;
         private View constraintLayoutDeviceInfo;
-        private MyDevice currentDevice;
+        private Device currentDevice;
 
         private Button switchAutoConnect;
         private Button buttonDisconnectDevice;
@@ -114,13 +114,13 @@ public class MyDevicesAdapter extends RecyclerView.Adapter<MyDevicesAdapter.Devi
 
     @Override
     public void onBindViewHolder(@NonNull DeviceViewHolder holder, int position) {
-        MyDevice currentDevice = devices.get(position);
-        holder.textViewDeviceName.setText(currentDevice.getAssignedName());
-        holder.textViewMacAddress.setText(currentDevice.getMacAddress());
+        Device currentDevice = devices.get(position);
+        holder.textViewDeviceName.setText(currentDevice.getDeviceAssignedName());
+        holder.textViewMacAddress.setText(currentDevice.getDeviceMacAddress());
 
     }
 
-    public void setDevices(List<MyDevice> devices){
+    public void setDevices(List<Device> devices){
         this.devices = devices;
         notifyDataSetChanged();
     }

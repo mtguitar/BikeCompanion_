@@ -28,7 +28,7 @@ import com.example.bikecompanion.adapters.scanner.ScannerAdapter;
 import com.example.bikecompanion.ble.BleScannerService;
 import com.example.bikecompanion.ble.RegisterBroadcastReceiver;
 import com.example.bikecompanion.constants.Constants;
-import com.example.bikecompanion.databases.devices.MyDevice;
+import com.example.bikecompanion.databases.entities.Device;
 import com.example.bikecompanion.ui.myDevices.MyDevicesViewModel;
 
 import java.util.ArrayList;
@@ -205,8 +205,8 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
         String deviceType = scannerAdapter.scanResultsArrayList.get(position).getDeviceType();
 
 
-        MyDevice newDevice = new MyDevice(deviceName, deviceName, deviceMacAddress, deviceType);
-        LiveData<List<MyDevice>> allDevices = myDevicesViewModel.getAllDevices();
+        Device newDevice = new Device(deviceName, deviceName, deviceMacAddress, deviceType);
+        LiveData<List<Device>> allDevices = myDevicesViewModel.getAllDevices();
         myDevicesViewModel.insert(newDevice);
 
         NavDirections action = ScannerFragmentDirections.actionNavScannerToNavMyDevices();

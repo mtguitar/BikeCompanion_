@@ -1,4 +1,4 @@
-package com.example.bikecompanion.databases.devices;
+package com.example.bikecompanion.databases;
 
 import android.app.Application;
 import android.content.BroadcastReceiver;
@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -17,6 +16,8 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.bikecompanion.ble.BleConnectionService;
 import com.example.bikecompanion.constants.Constants;
+import com.example.bikecompanion.databases.entities.Bike;
+import com.example.bikecompanion.databases.entities.Device;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,10 +33,12 @@ import java.util.UUID;
  * MyDevicesFragment interacts with this repo entirely through MyDevicesViewModel.
  */
 
-public class MyDevicesRepository {
+public class EntitiesRepository {
 
-    private MyDevicesDao deviceDao;
-    private LiveData<List<MyDevice>> allDevices;
+    private EntitiesDao entitiesDao;
+
+    private LiveData<List<Device>> allDevices;
+    private LiveData<List<Bike>> allBikes;
 
     private BleConnectionService bleConnectionService;
 
@@ -53,109 +56,185 @@ public class MyDevicesRepository {
 
     private Context context;
 
-    public MyDevicesRepository(Application application){
-        MyDevicesDataBase deviceDataBase = MyDevicesDataBase.getInstance(application);
-        deviceDao = deviceDataBase.deviceDao();
-        allDevices = deviceDao.getAllDevices();
+    public EntitiesRepository(Application application){
+        EntitiesDataBase entitiesDataBase = EntitiesDataBase.getInstance(application);
+        entitiesDao = entitiesDataBase.entitiesDao();
+        allDevices = entitiesDao.getAllDevices();
+        allBikes = entitiesDao.getAllBikes();
 
         context = application.getApplicationContext();
         registerBroadcastReceiver(context);
     }
 
-    public void insert (MyDevice device){
-        new InsertDeviceAsyncTask(deviceDao).execute(device);
+
+    public void insertBike(Bike bike){
+        new InsertBikeAsyncTask(entitiesDao).execute(bike);
     }
 
-    public void update (MyDevice device){
-        new UpdateDeviceAsyncTask(deviceDao).execute(device);
+    public void updateBike(Bike bike){
+        new UpdateBikeAsyncTask(entitiesDao).execute(bike);
     }
 
-    public void delete (MyDevice device){
-        new DeleteDeviceAsyncTask(deviceDao).execute(device);
+    public void deleteBike(Bike bike){
+        new DeleteBikeAsyncTask(entitiesDao).execute(bike);
+    }
 
+    public void deleteAllBikes (){
+        new DeleteAllDevicesAsyncTask(entitiesDao).execute();
+    }
+
+    public LiveData<List<Bike>> getAllBikes(){
+        return allBikes;
+    }
+
+
+
+
+    public void insertDevice(Device device){
+        new InsertDeviceAsyncTask(entitiesDao).execute(device);
+    }
+
+    public void updateDevice(Device device){
+        new UpdateDeviceAsyncTask(entitiesDao).execute(device);
+    }
+
+    public void deleteDevice(Device device){
+        new DeleteDeviceAsyncTask(entitiesDao).execute(device);
     }
 
     public void deleteAllDevices (){
-        new DeleteAllDevicesAsyncTask(deviceDao).execute();
-
+        new DeleteAllDevicesAsyncTask(entitiesDao).execute();
     }
 
-    public LiveData<List<MyDevice>> getAllDevices(){
+    public LiveData<List<Device>> getAllDevices(){
         return allDevices;
     }
 
-    //AsyncTasks to ensure that we are not working on the main thread
-    private static class InsertDeviceAsyncTask extends AsyncTask<MyDevice, Void, Void>{
-        private MyDevicesDao deviceDao;
 
-        private InsertDeviceAsyncTask(MyDevicesDao deviceDao){
-            this.deviceDao = deviceDao;
+    /**
+     * AsyncTasks for writing/reading to/from db to ensure that we are not working on the main thread
+     */
+
+    //Bikes
+    private static class InsertBikeAsyncTask extends android.os.AsyncTask<Bike, Void, Void> {
+        private EntitiesDao entitiesDao;
+
+        private InsertBikeAsyncTask(EntitiesDao entitiesDao){
+            this.entitiesDao = entitiesDao;
         }
 
         @Override
-        protected Void doInBackground(MyDevice... devices) {
-            deviceDao.insert(devices[0]);
+        protected Void doInBackground(Bike... bikes) {
+            entitiesDao.insertBike(bikes[0]);
             return null;
         }
     }
 
-    private static class UpdateDeviceAsyncTask extends AsyncTask<MyDevice, Void, Void>{
-        private MyDevicesDao deviceDao;
 
-        private UpdateDeviceAsyncTask(MyDevicesDao deviceDao){
-            this.deviceDao = deviceDao;
+    private static class UpdateBikeAsyncTask extends android.os.AsyncTask<Bike, Void, Void> {
+        private EntitiesDao entitiesDao;
+
+        private UpdateBikeAsyncTask(EntitiesDao entitiesDao){
+            this.entitiesDao = entitiesDao;
         }
 
         @Override
-        protected Void doInBackground(MyDevice... devices) {
-            deviceDao.update(devices[0]);
+        protected Void doInBackground(Bike... bikes) {
+            entitiesDao.updateBike(bikes[0]);
             return null;
         }
     }
 
-    private static class DeleteDeviceAsyncTask extends AsyncTask<MyDevice, Void, Void>{
-        private MyDevicesDao deviceDao;
+    private static class DeleteBikeAsyncTask extends android.os.AsyncTask<Bike, Void, Void> {
+        private EntitiesDao entitiesDao;
 
-        private DeleteDeviceAsyncTask(MyDevicesDao deviceDao){
-            this.deviceDao = deviceDao;
+        private DeleteBikeAsyncTask(EntitiesDao entitiesDao){
+            this.entitiesDao = entitiesDao;
         }
 
         @Override
-        protected Void doInBackground(MyDevice... devices) {
-            deviceDao.delete(devices[0]);
+        protected Void doInBackground(Bike... bikes) {
+            entitiesDao.deleteBike(bikes[0]);
+            return null;
+        }
+    }
+
+    private static class DeleteAllBikesAsyncTask extends android.os.AsyncTask<Void, Void, Void> {
+        private EntitiesDao entitiesDao;
+
+        private DeleteAllBikesAsyncTask(EntitiesDao entitiesDao){
+            this.entitiesDao = entitiesDao;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            entitiesDao.deleteAllBikes();
+            return null;
+        }
+    }
+
+    //Devices
+    private static class InsertDeviceAsyncTask extends android.os.AsyncTask<Device, Void, Void> {
+        private EntitiesDao entitiesDao;
+
+        private InsertDeviceAsyncTask(EntitiesDao entitiesDao){
+            this.entitiesDao = entitiesDao;
+        }
+
+        @Override
+        protected Void doInBackground(Device... devices) {
+            entitiesDao.insertDevice(devices[0]);
+            return null;
+        }
+    }
+
+    private static class UpdateDeviceAsyncTask extends android.os.AsyncTask<Device, Void, Void> {
+        private EntitiesDao entitiesDao;
+
+        private UpdateDeviceAsyncTask(EntitiesDao entitiesDao){
+            this.entitiesDao = entitiesDao;
+        }
+
+        @Override
+        protected Void doInBackground(Device... devices) {
+            entitiesDao.updateDevice(devices[0]);
+            return null;
+        }
+    }
+
+    private static class DeleteDeviceAsyncTask extends android.os.AsyncTask<Device, Void, Void> {
+        private EntitiesDao entitiesDao;
+
+        private DeleteDeviceAsyncTask(EntitiesDao entitiesDao){
+            this.entitiesDao = entitiesDao;
+        }
+
+        @Override
+        protected Void doInBackground(Device... devices) {
+            entitiesDao.deleteDevice(devices[0]);
             return null;
         }
     }
 
     private static class DeleteAllDevicesAsyncTask extends android.os.AsyncTask<Void, Void, Void> {
-        private MyDevicesDao deviceDao;
+        private EntitiesDao entitiesDao;
 
-        private DeleteAllDevicesAsyncTask(MyDevicesDao deviceDao){
-            this.deviceDao = deviceDao;
+        private DeleteAllDevicesAsyncTask(EntitiesDao entitiesDao){
+            this.entitiesDao = entitiesDao;
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-            deviceDao.deleteAllDevices();
+            entitiesDao.deleteAllDevices();
             return null;
         }
     }
 
 
-
-    /*
-    //Sends intents to BleConnectionService
-    public void sendCommandToService(Class serviceClass, String action, Bundle extras) {
-        Intent bleServiceIntent = new Intent(context, serviceClass);
-        bleServiceIntent.setAction(action);
-        if(extras != null){
-            bleServiceIntent.putExtras(extras);
-        }
-        context.startService(bleServiceIntent);
-        Log.d(TAG, "Sent intent to " + serviceClass + " " + action);
-    }
-
+    /**
+     * methods to interact with BleConnectionService
      */
+
 
     public void connectDevice(String deviceMacAddress) {
         bleConnectionService.connectDevice(deviceMacAddress);
@@ -270,9 +349,10 @@ public class MyDevicesRepository {
     };
 
 
+    /**
+     * LiveData
+     */
 
-
-    //liveData
     public HashMap<String, String> getConnectionStateHashMap(){
         if (connectionStateHashMap == null) {
             connectionStateHashMap = new HashMap<String, String>();

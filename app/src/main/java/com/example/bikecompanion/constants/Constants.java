@@ -88,4 +88,11 @@ public class Constants {
     public final static String GATT_DISCONNECTED = "Disconnected";
     public static final String GATT_SERVICES_DISCOVERED = "Ready to Read/Write";
     public static final String GATT_CONNECTION_STATE = "GATT_CONNECTION_STATE";
+
+
+
+    //Database
+    public static final String PLACEHOLDER = "PLACEHOLDER";
 }
+
+

@@ -6,8 +6,9 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.example.bikecompanion.databases.devices.MyDevice;
-import com.example.bikecompanion.databases.devices.MyDevicesRepository;
+import com.example.bikecompanion.databases.entities.Bike;
+import com.example.bikecompanion.databases.entities.Device;
+import com.example.bikecompanion.databases.EntitiesRepository;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,37 +18,64 @@ public class MyDevicesViewModel extends AndroidViewModel {
 
     private final static String TAG = "FlareLog MDViewModel";
 
-    private MyDevicesRepository repository;
-    private LiveData<List<MyDevice>> allDevices;
+    private EntitiesRepository repository;
+    private LiveData<List<Device>> allDevices;
     private LiveData<String> connectionState;
+    private LiveData<List<Bike>> allBikes;
 
 
 
 
     public MyDevicesViewModel(@NonNull Application application) {
         super(application);
-        repository = new MyDevicesRepository(application);
+        repository = new EntitiesRepository(application);
         allDevices = repository.getAllDevices();
+        allBikes = repository.getAllBikes();
 
     }
 
-    public void insert(MyDevice device){
-        repository.insert(device);
+    public void insert(Bike bike){
+        repository.insertBike(bike);
     }
 
-    public void update(MyDevice device){
-        repository.update(device);
+    public void update(Bike bike){
+        repository.updateBike(bike);
     }
 
-    public void delete(MyDevice device){
-        repository.delete(device);
+    public void delete(Bike bike){
+        repository.deleteBike(bike);
     }
 
-    public void deleteAllNotes(){
+    public void deleteAllBikes(){
+        repository.deleteAllBikes();
+    }
+
+    public LiveData<List<Bike>> getAllBikes(){
+        return allBikes;
+    }
+
+
+
+
+
+
+    public void insert(Device device){
+        repository.insertDevice(device);
+    }
+
+    public void update(Device device){
+        repository.updateDevice(device);
+    }
+
+    public void delete(Device device){
+        repository.deleteDevice(device);
+    }
+
+    public void deleteAllDevices(){
         repository.deleteAllDevices();
     }
 
-    public LiveData<List<MyDevice>> getAllDevices(){
+    public LiveData<List<Device>> getAllDevices(){
         return allDevices;
     }
 

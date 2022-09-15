@@ -7,7 +7,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.example.bikecompanion.databases.devices.MyDevice;
+import com.example.bikecompanion.databases.entities.Bike;
 
 import java.util.List;
 
@@ -15,18 +15,18 @@ import java.util.List;
 public interface MyBikesDao {
 
     @Insert
-    void insert(MyBike bike);
+    void insert(Bike bike);
 
     @Update
-    void update(MyBike bike);
+    void update(Bike bike);
 
     @Delete
-    void delete(MyBike bike);
+    void delete(Bike bike);
 
     @Query("DELETE FROM bike_table")
     void deleteAllBikes();
 
-    @Query("SELECT * FROM bike_table ORDER BY id DESC")
-    LiveData<List<MyBike>> getAllBikes();
+    @Query("SELECT * FROM bike_table ORDER BY bikeName DESC")
+    LiveData<List<Bike>> getAllBikes();
 
 }
