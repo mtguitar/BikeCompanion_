@@ -15,8 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.bikecompanion.R;
 import com.example.bikecompanion.constants.Constants;
 import com.example.bikecompanion.databinding.FragmentHomeBinding;
-import com.example.bikecompanion.deviceTypes.FlareRTDeviceType;
-import com.example.bikecompanion.ui.myDevices.MyDevicesViewModel;
+import com.example.bikecompanion.ui.myDevices.SharedEntitiesViewModel;
 
 import java.util.HashMap;
 
@@ -24,7 +23,7 @@ public class HomeFragment extends Fragment {
 
     private final static String TAG = "FlareLog Home";
     private FragmentHomeBinding binding;
-    private MyDevicesViewModel myDevicesViewModel;
+    private SharedEntitiesViewModel myDevicesViewModel;
 
 
     private View view;
@@ -81,7 +80,7 @@ public class HomeFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
 
-        myDevicesViewModel = new ViewModelProvider(this).get(MyDevicesViewModel.class);
+        myDevicesViewModel = new ViewModelProvider(this).get(SharedEntitiesViewModel.class);
         myDevicesViewModel.bindService();
 
         //initOnClickListeners();

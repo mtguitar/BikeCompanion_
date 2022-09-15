@@ -13,8 +13,8 @@ public class BikeWithDevices {
 
     @Embedded public Bike bike;
     @Relation(
-            parentColumn = "bikeName",
-            entityColumn = "deviceMacAddress",
+            parentColumn = "bikeId",
+            entityColumn = "deviceId",
             associateBy = @Junction(BikeDeviceCrossRef.class)
 
     )

@@ -10,19 +10,19 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.bikecompanion.databinding.FragmentSlideshowBinding;
-import com.example.bikecompanion.ui.myDevices.MyDevicesViewModel;
+import com.example.bikecompanion.ui.myDevices.SharedEntitiesViewModel;
 
 public class OLDMyDevicesFragment extends Fragment {
 
     private FragmentSlideshowBinding binding;
 
-    private MyDevicesViewModel myDevicesViewModel;
+    private SharedEntitiesViewModel myDevicesViewModel;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        MyDevicesViewModel slideshowViewModel =
-                new ViewModelProvider(this).get(MyDevicesViewModel.class);
+        SharedEntitiesViewModel slideshowViewModel =
+                new ViewModelProvider(this).get(SharedEntitiesViewModel.class);
 
         binding = FragmentSlideshowBinding.inflate(inflater, container, false);
         View root = binding.getRoot();

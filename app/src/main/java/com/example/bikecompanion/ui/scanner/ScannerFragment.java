@@ -29,7 +29,7 @@ import com.example.bikecompanion.ble.BleScannerService;
 import com.example.bikecompanion.ble.RegisterBroadcastReceiver;
 import com.example.bikecompanion.constants.Constants;
 import com.example.bikecompanion.databases.entities.Device;
-import com.example.bikecompanion.ui.myDevices.MyDevicesViewModel;
+import com.example.bikecompanion.ui.myDevices.SharedEntitiesViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +54,7 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
     private static View progressBarScan;
     private static Button buttonAddToMyDevices;
 
-    private MyDevicesViewModel myDevicesViewModel;
+    private SharedEntitiesViewModel myDevicesViewModel;
 
 
 
@@ -62,7 +62,7 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        myDevicesViewModel = new ViewModelProvider(this).get(MyDevicesViewModel.class);
+        myDevicesViewModel = new ViewModelProvider(this).get(SharedEntitiesViewModel.class);
 
         getVarsFromPreviousFragment();
 

@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-public class MyDevicesViewModel extends AndroidViewModel {
+public class SharedEntitiesViewModel extends AndroidViewModel {
 
     private final static String TAG = "FlareLog MDViewModel";
 
@@ -26,7 +26,7 @@ public class MyDevicesViewModel extends AndroidViewModel {
 
 
 
-    public MyDevicesViewModel(@NonNull Application application) {
+    public SharedEntitiesViewModel(@NonNull Application application) {
         super(application);
         repository = new EntitiesRepository(application);
         allDevices = repository.getAllDevices();
@@ -78,6 +78,7 @@ public class MyDevicesViewModel extends AndroidViewModel {
     public LiveData<List<Device>> getAllDevices(){
         return allDevices;
     }
+
 
 
     /**

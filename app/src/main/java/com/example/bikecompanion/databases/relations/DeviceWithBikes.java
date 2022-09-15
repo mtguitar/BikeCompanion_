@@ -14,7 +14,7 @@ public class DeviceWithBikes {
     @Embedded
     public Device device;
     @Relation(
-            parentColumn = "deviceMacAddress",
+            parentColumn = "deviceId",
             entityColumn = "bikeId",
             associateBy = @Junction(BikeDeviceCrossRef.class)
     )

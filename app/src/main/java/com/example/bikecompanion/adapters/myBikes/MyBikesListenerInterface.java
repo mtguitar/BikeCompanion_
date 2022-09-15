@@ -9,7 +9,8 @@ import java.util.List;
 public interface MyBikesListenerInterface {
     void onItemClick(int position, View itemView, List<Bike> bike);
 
-    void onButtonClickAdd(int position, List<Bike> bike);
+    void onButtonClickRemove(int position, List<Bike> bike);
 
-    void onButtonClickDisconnect(int position, List<Bike> bike);
+    void onButtonClickEdit(int position, List<Bike> bike);
 }
+

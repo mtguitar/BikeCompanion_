@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecompanion.R;
 import com.example.bikecompanion.databases.entities.Bike;
-import com.example.bikecompanion.databases.entities.Device;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,32 +30,24 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
     @NonNull
     @Override
     public BikeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.device_item, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.bike_item, parent, false);
         return new BikeViewHolder(itemView);
     }
 
     class BikeViewHolder extends RecyclerView.ViewHolder{
-        private TextView textViewDeviceBattery;
-        private TextView textViewDeviceType;
-        private TextView textViewDeviceMode;
-        private TextView textViewDeviceManufacturer;
-        private TextView textViewDeviceMacAddress;
-        private TextView textViewDeviceName;
-        private TextView textViewMacAddress;
-        private View constraintLayoutDeviceInfo;
-        private Device currentDevice;
-
-        private Button switchPrimaryBike;
-        private Button buttonEdit;
-        private Button buttonAddDevices;
+        private TextView textViewBikeName;
+        private TextView textViewBikeId;
+        private Button buttonBikeEdit;
+        private Button buttonBikeRemove;
 
 
         public BikeViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            switchPrimaryBike = itemView.findViewById(R.id.switch_primary_bike);
-            buttonEdit = itemView.findViewById(R.id.button_device_edit);
-            buttonAddDevices = itemView.findViewById(R.id.button_add_devices);
+            textViewBikeName = itemView.findViewById(R.id.text_view_my_bike_name);
+            textViewBikeId = itemView.findViewById(R.id.text_view_my_bike_id);
+            buttonBikeEdit = itemView.findViewById(R.id.button_bike_edit);
+            buttonBikeRemove = itemView.findViewById(R.id.button_bike_remove);
 
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -73,7 +64,7 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
                 }
             });
 
-            buttonAddDevices.setOnClickListener(new View.OnClickListener() {
+            buttonBikeRemove.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
@@ -81,14 +72,14 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
                         int position = getAbsoluteAdapterPosition();
 
                         if (position != RecyclerView.NO_POSITION){
-                            listener.onButtonClickAdd(position, bike);
+                            listener.onButtonClickRemove(position, bike);
                         }
                     }
 
                 }
             });
 
-            buttonEdit.setOnClickListener(new View.OnClickListener() {
+            buttonBikeEdit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
@@ -96,7 +87,7 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
                         int position = getAbsoluteAdapterPosition();
 
                         if (position != RecyclerView.NO_POSITION){
-                            listener.onButtonClickDisconnect(position, bike);
+                            listener.onButtonClickEdit(position, bike);
                         }
                     }
 
@@ -110,7 +101,8 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
     @Override
     public void onBindViewHolder(@NonNull BikeViewHolder holder, int position) {
         Bike currentBike = bike.get(position);
-        //holder.textViewDeviceName.setText(currentBike.getName());
+        holder.textViewBikeName.setText(currentBike.getBikeName());
+        //holder.textViewBikeId.setText(String.valueOf(currentBike.getBikeId());
 
     }
 

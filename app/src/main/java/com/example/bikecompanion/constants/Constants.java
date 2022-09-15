@@ -93,6 +93,7 @@ public class Constants {
 
     //Database
     public static final String PLACEHOLDER = "PLACEHOLDER";
+    public static final String SELECT_DEVICES = "SELECT DEVICES";
 }
 
 

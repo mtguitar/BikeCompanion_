@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
-    app:cardBackgroundColor="@color/primaryDarkColor"
+    app:cardBackgroundColor="@color/cardview_light_background"
     app:cardCornerRadius="0dp"
     app:cardElevation="8dp">
 
@@ -24,41 +24,42 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="10dp"
+                android:tint="#000000"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:srcCompat="@drawable/ic_expand" />
 
             <TextView
-                android:id="@+id/text_view_my_bike_name"
+                android:id="@+id/text_view_my_device_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="70dp"
                 android:layout_marginTop="10dp"
                 android:fontFamily="sans-serif"
                 android:text="Line1"
-                android:textColor="@android:color/white"
+                android:textColor="@color/primaryTextColor"
                 android:textSize="25sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/text_view_my_device_mac_address"
+                app:layout_constraintBottom_toTopOf="@+id/text_view_my_device_id"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/text_view_my_device_mac_address"
+                android:id="@+id/text_view_my_device_id"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="70dp"
                 android:layout_marginBottom="10dp"
                 android:fontFamily="sans-serif"
                 android:text="Line 2"
-                android:textColor="@android:color/white"
+                android:textColor="@color/primaryTextColor"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_view_my_bike_name" />
+                app:layout_constraintTop_toBottomOf="@+id/text_view_my_device_name" />
 
             <ImageView
-                android:id="@+id/imageView3"
+                android:id="@+id/image_view_bike"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginStart="10dp"
@@ -73,10 +74,10 @@
             android:id="@+id/constraint_layout_device_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <Button
-                android:id="@+id/button_device_edit"
+                android:id="@+id/button_device_remove"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="70dp"
@@ -109,7 +110,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Battery"
-                        android:textColor="@color/cardview_light_background"
+                        android:textColor="@color/primaryTextColor"
                         android:textStyle="bold" />
 
                     <TextView
@@ -118,7 +119,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="4"
                         android:text="Connecting . . . "
-                        android:textColor="@color/cardview_light_background" />
+                        android:textColor="@color/primaryTextColor" />
                 </TableRow>
 
                 <TableRow
@@ -132,7 +133,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Mode"
-                        android:textColor="@color/cardview_light_background"
+                        android:textColor="@color/primaryTextColor"
                         android:textStyle="bold" />
 
                     <TextView
@@ -141,7 +142,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="4"
                         android:text="Connecting . . . "
-                        android:textColor="@color/cardview_light_background" />
+                        android:textColor="@color/primaryTextColor" />
                 </TableRow>
 
                 <TableRow
@@ -155,7 +156,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Manufacturer"
-                        android:textColor="@color/cardview_light_background"
+                        android:textColor="@color/primaryTextColor"
                         android:textStyle="bold" />
 
                     <TextView
@@ -164,7 +165,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="4"
                         android:text="Connecting . . . "
-                        android:textColor="@color/cardview_light_background" />
+                        android:textColor="@color/primaryTextColor" />
 
                 </TableRow>
 
@@ -179,7 +180,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Model"
-                        android:textColor="@color/cardview_light_background"
+                        android:textColor="@color/primaryTextColor"
                         android:textStyle="bold" />
 
                     <TextView
@@ -188,7 +189,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="4"
                         android:text="Connecting . . . "
-                        android:textColor="@color/cardview_light_background" />
+                        android:textColor="@color/primaryTextColor" />
                 </TableRow>
 
                 <TableRow
@@ -202,7 +203,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="State"
-                        android:textColor="@color/cardview_light_background"
+                        android:textColor="@color/primaryTextColor"
                         android:textStyle="bold" />
 
                     <TextView
@@ -224,7 +225,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Auto Connect"
-                        android:textColor="@color/cardview_light_background" />
+                        android:textColor="@color/primaryTextColor" />
 
                     <TextView
                         android:id="@+id/textView12"
@@ -236,14 +237,14 @@
             </TableLayout>
 
             <Button
-                android:id="@+id/button_add_devices"
+                android:id="@+id/button_device_connect"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:text="Connecting"
                 android:textColor="@color/cardview_light_background"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/button_device_edit"
+                app:layout_constraintStart_toEndOf="@+id/button_device_remove"
                 app:layout_constraintTop_toBottomOf="@+id/tableLayout2" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
