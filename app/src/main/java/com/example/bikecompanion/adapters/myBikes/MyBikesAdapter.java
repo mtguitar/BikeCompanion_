@@ -36,7 +36,8 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
 
     class BikeViewHolder extends RecyclerView.ViewHolder{
         private TextView textViewBikeName;
-        private TextView textViewBikeId;
+        private TextView textViewBikeMake;
+        private TextView textViewBikeModel;
         private Button buttonBikeEdit;
         private Button buttonBikeRemove;
 
@@ -45,7 +46,8 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
             super(itemView);
 
             textViewBikeName = itemView.findViewById(R.id.text_view_my_bike_name);
-            textViewBikeId = itemView.findViewById(R.id.text_view_my_bike_make);
+            textViewBikeMake = itemView.findViewById(R.id.text_view_my_bike_make);
+            textViewBikeModel = itemView.findViewById(R.id.text_view_my_bike_model);
             buttonBikeEdit = itemView.findViewById(R.id.button_bike_edit);
             buttonBikeRemove = itemView.findViewById(R.id.button_bike_remove);
 
@@ -102,6 +104,13 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
     public void onBindViewHolder(@NonNull BikeViewHolder holder, int position) {
         Bike currentBike = bike.get(position);
         holder.textViewBikeName.setText(currentBike.getBikeName());
+        holder.textViewBikeMake.setText(currentBike.getBikeMake());
+        holder.textViewBikeModel.setText(currentBike.getBikeModel());
+
+
+
+
+
         //holder.textViewBikeId.setText(String.valueOf(currentBike.getBikeId());
 
     }

@@ -207,12 +207,15 @@ public class BleScannerService extends LifecycleService {
             }
         }
         //if deviceMacAddress not already in list, add device to scannerResults
-        int image = R.drawable.ic_device_type_other_sensor;
-        if (deviceType.contains("light")){
+        int image;
+        if (deviceType.contains(Constants.DEVICE_TYPE_LIGHT)){
             image = R.drawable.ic_device_type_light;
         }
-        if (deviceType.contains("speed")){
+        else if (deviceType.contains(Constants.DEVICE_TYPE_SPEED)){
             image = R.drawable.ic_speed;
+        }
+        else {
+            image = R.drawable.ic_device_type_other_sensor;
         }
         scanResults.add(new ScanResults(image, deviceName, deviceMacAddress, deviceType));
         scannerLiveDataList.postValue(scanResults);

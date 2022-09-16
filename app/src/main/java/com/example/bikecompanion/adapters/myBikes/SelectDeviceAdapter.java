@@ -1,5 +1,6 @@
 package com.example.bikecompanion.adapters.myBikes;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecompanion.R;
+import com.example.bikecompanion.constants.Constants;
 import com.example.bikecompanion.databases.entities.Bike;
 import com.example.bikecompanion.databases.entities.Device;
 
@@ -21,6 +23,7 @@ import java.util.List;
 
 public class SelectDeviceAdapter extends RecyclerView.Adapter<SelectDeviceAdapter.SelectDeviceViewHolder>{
 
+    private final static String TAG = "FlareLog SelectAdapt";
     private List<Device> device = new ArrayList<>();
     private MyBikesListenerInterface listener;
 
@@ -78,6 +81,21 @@ public class SelectDeviceAdapter extends RecyclerView.Adapter<SelectDeviceAdapte
     public void onBindViewHolder(@NonNull SelectDeviceViewHolder holder, int position) {
         Device currentDevice = device.get(position);
         holder.checkBox.setText(currentDevice.getDeviceBleName() + " " + currentDevice.getDeviceMacAddress());
+
+        String deviceType = currentDevice.getDeviceType();
+        deviceType = deviceType.toLowerCase();
+        Log.d(TAG, "Current device type: " + deviceType);
+
+        if (deviceType.contains(Constants.DEVICE_TYPE_LIGHT)){
+            holder.selectDeviceImageView.setImageResource(R.drawable.ic_device_type_light);
+        }
+        else if (deviceType.contains(Constants.DEVICE_TYPE_SPEED)){
+            holder.selectDeviceImageView.setImageResource(R.drawable.ic_speed);
+        }
+        else {
+            holder.selectDeviceImageView.setImageResource(R.drawable.ic_device_type_other_sensor);
+        }
+
     }
 
     public void setCheckBoxes(List<Device> devices){

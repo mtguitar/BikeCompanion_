@@ -94,6 +94,11 @@ public class Constants {
     //Database
     public static final String PLACEHOLDER = "PLACEHOLDER";
     public static final String SELECT_DEVICES = "SELECT DEVICES";
+
+
+    //Device types
+    public static final CharSequence DEVICE_TYPE_LIGHT = "light";
+    public static final CharSequence DEVICE_TYPE_SPEED = "speed";
 }
 
 

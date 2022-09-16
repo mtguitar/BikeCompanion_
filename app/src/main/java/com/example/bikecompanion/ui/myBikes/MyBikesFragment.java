@@ -20,7 +20,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.bikecompanion.R;
 import com.example.bikecompanion.adapters.myBikes.MyBikesAdapter;
@@ -46,9 +48,15 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
     private Button buttonAddBike;
     private Button buttonAddBikeCancel;
     private EditText editTextBikeName;
+    private EditText editTextBikeMake;
+    private EditText editTextBikeModel;
     private MyBikesAdapter bikeAdapter;
     private SelectDeviceAdapter selectDeviceAdapter;
     private View cardViewAddBike;
+
+
+
+    private ArrayList<Integer> checkedDevices;
 
     private List<Device> deviceList;
 
@@ -84,7 +92,10 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
         buttonAddBike = view.findViewById(R.id.button_add_bike);
         buttonAddBikeCancel = view.findViewById(R.id.button_add_bike_cancel);
         editTextBikeName = view.findViewById(R.id.edit_text_bike_name);
+        editTextBikeMake = view.findViewById(R.id.edit_text_bike_make);
+        editTextBikeModel = view.findViewById(R.id.edit_text_bike_model);
         cardViewAddBike = view.findViewById(R.id.card_view_add_bike);
+
 
 
 
@@ -129,8 +140,11 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
             @Override
             public void onClick(View v) {
                 String bikeName = String.valueOf(editTextBikeName.getText());
+                String bikeMake = String.valueOf(editTextBikeMake.getText());
+                String bikeModel = String.valueOf(editTextBikeModel.getText());
+
                 if (!bikeName.equals("")){
-                    Bike bike = new Bike(bikeName);
+                    Bike bike = new Bike(bikeName, bikeMake, bikeModel);
                     sharedEntitiesViewModel.insert(bike);
                     cardViewAddBike.setVisibility(View.GONE);
                 }
@@ -138,11 +152,14 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
                     return;
                 }
                 editTextBikeName.getText().clear();
+                editTextBikeMake.getText().clear();
+                editTextBikeModel.getText().clear();
 
 
             }
         });
 
+        //Add bike to db
         buttonAddBikeCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -206,7 +223,6 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
         });
 
 
-
         // add OK and Cancel buttons
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
@@ -218,12 +234,30 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
         // create and show the alert dialog
         AlertDialog dialog = builder.create();
         dialog.show();
-
-
     }
 
     @Override
     public void onCheckBoxClick(int position, List<Device> device) {
+        String mac = device.get(position).getDeviceMacAddress();
+        int deviceId = device.get(position).getDeviceId();
+        if (getCheckedDevices().contains(deviceId)){
+            getCheckedDevices().remove(Integer.valueOf(deviceId));
+            Toast.makeText(getActivity(), "Removed: " + mac + " " + deviceId, Toast.LENGTH_SHORT).show();
+        }
+        else{
+            getCheckedDevices().add(deviceId);
+            Toast.makeText(getActivity(), "Added: " + mac + " " + deviceId, Toast.LENGTH_SHORT).show();
+        }
+
 
     }
+
+    public ArrayList<Integer> getCheckedDevices() {
+        if (checkedDevices == null)
+        {
+            checkedDevices = new ArrayList<>();
+        }
+        return checkedDevices;
+    }
+
 }

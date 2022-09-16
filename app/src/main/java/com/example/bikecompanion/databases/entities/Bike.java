@@ -15,13 +15,23 @@ public class Bike {
     @PrimaryKey(autoGenerate = true)
     private int bikeId;
 
-    private String bikeName = Constants.PLACEHOLDER;
+    private String bikeName;
+    private String bikeMake;
+    private String bikeModel;
 
 
-    public Bike(String bikeName) {
+    //Constructor
+    public Bike(String bikeName, String bikeMake, String bikeModel) {
         this.bikeName = bikeName;
+        this.bikeMake = bikeMake;
+        this.bikeModel = bikeModel;
     }
 
+    //Getters and setters
+
+    public void setBikeName(String bikeName) {
+        this.bikeName = bikeName;
+    }
 
     public String getBikeName() {
         return bikeName;
@@ -34,6 +44,23 @@ public class Bike {
     public void setBikeId(int bikeId) {
         this.bikeId = bikeId;
     }
+
+    public String getBikeMake() {
+        return bikeMake;
+    }
+
+    public void setBikeMake(String bikeMake) {
+        this.bikeMake = bikeMake;
+    }
+
+    public String getBikeModel() {
+        return bikeModel;
+    }
+
+    public void setBikeModel(String bikeModel) {
+        this.bikeModel = bikeModel;
+    }
+
 
 
 

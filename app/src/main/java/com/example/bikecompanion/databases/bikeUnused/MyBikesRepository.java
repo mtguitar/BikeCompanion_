@@ -1,4 +1,4 @@
-package com.example.bikecompanion.databases.bike;
+package com.example.bikecompanion.databases.bikeUnused;
 
 import android.app.Application;
 import android.content.Context;
