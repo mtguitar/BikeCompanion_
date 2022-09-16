@@ -5,17 +5,18 @@
     android:id="@+id/constraint_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTint="#00FFFFFF"
     tools:context=".ui.myDevices.MyDevicesFragment">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/card_view_add_bike"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="0dp"
+        android:layout_margin="10dp"
         android:layout_marginBottom="10dp"
         android:backgroundTint="#ECEBEB"
         android:visibility="gone"
-        app:cardElevation="8dp"
+        app:cardElevation="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -45,7 +46,7 @@
                 android:text="Add"
                 android:textColor="@color/primaryColor"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/recyclerView" />
+                app:layout_constraintStart_toStartOf="@+id/recycler_view_select_device" />
 
             <EditText
                 android:id="@+id/edit_text_bike_name"
@@ -119,13 +120,13 @@
                 app:layout_constraintTop_toBottomOf="@+id/edit_text_bike_model" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
-                android:layout_width="249dp"
+                android:id="@+id/recycler_view_select_device"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="30dp"
                 app:layout_constraintBottom_toTopOf="@+id/button_add_bike"
                 app:layout_constraintStart_toStartOf="@+id/textView20"
-                app:layout_constraintTop_toBottomOf="@+id/textView20" />
+                app:layout_constraintTop_toBottomOf="@+id/textView20"
+                tools:listitem="@layout/device_checkbox_item" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline15"

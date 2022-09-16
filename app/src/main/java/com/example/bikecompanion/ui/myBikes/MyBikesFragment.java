@@ -25,6 +25,7 @@ import android.widget.EditText;
 import com.example.bikecompanion.R;
 import com.example.bikecompanion.adapters.myBikes.MyBikesAdapter;
 import com.example.bikecompanion.adapters.myBikes.MyBikesListenerInterface;
+import com.example.bikecompanion.adapters.myBikes.SelectDeviceAdapter;
 import com.example.bikecompanion.constants.Constants;
 import com.example.bikecompanion.databases.entities.Bike;
 import com.example.bikecompanion.databases.entities.Device;
@@ -46,6 +47,7 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
     private Button buttonAddBikeCancel;
     private EditText editTextBikeName;
     private MyBikesAdapter bikeAdapter;
+    private SelectDeviceAdapter selectDeviceAdapter;
     private View cardViewAddBike;
 
     private List<Device> deviceList;
@@ -89,24 +91,26 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
     }
 
     private void initObservers() {
-
-
-        sharedEntitiesViewModel.getAllBikes().observe(getViewLifecycleOwner(), new Observer<List<Bike>>() {
+        sharedEntitiesViewModel.getAllDevices().observe(getViewLifecycleOwner(), new Observer<List<Device>>() {
             @Override
-            public void onChanged(List<Bike> bikes) {
-                Log.d(TAG, "Received bike live data");
-                bikeAdapter.setBikes(bikes);
+            public void onChanged(List<Device> devices) {
+                String macAddressTest = devices.get(1).getDeviceMacAddress();
+
+                Log.d(TAG, "Received devices live data " + macAddressTest);
+                if (devices != null){
+
+                }
+                selectDeviceAdapter.setCheckBoxes(devices);
             }
 
         });
 
-        sharedEntitiesViewModel.getAllDevices().observe(getViewLifecycleOwner(), new Observer<List<Device>>() {
+        sharedEntitiesViewModel.getAllBikes().observe(getViewLifecycleOwner(), new Observer<List<Bike>>() {
             @Override
-            public void onChanged(List<Device> devices) {
-                Log.d(TAG, "Received devices live data");
-                deviceList = devices;
+            public void onChanged(List<Bike> bikes) {
+                Log.d(TAG, "Received bikes live data ");
+                bikeAdapter.setBikes(bikes);
             }
-
         });
 
     }
@@ -155,6 +159,12 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
         recyclerView.setHasFixedSize(true);
         bikeAdapter = new MyBikesAdapter(this);
         recyclerView.setAdapter(bikeAdapter);
+
+        RecyclerView recyclerViewSelectDevice = view.findViewById(R.id.recycler_view_select_device);
+        recyclerViewSelectDevice.setLayoutManager(new LinearLayoutManager(getActivity()));
+        selectDeviceAdapter = new SelectDeviceAdapter(this);
+        recyclerViewSelectDevice.setAdapter(selectDeviceAdapter);
+
     }
 
 
@@ -210,6 +220,11 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
         AlertDialog dialog = builder.create();
         dialog.show();
 
+
+    }
+
+    @Override
+    public void onCheckBoxClick(int position, List<Device> device) {
 
     }
 }

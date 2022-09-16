@@ -4,6 +4,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,14 +13,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecompanion.R;
 import com.example.bikecompanion.databases.entities.Bike;
+import com.example.bikecompanion.databases.entities.Device;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class SelectDeviceAdapter extends RecyclerView.Adapter<SelectDeviceAdapter.BikeViewHolder>{
+public class SelectDeviceAdapter extends RecyclerView.Adapter<SelectDeviceAdapter.SelectDeviceViewHolder>{
 
-    private List<Bike> bike = new ArrayList<>();
+    private List<Device> device = new ArrayList<>();
     private MyBikesListenerInterface listener;
 
 
@@ -29,42 +32,25 @@ public class SelectDeviceAdapter extends RecyclerView.Adapter<SelectDeviceAdapte
 
     @NonNull
     @Override
-    public BikeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.bike_item, parent, false);
-        return new BikeViewHolder(itemView);
+    public SelectDeviceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.device_checkbox_item, parent, false);
+        return new SelectDeviceViewHolder(itemView);
     }
 
-    class BikeViewHolder extends RecyclerView.ViewHolder{
-        private TextView textViewBikeName;
-        private TextView textViewBikeId;
-        private Button buttonBikeEdit;
-        private Button buttonBikeRemove;
+    class SelectDeviceViewHolder extends RecyclerView.ViewHolder{
+        private CheckBox checkBox;
+        private ImageView selectDeviceImageView;
 
 
-        public BikeViewHolder(@NonNull View itemView) {
+
+        public SelectDeviceViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            textViewBikeName = itemView.findViewById(R.id.text_view_my_bike_name);
-            textViewBikeId = itemView.findViewById(R.id.text_view_my_bike_make);
-            buttonBikeEdit = itemView.findViewById(R.id.button_bike_edit);
-            buttonBikeRemove = itemView.findViewById(R.id.button_bike_remove);
+            checkBox = itemView.findViewById(R.id.checkbox_select_device);
+            selectDeviceImageView = itemView.findViewById(R.id.image_view_checkbox);
 
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (listener != null) {
-                        int position = getAbsoluteAdapterPosition();
-
-                        if (position != RecyclerView.NO_POSITION){
-                            listener.onItemClick(position, itemView, bike);
-
-                        }
-                    }
-                }
-            });
-
-            buttonBikeRemove.setOnClickListener(new View.OnClickListener() {
+            checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
@@ -72,48 +58,36 @@ public class SelectDeviceAdapter extends RecyclerView.Adapter<SelectDeviceAdapte
                         int position = getAbsoluteAdapterPosition();
 
                         if (position != RecyclerView.NO_POSITION){
-                            listener.onButtonClickRemove(position, bike);
+                            listener.onCheckBoxClick(position, device);
                         }
                     }
 
                 }
             });
 
-            buttonBikeEdit.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
 
-                    if (listener != null) {
-                        int position = getAbsoluteAdapterPosition();
 
-                        if (position != RecyclerView.NO_POSITION){
-                            listener.onButtonClickEdit(position, bike);
-                        }
-                    }
 
-                }
-            });
+
 
 
         }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull BikeViewHolder holder, int position) {
-        Bike currentBike = bike.get(position);
-        holder.textViewBikeName.setText(currentBike.getBikeName());
-        //holder.textViewBikeId.setText(String.valueOf(currentBike.getBikeId());
-
+    public void onBindViewHolder(@NonNull SelectDeviceViewHolder holder, int position) {
+        Device currentDevice = device.get(position);
+        holder.checkBox.setText(currentDevice.getDeviceBleName() + " " + currentDevice.getDeviceMacAddress());
     }
 
-    public void setBikes(List<Bike> bike){
-        this.bike = bike;
+    public void setCheckBoxes(List<Device> devices){
+        this.device = devices;
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        return bike.size();
+        return device.size();
     }
 
 }
