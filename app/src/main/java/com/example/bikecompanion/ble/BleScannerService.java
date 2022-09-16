@@ -18,13 +18,19 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleService;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import com.example.bikecompanion.R;
 import com.example.bikecompanion.constants.Constants;
+import com.example.bikecompanion.databases.EntitiesRepository;
+import com.example.bikecompanion.databases.entities.Bike;
+import com.example.bikecompanion.databases.entities.Device;
+import com.example.bikecompanion.ui.myDevices.SharedEntitiesViewModel;
 import com.example.bikecompanion.ui.scanner.ScanResults;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 @SuppressLint("MissingPermission")
 public class BleScannerService extends LifecycleService {
@@ -37,6 +43,7 @@ public class BleScannerService extends LifecycleService {
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothLeScanner scanner;
     private Handler handler;
+    private List<Device> deviceList;
 
     //filter and scan settings vars
     private ScanFilter scanFilter;
@@ -57,6 +64,8 @@ public class BleScannerService extends LifecycleService {
 
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
+        initObservers();
+
         String action = intent.getAction();
         getIntentExtras(intent);
 
@@ -190,36 +199,73 @@ public class BleScannerService extends LifecycleService {
         return scannerLiveDataList;
     }
 
-    private void addScanResults(String deviceName, String deviceMacAddress, String deviceType) {
+    private void addScanResults(String deviceName, String deviceMacAddress, String deviceType)
+    {
+
         if (scannerLiveDataList == null) {
             scannerLiveDataList = new MutableLiveData<>();
         }
         if (scanResults == null) {
             scanResults = new ArrayList<>();
         }
-        //checks to see if deviceMacAddress is already in list
-        int n = scanResults.size();
-        if(n > 0){
-            for (int i = 0; i < n; i++) {
-                if(deviceMacAddress.equals(scanResults.get(i).getDeviceMacAddress())){
-                    return;
+        //checks to see if last device discovered is already in list of scan results
+        int scanSize = scanResults.size();
+        if(scanSize > 0) {
+            for (int i = 0; i < scanSize; i++) {
+                {
+                    if (deviceMacAddress.equals(scanResults.get(i).getDeviceMacAddress())) {
+                        return;
+                    }
+
                 }
             }
         }
-        //if deviceMacAddress not already in list, add device to scannerResults
-        int image;
-        if (deviceType.contains(Constants.DEVICE_TYPE_LIGHT)){
-            image = R.drawable.ic_device_type_light;
+
+        //checks to see if last device discovered is already myDevices
+        int deviceSize = deviceList.size();
+        if(deviceSize > 0) {
+            for (int j = 0; j < deviceSize; j++) {
+                if (deviceMacAddress.equals(deviceList.get(j).getDeviceMacAddress())) {
+                    return;
+                }
+
+
+            }
         }
-        else if (deviceType.contains(Constants.DEVICE_TYPE_SPEED)){
-            image = R.drawable.ic_speed;
+
+
+            //if deviceMacAddress not already in list, add device to scannerResults
+            int image;
+            if (deviceType.contains(Constants.DEVICE_TYPE_LIGHT)) {
+                image = R.drawable.ic_device_type_light;
+            } else if (deviceType.contains(Constants.DEVICE_TYPE_SPEED)) {
+                image = R.drawable.ic_speed;
+            } else {
+                image = R.drawable.ic_device_type_other_sensor;
+            }
+            scanResults.add(new ScanResults(image, deviceName, deviceMacAddress, deviceType));
+            scannerLiveDataList.postValue(scanResults);
         }
-        else {
-            image = R.drawable.ic_device_type_other_sensor;
-        }
-        scanResults.add(new ScanResults(image, deviceName, deviceMacAddress, deviceType));
-        scannerLiveDataList.postValue(scanResults);
+
+
+
+    private void initObservers() {
+        Log.d(TAG, "initObservers ");
+        EntitiesRepository entitiesRepository = new EntitiesRepository(getApplication());
+        entitiesRepository.getAllDevices().observe(this, new Observer<List<Device>>() {
+
+            @Override
+            public void onChanged(List<Device> devices) {
+                deviceList = devices;
+                Log.d(TAG, "Received devices live data ");
+
+            }
+
+        });
     }
+
+
+
 
 
 

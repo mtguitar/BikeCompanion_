@@ -98,6 +98,25 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         return view;
     }
 
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (itemsOpen >= 1) {
+            lastItemOpen.setVisibility(View.GONE);
+            lastArrowOpen.setRotation(0);
+            itemsOpen--;
+            clearTextViews();
+
+            Log.d(TAG, "isConnected: " + String.valueOf(isConnected));
+            if (isConnected) {
+                sharedEntitiesViewModel.disconnectDevice(lastDeviceConnected);
+                Log.d(TAG, "Item clicked, trying to disconnect: " + lastDeviceConnected);
+            }
+        }
+    }
+
+
     private void initFAB(){
         FloatingActionButton fabNewDevice = view.findViewById(R.id.fac_add_device);
         fabNewDevice.setOnClickListener(new View.OnClickListener() {

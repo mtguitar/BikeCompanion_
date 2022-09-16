@@ -4,17 +4,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecompanion.R;
 import com.example.bikecompanion.constants.Constants;
-import com.example.bikecompanion.databases.entities.Bike;
 import com.example.bikecompanion.databases.entities.Device;
 
 import java.util.ArrayList;
@@ -36,7 +33,7 @@ public class SelectDeviceAdapter extends RecyclerView.Adapter<SelectDeviceAdapte
     @NonNull
     @Override
     public SelectDeviceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.device_checkbox_item, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_device_checkbox, parent, false);
         return new SelectDeviceViewHolder(itemView);
     }
 

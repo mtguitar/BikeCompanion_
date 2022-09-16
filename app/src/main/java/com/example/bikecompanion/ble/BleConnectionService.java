@@ -160,7 +160,7 @@ public class BleConnectionService extends LifecycleService {
     // Subscribe to characteristic notifications
     public void setCharacteristicNotification(String deviceMacAddress, UUID service, UUID characteristic, boolean enabled){
         BluetoothGatt gatt = getBluetoothDevicesMap().get(deviceMacAddress);
-        Log.w(TAG, "Received request to read characteristic");
+        Log.w(TAG, "Received request to set characteristic notification");
         if (gatt == null) {
             Log.w(TAG, "BluetoothGatt not initialized");
             return;
