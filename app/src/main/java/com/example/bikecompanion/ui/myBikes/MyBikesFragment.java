@@ -94,13 +94,12 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
         sharedEntitiesViewModel.getAllDevices().observe(getViewLifecycleOwner(), new Observer<List<Device>>() {
             @Override
             public void onChanged(List<Device> devices) {
-                String macAddressTest = devices.get(1).getDeviceMacAddress();
 
-                Log.d(TAG, "Received devices live data " + macAddressTest);
+                Log.d(TAG, "Received devices live data ");
                 if (devices != null){
-
+                    selectDeviceAdapter.setCheckBoxes(devices);
                 }
-                selectDeviceAdapter.setCheckBoxes(devices);
+
             }
 
         });
