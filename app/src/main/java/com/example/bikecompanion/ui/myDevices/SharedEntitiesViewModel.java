@@ -9,6 +9,8 @@ import androidx.lifecycle.LiveData;
 import com.example.bikecompanion.databases.entities.Bike;
 import com.example.bikecompanion.databases.entities.Device;
 import com.example.bikecompanion.databases.EntitiesRepository;
+import com.example.bikecompanion.databases.entities.BikeDeviceCrossRef;
+import com.example.bikecompanion.databases.relations.BikeWithDevices;
 
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +60,15 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
 
     public List<Bike> getBikeList(){
         return bikeList;
+    }
+
+    public LiveData<List<BikeWithDevices>> getBikesWithDevices(){
+        return repository.getBikesWithDevices();
+    }
+
+
+    public void insert (BikeDeviceCrossRef bikeDeviceCrossRef){
+        repository.insertBikeDeviceCrossRef(bikeDeviceCrossRef);
     }
 
 

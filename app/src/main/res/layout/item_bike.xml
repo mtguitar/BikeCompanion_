@@ -69,18 +69,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_launcher_foreground" />
 
-            <Switch
-                android:id="@+id/switch_primary_bike"
-                android:layout_width="146dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="10dp"
-                android:layout_weight="1"
-                android:text="Primary Bike"
-                android:textColor="@color/primaryTextColor"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -94,13 +82,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="70dp"
-                android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:text="REmove"
                 android:textColor="@color/cardview_light_background"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_view_bike_devices" />
+                app:layout_constraintTop_toBottomOf="@+id/switch_primary_bike" />
 
             <Button
                 android:id="@+id/button_bike_edit"
@@ -200,9 +187,30 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="70dp"
-                android:text="TextView"
                 app:layout_constraintStart_toStartOf="parent"
-                tools:layout_editor_absoluteY="68dp" />
+                app:layout_constraintTop_toBottomOf="@+id/text_view_bike_devices2" />
+
+            <TextView
+                android:id="@+id/text_view_bike_devices2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="70dp"
+                android:text="Devices"
+                android:textColor="@color/primaryTextColor"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tableLayout2" />
+
+            <Switch
+                android:id="@+id/switch_primary_bike"
+                android:layout_width="170dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="70dp"
+                android:layout_weight="1"
+                android:text="Make primary bike"
+                android:textColor="@color/primaryTextColor"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_view_bike_devices" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>

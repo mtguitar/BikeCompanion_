@@ -18,6 +18,9 @@ import com.example.bikecompanion.ble.BleConnectionService;
 import com.example.bikecompanion.constants.Constants;
 import com.example.bikecompanion.databases.entities.Bike;
 import com.example.bikecompanion.databases.entities.Device;
+import com.example.bikecompanion.databases.entities.BikeDeviceCrossRef;
+import com.example.bikecompanion.databases.relations.BikeWithDevices;
+import com.example.bikecompanion.databases.relations.DeviceWithBikes;
 
 import java.util.HashMap;
 import java.util.List;
@@ -65,6 +68,22 @@ public class EntitiesRepository {
 
         context = application.getApplicationContext();
         registerBroadcastReceiver(context);
+    }
+
+    public LiveData<List<BikeWithDevices>> getBikesWithDevices(){
+        LiveData<List<BikeWithDevices>> bikesWithDevices = entitiesDao.getBikesWithDevices();
+        return bikesWithDevices;
+
+    }
+
+    public LiveData<List<DeviceWithBikes>> getDevicesWithBikes(){
+        LiveData<List<DeviceWithBikes>> devicesWithBikes = entitiesDao.getDevicesWithBikes();
+        return devicesWithBikes;
+    }
+
+    public void insertBikeDeviceCrossRef(BikeDeviceCrossRef bikeDeviceCrossRef)
+    {
+        new InsertBikeDeviceCrossRefAsyncTask(entitiesDao).execute(bikeDeviceCrossRef);
     }
 
 
@@ -151,6 +170,20 @@ public class EntitiesRepository {
     /**
      * AsyncTasks for writing/reading to/from db to ensure that we are not working on the main thread
      */
+
+    private static class InsertBikeDeviceCrossRefAsyncTask extends android.os.AsyncTask<BikeDeviceCrossRef, Void, Void> {
+        private EntitiesDao entitiesDao;
+
+        private InsertBikeDeviceCrossRefAsyncTask(EntitiesDao entitiesDao){
+            this.entitiesDao = entitiesDao;
+        }
+
+        @Override
+        protected Void doInBackground(BikeDeviceCrossRef... bikeDeviceCrossRef) {
+            entitiesDao.insertBikeDeviceCrossRef(bikeDeviceCrossRef[0]);
+            return null;
+        }
+    }
 
     //Bikes
     private static class InsertBikeAsyncTask extends android.os.AsyncTask<Bike, Void, Void> {

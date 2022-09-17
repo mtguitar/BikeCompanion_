@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.bikecompanion.R;
 import com.example.bikecompanion.databases.entities.Bike;
 import com.example.bikecompanion.databases.entities.Device;
+import com.example.bikecompanion.databases.relations.BikeWithDevices;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
 
     private List<Bike> bikeList;
     private List<Device> deviceList;
+    private List<BikeWithDevices> bikesWithDevicesList;
     private MyBikesListenerInterface listener;
 
 
@@ -107,17 +109,31 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
 
     @Override
     public void onBindViewHolder(@NonNull BikeViewHolder holder, int position) {
-        Bike currentBike = bikeList.get(position);
-        int bikeId = currentBike.getBikeId();
-        holder.textViewBikeName.setText(currentBike.getBikeName());
-        holder.textViewBikeMake.setText(currentBike.getBikeMake());
-        holder.textViewBikeModel.setText(currentBike.getBikeModel());
-        // TODO add devices to textViewBikeDevice
+        Bike currentViewBike = bikeList.get(position);
+        String currentViewBikeName = currentViewBike.getBikeName();
+        holder.textViewBikeName.setText(currentViewBike.getBikeName());
+        holder.textViewBikeMake.setText(currentViewBike.getBikeMake());
+        holder.textViewBikeModel.setText(currentViewBike.getBikeModel());
 
-
-
-
-        //holder.textViewBikeId.setText(String.valueOf(currentBike.getBikeId());
+        //Add devices belonging to each bike
+        if (bikesWithDevicesList != null)
+        {
+            //loops through each bike, checking if it matches name of the current bike in the recyclerView
+            int listSize = bikesWithDevicesList.size();
+            for (int i = 0; i < listSize; i++) {
+                String listBikeName = bikesWithDevicesList.get(i).bike.getBikeName();
+                if(listBikeName.equals(currentViewBikeName)){
+                    //loops through each device in the list and adds it to the textView, followed by a new line
+                    int deviceListSize = bikesWithDevicesList.get(i).deviceList.size();
+                    for (int j = 0; j < deviceListSize; j++)
+                    {
+                        String listDeviceName = bikesWithDevicesList.get(i).deviceList.get(j).getDeviceAssignedName();
+                        String listDeviceMacAddress = bikesWithDevicesList.get(i).deviceList.get(j).getDeviceMacAddress();
+                        holder.textViewBikeDevices.append(listDeviceName + " " + listDeviceMacAddress + "\n");
+                    }
+                }
+            }
+        }
 
     }
 
@@ -138,9 +154,21 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
     }
 
 
+    public void setBikesWithDevices(List<BikeWithDevices> bikesWithDevices){
+        bikesWithDevicesList = bikesWithDevices;
+        notifyDataSetChanged();
+
+    }
+
+
     @Override
     public int getItemCount() {
-        return bikeList.size();
+        if (bikeList != null) {
+            return bikeList.size();
+        }
+        else {
+            return 0;
+        }
     }
 
 }

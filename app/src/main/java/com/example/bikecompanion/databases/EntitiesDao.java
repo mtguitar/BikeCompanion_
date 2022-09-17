@@ -11,10 +11,11 @@ import androidx.room.Update;
 
 import com.example.bikecompanion.databases.entities.Bike;
 import com.example.bikecompanion.databases.entities.Device;
-import com.example.bikecompanion.databases.relations.BikeDeviceCrossRef;
+import com.example.bikecompanion.databases.entities.BikeDeviceCrossRef;
+import com.example.bikecompanion.databases.relations.BikeWithDevices;
+import com.example.bikecompanion.databases.relations.DeviceWithBikes;
 
 import java.util.List;
-import java.util.Map;
 
 @Dao
 public interface EntitiesDao {
@@ -69,22 +70,16 @@ public interface EntitiesDao {
     @Insert (onConflict = OnConflictStrategy.REPLACE)
     void insertBikeDeviceCrossRef(BikeDeviceCrossRef bikeDeviceCrossRef);
 
+
     @Transaction
     @Query("SELECT * FROM bike_table WHERE bikeName = bikeName ")
-    LiveData<List<Bike>> getDevicesOfBike();
+    LiveData<List<BikeWithDevices>> getBikesWithDevices();
 
     @Transaction
+
     @Query("SELECT * FROM device_table WHERE deviceMacAddress = deviceMacAddress")
-    LiveData<List<Device>> getBikesOfDevice();
+    LiveData<List<DeviceWithBikes>> getDevicesWithBikes();
 
-
-    /*
-    @Query("SELECT * FROM bike_table JOIN device_table ON bike_table.bikeName = device_table.bikeList")
-    public Map<Bike, List<Device>> loadBikeAndDevices();
-
-
-
- */
 
 
 }

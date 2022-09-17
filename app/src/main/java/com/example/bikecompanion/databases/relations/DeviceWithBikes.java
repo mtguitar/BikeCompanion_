@@ -5,6 +5,7 @@ import androidx.room.Junction;
 import androidx.room.Relation;
 
 import com.example.bikecompanion.databases.entities.Bike;
+import com.example.bikecompanion.databases.entities.BikeDeviceCrossRef;
 import com.example.bikecompanion.databases.entities.Device;
 
 import java.util.List;
@@ -14,12 +15,12 @@ public class DeviceWithBikes {
     @Embedded
     public Device device;
     @Relation(
-            parentColumn = "deviceId",
-            entityColumn = "bikeId",
+            parentColumn = "deviceMacAddress",
+            entityColumn = "bikeName",
             associateBy = @Junction(BikeDeviceCrossRef.class)
     )
 
-    public List<Bike> bikes;
+    public List<Bike> bikeList;
 
 
 }

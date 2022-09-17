@@ -9,11 +9,11 @@ import java.util.ArrayList;
 @Entity(tableName = "device_table")
 public class Device {
 
+    @NonNull
+    @PrimaryKey(autoGenerate = false)
+    private String deviceMacAddress = "Ignore";
 
-
-    @PrimaryKey(autoGenerate = true)
     private int deviceId;
-    private String deviceMacAddress;
     private String deviceAssignedName;
     private String deviceBleName;
     private String deviceType;

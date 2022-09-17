@@ -12,12 +12,15 @@ import java.util.ArrayList;
 @Entity(tableName = "bike_table")
 public class Bike {
 
-    @PrimaryKey(autoGenerate = true)
-    private int bikeId;
+    @NonNull
+    @PrimaryKey(autoGenerate = false)
+    private String bikeName = "ignore";
 
-    private String bikeName;
+    private int bikeId;
     private String bikeMake;
     private String bikeModel;
+    private ArrayList<Device> deviceList;
+
 
 
     //Constructor
@@ -59,6 +62,14 @@ public class Bike {
 
     public void setBikeModel(String bikeModel) {
         this.bikeModel = bikeModel;
+    }
+
+    public ArrayList<Device> getDeviceList() {
+        return deviceList;
+    }
+
+    public void setDeviceList(ArrayList<Device> deviceList) {
+        this.deviceList = deviceList;
     }
 
 

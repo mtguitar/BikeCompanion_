@@ -11,7 +11,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.example.bikecompanion.databases.entities.Bike;
 import com.example.bikecompanion.databases.entities.Device;
-import com.example.bikecompanion.databases.relations.BikeDeviceCrossRef;
+import com.example.bikecompanion.databases.entities.BikeDeviceCrossRef;
 
 @Database(entities = {Device.class, Bike.class, BikeDeviceCrossRef.class}, version = 1, exportSchema = false)
 public abstract class EntitiesDataBase extends RoomDatabase {
