@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.bikecompanion.R;
@@ -50,6 +51,8 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
     private EditText editTextBikeName;
     private EditText editTextBikeMake;
     private EditText editTextBikeModel;
+    private TextView textViewBikeDevices;
+
     private MyBikesAdapter bikeAdapter;
     private SelectDeviceAdapter selectDeviceAdapter;
     private View cardViewAddBike;
@@ -95,6 +98,8 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
         editTextBikeMake = view.findViewById(R.id.edit_text_bike_make);
         editTextBikeModel = view.findViewById(R.id.edit_text_bike_model);
         cardViewAddBike = view.findViewById(R.id.card_view_add_bike);
+        textViewBikeDevices = view.findViewById(R.id.text_view_bike_devices);
+
 
 
 
@@ -146,6 +151,9 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
                 if (!bikeName.equals("")){
                     Bike bike = new Bike(bikeName, bikeMake, bikeModel);
                     sharedEntitiesViewModel.insert(bike);
+                    //TODO: add devices
+
+
                     cardViewAddBike.setVisibility(View.GONE);
                 }
                 else{

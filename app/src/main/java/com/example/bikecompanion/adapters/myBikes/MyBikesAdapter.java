@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecompanion.R;
 import com.example.bikecompanion.databases.entities.Bike;
+import com.example.bikecompanion.databases.entities.Device;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,8 @@ import java.util.List;
 
 public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeViewHolder>{
 
-    private List<Bike> bike = new ArrayList<>();
+    private List<Bike> bikeList;
+    private List<Device> deviceList;
     private MyBikesListenerInterface listener;
 
 
@@ -38,6 +40,8 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
         private TextView textViewBikeName;
         private TextView textViewBikeMake;
         private TextView textViewBikeModel;
+        private TextView textViewBikeDevices;
+
         private Button buttonBikeEdit;
         private Button buttonBikeRemove;
 
@@ -50,6 +54,7 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
             textViewBikeModel = itemView.findViewById(R.id.text_view_my_bike_model);
             buttonBikeEdit = itemView.findViewById(R.id.button_bike_edit);
             buttonBikeRemove = itemView.findViewById(R.id.button_bike_remove);
+            textViewBikeDevices = itemView.findViewById(R.id.text_view_bike_devices);
 
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -59,7 +64,7 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
                         int position = getAbsoluteAdapterPosition();
 
                         if (position != RecyclerView.NO_POSITION){
-                            listener.onItemClick(position, itemView, bike);
+                            listener.onItemClick(position, itemView, bikeList);
 
                         }
                     }
@@ -74,7 +79,7 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
                         int position = getAbsoluteAdapterPosition();
 
                         if (position != RecyclerView.NO_POSITION){
-                            listener.onButtonClickRemove(position, bike);
+                            listener.onButtonClickRemove(position, bikeList);
                         }
                     }
 
@@ -89,7 +94,7 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
                         int position = getAbsoluteAdapterPosition();
 
                         if (position != RecyclerView.NO_POSITION){
-                            listener.onButtonClickEdit(position, bike);
+                            listener.onButtonClickEdit(position, bikeList);
                         }
                     }
 
@@ -102,11 +107,12 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
 
     @Override
     public void onBindViewHolder(@NonNull BikeViewHolder holder, int position) {
-        Bike currentBike = bike.get(position);
+        Bike currentBike = bikeList.get(position);
+        int bikeId = currentBike.getBikeId();
         holder.textViewBikeName.setText(currentBike.getBikeName());
         holder.textViewBikeMake.setText(currentBike.getBikeMake());
         holder.textViewBikeModel.setText(currentBike.getBikeModel());
-
+        // TODO add devices to textViewBikeDevice
 
 
 
@@ -115,14 +121,26 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
 
     }
 
-    public void setBikes(List<Bike> bike){
-        this.bike = bike;
+    public void setBikes(List<Bike> bikes){
+        if (bikeList == null){
+            bikeList = new ArrayList<>();
+        }
+        bikeList = bikes;
         notifyDataSetChanged();
     }
 
+    public void setDevices(List<Device> devices){
+        if (deviceList == null){
+            deviceList = new ArrayList<>();
+        }
+        deviceList = devices;
+        notifyDataSetChanged();
+    }
+
+
     @Override
     public int getItemCount() {
-        return bike.size();
+        return bikeList.size();
     }
 
 }

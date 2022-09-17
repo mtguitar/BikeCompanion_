@@ -69,6 +69,18 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_launcher_foreground" />
 
+            <Switch
+                android:id="@+id/switch_primary_bike"
+                android:layout_width="146dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:text="Primary Bike"
+                android:textColor="@color/primaryTextColor"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -88,7 +100,18 @@
                 android:textColor="@color/cardview_light_background"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tableLayout2" />
+                app:layout_constraintTop_toBottomOf="@+id/text_view_bike_devices" />
+
+            <Button
+                android:id="@+id/button_bike_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginBottom="10dp"
+                android:text="Edit"
+                android:textColor="@color/cardview_light_background"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/button_bike_remove" />
 
             <TableLayout
                 android:id="@+id/tableLayout2"
@@ -170,85 +193,16 @@
 
                 </TableRow>
 
-                <TableRow
-                    android:id="@+id/row_model"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <TextView
-                        android:id="@+id/textView9"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text='-'
-                        android:textColor="@color/primaryTextColor"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/text_view_device_model"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="4"
-                        android:text="-"
-                        android:textColor="@color/primaryTextColor" />
-                </TableRow>
-
-                <TableRow
-                    android:id="@+id/row_connection_state"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <TextView
-                        android:id="@+id/textView10"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="-"
-                        android:textColor="@color/primaryTextColor"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/text_view_device_state"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="4"
-                        android:text="-"
-                        android:textColor="@color/primaryTextColor" />
-                </TableRow>
-
-                <TableRow
-                    android:id="@+id/row_auto_connect"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <Switch
-                        android:id="@+id/switch_primary_bike"
-                        android:layout_width="74dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Primary Bike"
-                        android:textColor="@color/primaryTextColor" />
-
-                    <TextView
-                        android:id="@+id/textView12"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textColor="@color/primaryTextColor" />
-
-                </TableRow>
             </TableLayout>
 
-            <Button
-                android:id="@+id/button_bike_edit"
+            <TextView
+                android:id="@+id/text_view_bike_devices"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="Edit"
-                android:textColor="@color/cardview_light_background"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/button_bike_remove"
-                app:layout_constraintTop_toBottomOf="@+id/tableLayout2" />
+                android:layout_marginStart="70dp"
+                android:text="TextView"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:layout_editor_absoluteY="68dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
