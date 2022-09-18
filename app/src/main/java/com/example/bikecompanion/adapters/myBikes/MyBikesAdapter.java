@@ -119,6 +119,7 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
         if (bikesWithDevicesList != null)
         {
             //loops through each bike, checking if it matches name of the current bike in the recyclerView
+            holder.textViewBikeDevices.setText("");
             int listSize = bikesWithDevicesList.size();
             for (int i = 0; i < listSize; i++) {
                 String listBikeName = bikesWithDevicesList.get(i).bike.getBikeName();
@@ -157,7 +158,6 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
     public void setBikesWithDevices(List<BikeWithDevices> bikesWithDevices){
         bikesWithDevicesList = bikesWithDevices;
         notifyDataSetChanged();
-
     }
 
 

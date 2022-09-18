@@ -40,20 +40,30 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
     private MyBikesViewModel mViewModel;
     private View view;
     private Button buttonAddBike;
-    private Button buttonAddBikeCancel;
+    private Button buttonUpdate;
+    private Button buttonCancel;
+
     private EditText editTextBikeName;
     private EditText editTextBikeMake;
     private EditText editTextBikeModel;
+
     private TextView textViewBikeDevices;
+    private TextView textViewEditAddTitle;
+
+    private Bike bikeToEdit;
+
+    private List<Bike> bikeList;
+    private List<Device> deviceList;
+    private List<BikeWithDevices> bikesWithDevicesList;
+    private List<String> checkedDevices;
+
 
     private MyBikesAdapter bikeAdapter;
     private SelectDeviceAdapter selectDeviceAdapter;
     private View cardViewAddBike;
 
 
-    private ArrayList<String> checkedDevices;
 
-    private List<Device> deviceList;
 
     private SharedEntitiesViewModel sharedEntitiesViewModel;
 
@@ -84,14 +94,18 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
     }
 
     private void initViews() {
-        buttonAddBike = view.findViewById(R.id.button_add_bike);
-        buttonAddBikeCancel = view.findViewById(R.id.button_add_bike_cancel);
+        buttonAddBike = view.findViewById(R.id.button_bike_add);
+        buttonUpdate = view.findViewById(R.id.button_bike_update);
+        buttonCancel = view.findViewById(R.id.button_bike_cancel);
+
         editTextBikeName = view.findViewById(R.id.edit_text_bike_name);
         editTextBikeMake = view.findViewById(R.id.edit_text_bike_make);
         editTextBikeModel = view.findViewById(R.id.edit_text_bike_model);
-        cardViewAddBike = view.findViewById(R.id.card_view_add_bike);
-        textViewBikeDevices = view.findViewById(R.id.text_view_bike_devices);
 
+        cardViewAddBike = view.findViewById(R.id.card_view_add_bike);
+
+        textViewBikeDevices = view.findViewById(R.id.text_view_bike_devices);
+        textViewEditAddTitle = view.findViewById(R.id.text_view_edit_add_title);
 
     }
 
@@ -101,6 +115,7 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
             public void onChanged(List<Device> devices) {
 
                 Log.d(TAG, "Received devices live data ");
+                deviceList = devices;
                 if (devices != null) {
                     selectDeviceAdapter.setCheckBoxes(devices);
                 }
@@ -111,6 +126,7 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
             @Override
             public void onChanged(List<Bike> bikes) {
                 Log.d(TAG, "Received bikes live data ");
+                bikeList = bikes;
                 bikeAdapter.setBikes(bikes);
             }
         });
@@ -118,7 +134,8 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
         sharedEntitiesViewModel.getBikesWithDevices().observe(getViewLifecycleOwner(), new Observer<List<BikeWithDevices>>() {
             @Override
             public void onChanged(List<BikeWithDevices> bikesWithDevices) {
-                Log.d(TAG, "Received bikes live data ");
+                Log.d(TAG, "Received bikesWithDevices live data ");
+                bikesWithDevicesList = bikesWithDevices;
                 bikeAdapter.setBikesWithDevices(bikesWithDevices);
             }
         });
@@ -131,8 +148,10 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
         fabNewDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                buttonUpdate.setVisibility(View.INVISIBLE);
+                buttonAddBike.setVisibility(View.VISIBLE);
+                textViewEditAddTitle.setText("Add New Bike");
                 cardViewAddBike.setVisibility(View.VISIBLE);
-
             }
         });
 
@@ -142,38 +161,85 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
                 String bikeName = String.valueOf(editTextBikeName.getText());
                 String bikeMake = String.valueOf(editTextBikeMake.getText());
                 String bikeModel = String.valueOf(editTextBikeModel.getText());
-
-                if (!bikeName.equals("")) {
-                    Bike bike = new Bike(bikeName, bikeMake, bikeModel);
-                    sharedEntitiesViewModel.insert(bike);
-
-                    int listSize = getCheckedDevices().size();
-                    for (int i = 0; i < listSize; i++) {
-                        String deviceMacAddress = getCheckedDevices().get(i);
-                        BikeDeviceCrossRef bikeDeviceCrossRef = new BikeDeviceCrossRef(deviceMacAddress, bikeName);
-                        sharedEntitiesViewModel.insert(bikeDeviceCrossRef);
-                    }
-
-                    cardViewAddBike.setVisibility(View.GONE);
-                    getCheckedDevices().clear();
-                } else {
+                //checks if bikeName is blank
+                if (bikeName.equals("")) {
+                    Toast.makeText(getActivity(), "Bike name cannot be empty", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                //checks if bikeName is already in Bike table (current state of db is assigned to bikeList)
+                for (int i = 0; i < bikeList.size(); i++) {
+                    String bikeListName = bikeList.get(i).getBikeName();
+                    if (bikeListName.equals(bikeName)) {
+                        Toast.makeText(getActivity(), "Bike already exists. Please select a unique name.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+
+                //inserts new bike into Bike table
+                Bike bike = new Bike(bikeName, bikeMake, bikeModel);
+                sharedEntitiesViewModel.insert(bike);
+
+                //adds bike/device pair to crossReference table
+                int listSize = getCheckedDevices().size();
+                for (int i = 0; i < listSize; i++) {
+                    String deviceMacAddress = getCheckedDevices().get(i);
+                    BikeDeviceCrossRef bikeDeviceCrossRef = new BikeDeviceCrossRef(deviceMacAddress, bikeName);
+                    sharedEntitiesViewModel.insert(bikeDeviceCrossRef);
+                }
+
+                //cleans up views
+                cardViewAddBike.setVisibility(View.GONE);
                 editTextBikeName.getText().clear();
                 editTextBikeMake.getText().clear();
                 editTextBikeModel.getText().clear();
-
-
             }
+
+        });
+
+        buttonUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String bikeName = String.valueOf(editTextBikeName.getText());
+                String bikeMake = String.valueOf(editTextBikeMake.getText());
+                String bikeModel = String.valueOf(editTextBikeModel.getText());
+                //checks if bikeName is blank
+                if (bikeName.equals("")) {
+                    Toast.makeText(getActivity(), "Bike name cannot be empty", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                //updates bike in Bike table
+                bikeToEdit.setBikeName(bikeName);
+                bikeToEdit.setBikeMake(bikeMake);
+                bikeToEdit.setBikeModel(bikeModel);
+                sharedEntitiesViewModel.update(bikeToEdit);
+
+                //adds bike/device pair to crossReference table
+                int listSize = getCheckedDevices().size();
+                for (int i = 0; i < listSize; i++) {
+                    String deviceMacAddress = getCheckedDevices().get(i);
+                    BikeDeviceCrossRef bikeDeviceCrossRef = new BikeDeviceCrossRef(deviceMacAddress, bikeName);
+                    sharedEntitiesViewModel.insert(bikeDeviceCrossRef);
+                }
+
+                //cleans up views
+                cardViewAddBike.setVisibility(View.GONE);
+                editTextBikeName.getText().clear();
+                editTextBikeMake.getText().clear();
+                editTextBikeModel.getText().clear();
+            }
+
         });
 
         //Add bike to db
-        buttonAddBikeCancel.setOnClickListener(new View.OnClickListener() {
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 cardViewAddBike.setVisibility(View.GONE);
                 editTextBikeName.getText().clear();
-                getCheckedDevices().clear();
+                editTextBikeMake.getText().clear();
+                editTextBikeModel.getText().clear();
             }
         });
     }
@@ -207,6 +273,20 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
 
     @Override
     public void onButtonClickEdit(int position, List<Bike> bike) {
+        bikeToEdit = bike.get(position);
+
+        buttonAddBike.setVisibility(View.INVISIBLE);
+        buttonUpdate.setVisibility(View.VISIBLE);
+        cardViewAddBike.setVisibility(View.VISIBLE);
+        textViewEditAddTitle.setText("Edit Bike");
+
+        editTextBikeName.setText(bikeToEdit.getBikeName());
+        editTextBikeMake.setText(bikeToEdit.getBikeMake());
+        editTextBikeModel.setText(bikeToEdit.getBikeModel());
+
+        sharedEntitiesViewModel.get
+
+        //selectDeviceAdapter.setBikesWithDevices(bikesWithDevicesList);
 
     }
 
@@ -220,10 +300,9 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
             getCheckedDevices().add(mac);
             Toast.makeText(getActivity(), "Added: " + mac, Toast.LENGTH_SHORT).show();
         }
-
     }
 
-    public ArrayList<String> getCheckedDevices() {
+    public List<String> getCheckedDevices() {
         if (checkedDevices == null) {
             checkedDevices = new ArrayList<>();
         }

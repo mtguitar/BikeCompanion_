@@ -26,7 +26,7 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/button_add_bike_cancel"
+                android:id="@+id/button_bike_cancel"
                 style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -35,15 +35,27 @@
                 android:text="Cancel"
                 android:textColor="@color/primaryColor"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/button_add_bike" />
+                app:layout_constraintStart_toEndOf="@+id/button_bike_add" />
 
             <Button
-                android:id="@+id/button_add_bike"
+                android:id="@+id/button_bike_add"
                 style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:text="Add"
+                android:textColor="@color/primaryColor"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/recycler_view_select_device" />
+
+            <Button
+                android:id="@+id/button_bike_update"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="Update"
                 android:textColor="@color/primaryColor"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/recycler_view_select_device" />
@@ -61,7 +73,7 @@
                 android:inputType="textCapWords"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView16" />
+                app:layout_constraintTop_toBottomOf="@+id/text_view_edit_add_title" />
 
             <EditText
                 android:id="@+id/edit_text_bike_make"
@@ -96,7 +108,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/edit_text_bike_make" />
 
             <TextView
-                android:id="@+id/textView16"
+                android:id="@+id/text_view_edit_add_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -121,9 +133,10 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view_select_device"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@+id/button_add_bike"
+                android:layout_marginBottom="10dp"
+                app:layout_constraintBottom_toTopOf="@+id/button_bike_cancel"
                 app:layout_constraintStart_toStartOf="@+id/textView20"
                 app:layout_constraintTop_toBottomOf="@+id/textView20"
                 tools:listitem="@layout/item_device_checkbox" />

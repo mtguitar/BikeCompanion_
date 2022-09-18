@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecompanion.R;
 import com.example.bikecompanion.constants.Constants;
+import com.example.bikecompanion.databases.entities.Bike;
 import com.example.bikecompanion.databases.entities.Device;
+import com.example.bikecompanion.databases.relations.BikeWithDevices;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +25,8 @@ public class SelectDeviceAdapter extends RecyclerView.Adapter<SelectDeviceAdapte
     private final static String TAG = "FlareLog SelectAdapt";
     private List<Device> device = new ArrayList<>();
     private MyBikesListenerInterface listener;
+    private List<BikeWithDevices> bikesWithDevicesList;
+    private Bike bikeToEdit;
 
 
     public SelectDeviceAdapter(MyBikesListenerInterface listener) {
@@ -42,13 +46,11 @@ public class SelectDeviceAdapter extends RecyclerView.Adapter<SelectDeviceAdapte
         private ImageView selectDeviceImageView;
 
 
-
         public SelectDeviceViewHolder(@NonNull View itemView) {
             super(itemView);
 
             checkBox = itemView.findViewById(R.id.checkbox_select_device);
             selectDeviceImageView = itemView.findViewById(R.id.image_view_checkbox);
-
 
             checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -65,12 +67,6 @@ public class SelectDeviceAdapter extends RecyclerView.Adapter<SelectDeviceAdapte
                 }
             });
 
-
-
-
-
-
-
         }
     }
 
@@ -79,10 +75,14 @@ public class SelectDeviceAdapter extends RecyclerView.Adapter<SelectDeviceAdapte
         Device currentDevice = device.get(position);
         holder.checkBox.setText(currentDevice.getDeviceBleName() + " " + currentDevice.getDeviceMacAddress());
 
+        //get deviceWithBike for currentDevice
+        //loop through list of bikes to see if currentBike is in list
+        //if in list, check box, otherwise, uncheck box
+
+        //add image based on deviceType
         String deviceType = currentDevice.getDeviceType();
         deviceType = deviceType.toLowerCase();
         Log.d(TAG, "Current device type: " + deviceType);
-
         if (deviceType.contains(Constants.DEVICE_TYPE_LIGHT)){
             holder.selectDeviceImageView.setImageResource(R.drawable.ic_device_type_light);
         }
@@ -98,6 +98,15 @@ public class SelectDeviceAdapter extends RecyclerView.Adapter<SelectDeviceAdapte
     public void setCheckBoxes(List<Device> devices){
         this.device = devices;
         notifyDataSetChanged();
+    }
+
+    public void setBikesWithDevices(List<BikeWithDevices> bikesWithDevices){
+        bikesWithDevicesList = bikesWithDevices;
+        notifyDataSetChanged();
+    }
+
+    public void setBikeToEdit(Bike bikeToEdit) {
+        this.bikeToEdit = bikeToEdit;
     }
 
     @Override

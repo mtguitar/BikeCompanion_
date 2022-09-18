@@ -9,12 +9,12 @@ import androidx.room.ForeignKey;
         foreignKeys = {
         @ForeignKey(entity = Bike.class,
                 parentColumns = "bikeName",
-                childColumns = "deviceMacAddress",
+                childColumns = "bikeName",
                 onDelete = ForeignKey.CASCADE,
                 onUpdate = ForeignKey.CASCADE),
         @ForeignKey(entity = Device.class,
                 parentColumns = "deviceMacAddress",
-                childColumns = "bikeName",
+                childColumns = "deviceMacAddress",
                 onDelete = ForeignKey.CASCADE,
                 onUpdate = ForeignKey.CASCADE),
         }
