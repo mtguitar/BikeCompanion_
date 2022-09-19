@@ -21,7 +21,7 @@ import java.util.List;
 public interface EntitiesDao {
 
     //devices
-    @Insert (onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertDevice(Device device);
 
     @Update
@@ -36,11 +36,9 @@ public interface EntitiesDao {
     @Query("SELECT * FROM device_table ORDER BY deviceMacAddress DESC")
     LiveData<List<Device>> getAllDevices();
 
-    @Query("SELECT * FROM device_table ORDER BY deviceMacAddress DESC")
-    List<Device> getDeviceList();
 
     //bikes
-    @Insert (onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertBike(Bike bike);
 
     @Update
@@ -52,24 +50,13 @@ public interface EntitiesDao {
     @Query("DELETE FROM bike_table")
     void deleteAllBikes();
 
-    @Query("SELECT * FROM bike_table ORDER BY bikeName DESC")
+    @Query("SELECT * FROM bike_table ORDER BY bikeName ASC")
     LiveData<List<Bike>> getAllBikes();
 
-    @Query("SELECT * FROM bike_table ORDER BY bikeName DESC")
-    List<Bike> getBikeList();
 
-    @Insert
-    void insertDeviceToBike(Device device);
-
-    @Delete
-    void deleteDeviceFromBike(Device device);
-
-
-
-    //joint
-    @Insert (onConflict = OnConflictStrategy.REPLACE)
+    //Joint
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertBikeDeviceCrossRef(BikeDeviceCrossRef bikeDeviceCrossRef);
-
 
     @Transaction
     @Query("SELECT * FROM bike_table WHERE bikeName = bikeName ")
@@ -79,7 +66,6 @@ public interface EntitiesDao {
 
     @Query("SELECT * FROM device_table WHERE deviceMacAddress = deviceMacAddress")
     LiveData<List<DeviceWithBikes>> getDevicesWithBikes();
-
 
 
 }

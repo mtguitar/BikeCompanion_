@@ -13,6 +13,7 @@ import com.example.bikecompanion.R;
 import com.example.bikecompanion.databases.entities.Bike;
 import com.example.bikecompanion.databases.entities.Device;
 import com.example.bikecompanion.databases.relations.BikeWithDevices;
+import com.example.bikecompanion.databases.relations.DeviceWithBikes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
     private List<Bike> bikeList;
     private List<Device> deviceList;
     private List<BikeWithDevices> bikesWithDevicesList;
+
     private MyBikesListenerInterface listener;
 
 
@@ -159,6 +161,7 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
         bikesWithDevicesList = bikesWithDevices;
         notifyDataSetChanged();
     }
+
 
 
     @Override

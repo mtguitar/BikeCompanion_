@@ -15,6 +15,7 @@ import com.example.bikecompanion.constants.Constants;
 import com.example.bikecompanion.databases.entities.Bike;
 import com.example.bikecompanion.databases.entities.Device;
 import com.example.bikecompanion.databases.relations.BikeWithDevices;
+import com.example.bikecompanion.databases.relations.DeviceWithBikes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,8 @@ public class SelectDeviceAdapter extends RecyclerView.Adapter<SelectDeviceAdapte
     private final static String TAG = "FlareLog SelectAdapt";
     private List<Device> device = new ArrayList<>();
     private MyBikesListenerInterface listener;
-    private List<BikeWithDevices> bikesWithDevicesList;
+    private List<BikeWithDevices> bikeWithDevicesList;
+    private List<DeviceWithBikes> deviceWithBikesList;
     private Bike bikeToEdit;
 
 
@@ -60,7 +62,7 @@ public class SelectDeviceAdapter extends RecyclerView.Adapter<SelectDeviceAdapte
                         int position = getAbsoluteAdapterPosition();
 
                         if (position != RecyclerView.NO_POSITION){
-                            listener.onCheckBoxClick(position, device);
+                            listener.onCheckBoxClick(position, device, checkBox);
                         }
                     }
 
@@ -73,26 +75,46 @@ public class SelectDeviceAdapter extends RecyclerView.Adapter<SelectDeviceAdapte
     @Override
     public void onBindViewHolder(@NonNull SelectDeviceViewHolder holder, int position) {
         Device currentDevice = device.get(position);
+        String currentDeviceName = currentDevice.getDeviceBleName();
+        holder.checkBox.setChecked(false);
         holder.checkBox.setText(currentDevice.getDeviceBleName() + " " + currentDevice.getDeviceMacAddress());
+        if (bikeToEdit != null) {
+            String bikeToEditName = bikeToEdit.getBikeName();
+            Log.d(TAG, "bikeToEdit: " + bikeToEditName);
 
-        //get deviceWithBike for currentDevice
-        //loop through list of bikes to see if currentBike is in list
-        //if in list, check box, otherwise, uncheck box
+            //get deviceWithBikes for currentDevice
+            //loop through list of bikes to see if bikeToEdit is in list
+            //if in list, check box, otherwise, uncheck box
+            int deviceListSize = deviceWithBikesList.size();
+            for (int i = 0; i < deviceListSize; i++) {
+                if (deviceWithBikesList.get(i).device.getDeviceBleName().equals(currentDeviceName)) {
+                    int bikeListSize = deviceWithBikesList.get(i).bikeList.size();
+                    for (int j = 0; j < bikeListSize; j++) {
+                        String bikeListName = deviceWithBikesList.get(i).bikeList.get(j).getBikeName();
+                        Log.d(TAG, "bikeListName: " + bikeListName + " bikeToEditName: " + bikeToEditName);
+                        if (bikeListName.equals(bikeToEditName)) {
+                            holder.checkBox.setChecked(true);
+                        } else {
+                            holder.checkBox.setChecked(false);
+                        }
+                    }
 
-        //add image based on deviceType
-        String deviceType = currentDevice.getDeviceType();
-        deviceType = deviceType.toLowerCase();
-        Log.d(TAG, "Current device type: " + deviceType);
-        if (deviceType.contains(Constants.DEVICE_TYPE_LIGHT)){
-            holder.selectDeviceImageView.setImageResource(R.drawable.ic_device_type_light);
-        }
-        else if (deviceType.contains(Constants.DEVICE_TYPE_SPEED)){
-            holder.selectDeviceImageView.setImageResource(R.drawable.ic_speed);
-        }
-        else {
-            holder.selectDeviceImageView.setImageResource(R.drawable.ic_device_type_other_sensor);
-        }
+                }
+            }
 
+            //add image based on deviceType
+            String deviceType = currentDevice.getDeviceType();
+            deviceType = deviceType.toLowerCase();
+            Log.d(TAG, "Current device type: " + deviceType);
+            if (deviceType.contains(Constants.DEVICE_TYPE_LIGHT)) {
+                holder.selectDeviceImageView.setImageResource(R.drawable.ic_device_type_light);
+            } else if (deviceType.contains(Constants.DEVICE_TYPE_SPEED)) {
+                holder.selectDeviceImageView.setImageResource(R.drawable.ic_speed);
+            } else {
+                holder.selectDeviceImageView.setImageResource(R.drawable.ic_device_type_other_sensor);
+            }
+
+        }
     }
 
     public void setCheckBoxes(List<Device> devices){
@@ -100,18 +122,29 @@ public class SelectDeviceAdapter extends RecyclerView.Adapter<SelectDeviceAdapte
         notifyDataSetChanged();
     }
 
-    public void setBikesWithDevices(List<BikeWithDevices> bikesWithDevices){
-        bikesWithDevicesList = bikesWithDevices;
+    public void setBikeWithDevices(List<BikeWithDevices> bikeWithDevices){
+        bikeWithDevicesList = bikeWithDevices;
         notifyDataSetChanged();
     }
 
+    public void setDeviceWithBikes(List<DeviceWithBikes> deviceWithBikes){
+        deviceWithBikesList = deviceWithBikes;
+        notifyDataSetChanged();
+    }
+
+
     public void setBikeToEdit(Bike bikeToEdit) {
         this.bikeToEdit = bikeToEdit;
+        Log.d(TAG, "received bikeToEdit: " + this.bikeToEdit.getBikeName());
+        notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
         return device.size();
     }
+
+
+
 
 }

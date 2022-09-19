@@ -1,6 +1,7 @@
 package com.example.bikecompanion.adapters.myBikes;
 
 import android.view.View;
+import android.widget.CheckBox;
 
 import com.example.bikecompanion.databases.entities.Bike;
 import com.example.bikecompanion.databases.entities.Device;
@@ -14,6 +15,6 @@ public interface MyBikesListenerInterface {
 
     void onButtonClickEdit(int position, List<Bike> bike);
 
-    void onCheckBoxClick(int position, List<Device> device);
+    void onCheckBoxClick(int position, List<Device> device, CheckBox checkBox);
 }
 

@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +29,7 @@ import com.example.bikecompanion.databases.entities.Bike;
 import com.example.bikecompanion.databases.entities.Device;
 import com.example.bikecompanion.databases.entities.BikeDeviceCrossRef;
 import com.example.bikecompanion.databases.relations.BikeWithDevices;
+import com.example.bikecompanion.databases.relations.DeviceWithBikes;
 import com.example.bikecompanion.ui.myDevices.SharedEntitiesViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -37,8 +39,15 @@ import java.util.List;
 public class MyBikesFragment extends Fragment implements MyBikesListenerInterface {
 
     private final static String TAG = "FlareLog BikeFrag";
+
     private MyBikesViewModel mViewModel;
+    private SharedEntitiesViewModel sharedEntitiesViewModel;
+    private MyBikesAdapter bikeAdapter;
+    private SelectDeviceAdapter selectDeviceAdapter;
+
     private View view;
+    private View cardViewAddBike;
+
     private Button buttonAddBike;
     private Button buttonUpdate;
     private Button buttonCancel;
@@ -50,22 +59,15 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
     private TextView textViewBikeDevices;
     private TextView textViewEditAddTitle;
 
+    private RecyclerView recyclerViewSelectDevice;
+
     private Bike bikeToEdit;
 
     private List<Bike> bikeList;
     private List<Device> deviceList;
-    private List<BikeWithDevices> bikesWithDevicesList;
+    private List<BikeWithDevices> bikeWithDevicesList;
+    private List<DeviceWithBikes> deviceWithBikesList;
     private List<String> checkedDevices;
-
-
-    private MyBikesAdapter bikeAdapter;
-    private SelectDeviceAdapter selectDeviceAdapter;
-    private View cardViewAddBike;
-
-
-
-
-    private SharedEntitiesViewModel sharedEntitiesViewModel;
 
     public static MyBikesFragment newInstance() {
         return new MyBikesFragment();
@@ -80,7 +82,7 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
 
         initViews();
         initOnClickListeners();
-        initRecyclerViewer();
+        initRecyclerView();
         initObservers();
 
         return view;
@@ -131,12 +133,21 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
             }
         });
 
-        sharedEntitiesViewModel.getBikesWithDevices().observe(getViewLifecycleOwner(), new Observer<List<BikeWithDevices>>() {
+        sharedEntitiesViewModel.getBikeWithDevices().observe(getViewLifecycleOwner(), new Observer<List<BikeWithDevices>>() {
             @Override
-            public void onChanged(List<BikeWithDevices> bikesWithDevices) {
-                Log.d(TAG, "Received bikesWithDevices live data ");
-                bikesWithDevicesList = bikesWithDevices;
-                bikeAdapter.setBikesWithDevices(bikesWithDevices);
+            public void onChanged(List<BikeWithDevices> bikeWithDevices) {
+                Log.d(TAG, "Received BikeWithDevices live data ");
+                bikeWithDevicesList = bikeWithDevices;
+                bikeAdapter.setBikesWithDevices(bikeWithDevices);
+            }
+        });
+
+        sharedEntitiesViewModel.getDeviceWithBikes().observe(getViewLifecycleOwner(), new Observer<List<DeviceWithBikes>>() {
+            @Override
+            public void onChanged(List<DeviceWithBikes> deviceWithBikes) {
+                Log.d(TAG, "Received DeviceWithBikes live data ");
+                deviceWithBikesList = deviceWithBikes;
+                selectDeviceAdapter.setDeviceWithBikes(deviceWithBikes);
             }
         });
 
@@ -179,9 +190,10 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
                 Bike bike = new Bike(bikeName, bikeMake, bikeModel);
                 sharedEntitiesViewModel.insert(bike);
 
+
                 //adds bike/device pair to crossReference table
-                int listSize = getCheckedDevices().size();
-                for (int i = 0; i < listSize; i++) {
+                int checkBoxListSize = getCheckedDevices().size();
+                for (int i = 0; i < checkBoxListSize; i++) {
                     String deviceMacAddress = getCheckedDevices().get(i);
                     BikeDeviceCrossRef bikeDeviceCrossRef = new BikeDeviceCrossRef(deviceMacAddress, bikeName);
                     sharedEntitiesViewModel.insert(bikeDeviceCrossRef);
@@ -192,6 +204,7 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
                 editTextBikeName.getText().clear();
                 editTextBikeMake.getText().clear();
                 editTextBikeModel.getText().clear();
+                getCheckedDevices().clear();
             }
 
         });
@@ -240,22 +253,23 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
                 editTextBikeName.getText().clear();
                 editTextBikeMake.getText().clear();
                 editTextBikeModel.getText().clear();
+                getCheckedDevices().clear();
+
             }
         });
     }
 
-    private void initRecyclerViewer() {
+    private void initRecyclerView() {
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view_my_bikes);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         bikeAdapter = new MyBikesAdapter(this);
         recyclerView.setAdapter(bikeAdapter);
 
-        RecyclerView recyclerViewSelectDevice = view.findViewById(R.id.recycler_view_select_device);
+        recyclerViewSelectDevice = view.findViewById(R.id.recycler_view_select_device);
         recyclerViewSelectDevice.setLayoutManager(new LinearLayoutManager(getActivity()));
         selectDeviceAdapter = new SelectDeviceAdapter(this);
         recyclerViewSelectDevice.setAdapter(selectDeviceAdapter);
-
     }
 
 
@@ -268,12 +282,13 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
     public void onButtonClickRemove(int position, List<Bike> bike) {
         Bike currentBike = bike.get(position);
         sharedEntitiesViewModel.delete(currentBike);
-
     }
 
     @Override
     public void onButtonClickEdit(int position, List<Bike> bike) {
         bikeToEdit = bike.get(position);
+        Log.d(TAG, bikeToEdit.getBikeName());
+        selectDeviceAdapter.setBikeToEdit(bikeToEdit);
 
         buttonAddBike.setVisibility(View.INVISIBLE);
         buttonUpdate.setVisibility(View.VISIBLE);
@@ -284,21 +299,18 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
         editTextBikeMake.setText(bikeToEdit.getBikeMake());
         editTextBikeModel.setText(bikeToEdit.getBikeModel());
 
-        sharedEntitiesViewModel.get
-
-        //selectDeviceAdapter.setBikesWithDevices(bikesWithDevicesList);
 
     }
 
     @Override
-    public void onCheckBoxClick(int position, List<Device> device) {
+    public void onCheckBoxClick(int position, List<Device> device, CheckBox checkBox) {
         String mac = device.get(position).getDeviceMacAddress();
-        if (getCheckedDevices().contains(mac)) {
-            getCheckedDevices().remove(mac);
-            Toast.makeText(getActivity(), "Removed: " + mac, Toast.LENGTH_SHORT).show();
-        } else {
+        if (checkBox.isChecked()) {
             getCheckedDevices().add(mac);
             Toast.makeText(getActivity(), "Added: " + mac, Toast.LENGTH_SHORT).show();
+        } else {
+            getCheckedDevices().remove(mac);
+            Toast.makeText(getActivity(), "Removed: " + mac, Toast.LENGTH_SHORT).show();
         }
     }
 

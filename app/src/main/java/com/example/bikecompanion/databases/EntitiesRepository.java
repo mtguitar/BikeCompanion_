@@ -76,7 +76,7 @@ public class EntitiesRepository {
 
     }
 
-    public LiveData<List<DeviceWithBikes>> getDevicesWithBikes(){
+    public LiveData<List<DeviceWithBikes>> getDeviceWithBikes(){
         LiveData<List<DeviceWithBikes>> devicesWithBikes = entitiesDao.getDevicesWithBikes();
         return devicesWithBikes;
     }
@@ -107,10 +107,6 @@ public class EntitiesRepository {
         return allBikes;
     }
 
-    public List<Bike> getBikeList(){
-        List<Bike> bikeList = entitiesDao.getBikeList();
-        return bikeList;
-    }
 
 
 
@@ -136,40 +132,16 @@ public class EntitiesRepository {
     }
 
 
-    public List<Device> getDeviceList(){
-        List<Device> deviceList = new Vector<>();
-        GetDeviceListAsyncTask getDeviceListAsyncTask = new GetDeviceListAsyncTask(entitiesDao);
-        getDeviceListAsyncTask.execute();
-        return deviceList;
-    }
 
 
-    private static class GetDeviceListAsyncTask extends android.os.AsyncTask<Void, Void, List<Device>> {
-        private EntitiesDao entitiesDao;
-        private List<Device> deviceList;
-
-        private GetDeviceListAsyncTask(EntitiesDao entitiesDao){
-            this.entitiesDao = entitiesDao;
-        }
-
-
-        @Override
-        protected List<Device> doInBackground(Void... voids) {
-            deviceList = entitiesDao.getDeviceList();
-            return deviceList;
-
-        }
-        protected void onPostExecute(List<Device> deviceList) {
-            this.deviceList = deviceList;
-        }
-
-    }
 
 
 
     /**
      * AsyncTasks for writing/reading to/from db to ensure that we are not working on the main thread
      */
+
+
 
     private static class InsertBikeDeviceCrossRefAsyncTask extends android.os.AsyncTask<BikeDeviceCrossRef, Void, Void> {
         private EntitiesDao entitiesDao;
