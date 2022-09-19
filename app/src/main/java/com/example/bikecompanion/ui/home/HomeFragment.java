@@ -20,10 +20,12 @@ import com.example.bikecompanion.databases.entities.Bike;
 import com.example.bikecompanion.databases.entities.Device;
 import com.example.bikecompanion.databases.relations.BikeWithDevices;
 import com.example.bikecompanion.databinding.FragmentHomeBinding;
+import com.example.bikecompanion.deviceTypes.FlareRTDeviceType;
 import com.example.bikecompanion.ui.sharedViewModels.SharedEntitiesViewModel;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public class HomeFragment extends Fragment {
 
@@ -48,23 +50,27 @@ public class HomeFragment extends Fragment {
     private String characteristicValueByte;
 
     //Front Light
-    Button buttonHomeBlinkSolidFront;
-    Button buttonHomeDayNightFront;
-    Button buttonHomeOffFront;
-    ImageView imageViewHomeModeFront;
+    Button buttonBlinkSolidFront;
+    Button buttonDayNightFront;
+    Button buttonOffFront;
     TextView textViewFrontMode;
+    ImageView imageViewModeFront;
     ImageView imageViewFrontBattery;
+
     boolean frontLightConnected = false;
+    String macAddressFront;
 
 
     //Rear Light
-    Button buttonHomeBlinkSolidRear;
-    Button buttonHomeDayNightRear;
-    Button buttonHomeOffRear;
+    Button buttonBlinkSolidRear;
+    Button buttonDayNightRear;
+    Button buttonOffRear;
     TextView textViewRearMode;
-    ImageView imageViewHomeModeRear;
+    ImageView imageViewModeRear;
     ImageView imageViewRearBattery;
+
     boolean rearLightConnected = false;
+    String macAddressRear;
 
     //Distance
     TextView textViewHomeDistance;
@@ -93,12 +99,8 @@ public class HomeFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
         initViews();
-        initObservers();
-
-
-
-
-
+        initDatabaseObservers();
+        initBleServiceObservers();
         return view;
     }
 
@@ -112,19 +114,19 @@ public class HomeFragment extends Fragment {
 
     public void initViews() {
         //Front Light
-        buttonHomeBlinkSolidFront = view.findViewById(R.id.button_home_blink_solid_front);
-        buttonHomeDayNightFront = (Button) view.findViewById(R.id.button_home_day_night_front);
-        buttonHomeOffFront = view.findViewById(R.id.button_home_off_front);
-        imageViewHomeModeFront = view.findViewById(R.id.image_view_home_mode_front);
+        buttonBlinkSolidFront = view.findViewById(R.id.button_home_blink_solid_front);
+        buttonDayNightFront = (Button) view.findViewById(R.id.button_home_day_night_front);
+        buttonOffFront = view.findViewById(R.id.button_home_off_front);
+        imageViewModeFront = view.findViewById(R.id.image_view_home_mode_front);
         textViewFrontMode = view.findViewById(R.id.text_view_home_mode_front);
         imageViewFrontBattery = view.findViewById(R.id.image_view_home_battery_front);
 
         //Rear Light
-        buttonHomeBlinkSolidRear = view.findViewById(R.id.button_home_blink_solid_rear);
-        buttonHomeDayNightRear = view.findViewById(R.id.button_home_day_night_rear);
-        buttonHomeOffRear = view.findViewById(R.id.button_home_off_rear);
+        buttonBlinkSolidRear = view.findViewById(R.id.button_home_blink_solid_rear);
+        buttonDayNightRear = view.findViewById(R.id.button_home_day_night_rear);
+        buttonOffRear = view.findViewById(R.id.button_home_off_rear);
         textViewRearMode = view.findViewById(R.id.text_view_home_mode_rear);
-        imageViewHomeModeRear = view.findViewById(R.id.image_view_home_mode_rear);
+        imageViewModeRear = view.findViewById(R.id.image_view_home_mode_rear);
         imageViewRearBattery = view.findViewById(R.id.image_view_home_battery_rear);
 
         //Distance
@@ -140,7 +142,7 @@ public class HomeFragment extends Fragment {
         textViewHomeBikeName = view.findViewById(R.id.text_view_home_bike_name);
     }
 
-    private void initObservers() {
+    private void initDatabaseObservers() {
         sharedEntitiesViewModel.getAllDevices().observe(getViewLifecycleOwner(), new Observer<List<Device>>() {
             @Override
             public void onChanged(List<Device> devices) {
@@ -156,6 +158,7 @@ public class HomeFragment extends Fragment {
             public void onChanged(List<Bike> bikes) {
                 Log.d(TAG, "Received bikes live data ");
                 bikeList = bikes;
+                //todo specify which bike to initiate
                 initBike();
             }
         });
@@ -168,9 +171,42 @@ public class HomeFragment extends Fragment {
             }
         });
 
+    }
+
+
+    private void initBleServiceObservers() {
+        //observes changes to BLE device connection state
+        sharedEntitiesViewModel.getConnectionStateHashMapLive().observe(getActivity(), new Observer<HashMap>() {
+            @Override
+            public void onChanged(HashMap connectionStateHashMapArg) {
+                connectionStateHashMap = connectionStateHashMapArg;
+                gattMacAddress = connectionStateHashMap.get(Constants.GATT_MAC_ADDRESS);
+                connectionState = connectionStateHashMap.get(gattMacAddress);
+
+                //If services discovered, calls read characteristic method
+                if (connectionState.equals(Constants.GATT_SERVICES_DISCOVERED)) {
+
+                }
+
+            }
+        });
+
+        //observes changes to BLE device data
+        sharedEntitiesViewModel.getDeviceDataHashMapLive().observe(getActivity(), new Observer<HashMap>() {
+            @Override
+            public void onChanged(HashMap deviceDataHashMap) {
+                gattMacAddress = (String) deviceDataHashMap.get(Constants.GATT_MAC_ADDRESS);
+                characteristicUUID = (String) deviceDataHashMap.get(Constants.CHARACTERISTIC_UUID);
+                characteristicValueString = (String) deviceDataHashMap.get(Constants.CHARACTERISTIC_VALUE_STRING);
+                characteristicValueByte = (String) deviceDataHashMap.get(Constants.CHARACTERISTIC_VALUE_BYTE);
+                Log.d(TAG, "Received device data: " + gattMacAddress + " " + characteristicUUID + " " + characteristicValueString + " " + characteristicValueByte);
+
+            }
+        });
 
     }
 
+    //todo add parameter to specify which bike to initiate
     private void initBike(){
         if (bikeList == null)
         {
@@ -183,78 +219,63 @@ public class HomeFragment extends Fragment {
 
     }
 
-
-
     public void connectDevice(String deviceMacAddress){
         //myDevicesViewModel.connectDevice(deviceMacAddress);
     }
 
-/*
     private void initOnClickListeners(){
-        Button buttonDayNight = view.findViewById(R.id.button_home_day_night);
-        Button buttonBlinkSolid = view.findViewById(R.id.button_home_blink_solid);
-        Button buttonOff = view.findViewById(R.id.button_home_off);
-
-        String macAddress = Constants.AVENTON_FLARE_MAC_ADDRESS;
-
-
-        buttonDayNight.setOnClickListener(new View.OnClickListener() {
+        //frontLight
+        buttonDayNightFront.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 connectDevice(deviceToConnect);
-                myDevicesViewModel.writeCharacteristics(macAddress, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, FlareRTDeviceType.DAY_BLINK_MODE_BYTE);
+                writeCharacteristic(macAddressFront, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, FlareRTDeviceType.DAY_BLINK_MODE_BYTE);
             }
         });
 
-        buttonBlinkSolid.setOnClickListener(new View.OnClickListener() {
+        buttonBlinkSolidFront.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                myDevicesViewModel.writeCharacteristics(macAddress, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, FlareRTDeviceType.NIGHT_SOLID_MODE_BYTE);
+                writeCharacteristic(macAddressFront, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, FlareRTDeviceType.NIGHT_SOLID_MODE_BYTE);
             }
         });
-        buttonOff.setOnClickListener(new View.OnClickListener() {
+        buttonOffFront.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                writeCharacteristic(macAddressFront, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, FlareRTDeviceType.OFF_MODE_BYTE);
+            }
+        });
+
+        //rearLight
+        buttonDayNightRear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                connectDevice(deviceToConnect);
+                writeCharacteristic(macAddressRear, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, FlareRTDeviceType.DAY_BLINK_MODE_BYTE);
+            }
+        });
+
+        buttonBlinkSolidRear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                writeCharacteristic(macAddressRear, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, FlareRTDeviceType.NIGHT_SOLID_MODE_BYTE);
+            }
+        });
+        buttonOffRear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                myDevicesViewModel.writeCharacteristics(macAddress, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, FlareRTDeviceType.OFF_MODE_BYTE);
+               writeCharacteristic(macAddressRear, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, FlareRTDeviceType.OFF_MODE_BYTE);
             }
         });
+    }
 
 
+    private void writeCharacteristic(String macAddress, UUID serviceUUID, UUID characteristicUUID, byte[] payload){
+        sharedEntitiesViewModel.writeCharacteristics(macAddress, serviceUUID, characteristicUUID, payload);
     }
     /*
 
-
-    private void initOnClickListeners() {
-        Button buttonDayNight = view.findViewById(R.id.button_home_day_night_front);
-        Button buttonBlinkSolid = view.findViewById(R.id.button_home_blink_solid_front);
-        Button buttonOff = view.findViewById(R.id.button_home_off_front);
-
-        String macAddress = Constants.AVENTON_FLARE_MAC_ADDRESS;
-
-
-        buttonDayNight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                connectDevice(deviceToConnect);
-                myDevicesViewModel.writeCharacteristics(macAddress, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, FlareRTDeviceType.DAY_BLINK_MODE_BYTE);
-            }
-        });
-
-        buttonBlinkSolid.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                myDevicesViewModel.writeCharacteristics(macAddress, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, FlareRTDeviceType.NIGHT_SOLID_MODE_BYTE);
-            }
-        });
-        buttonOff.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                myDevicesViewModel.writeCharacteristics(macAddress, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, FlareRTDeviceType.OFF_MODE_BYTE);
-            }
-        });
-
-    }
 
 
     private void initObservers() {

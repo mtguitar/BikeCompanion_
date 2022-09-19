@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeViewHolder>{
+public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeViewHolder> {
 
     private List<Bike> bikeList;
     private List<Device> deviceList;
@@ -39,7 +39,7 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
         return new BikeViewHolder(itemView);
     }
 
-    class BikeViewHolder extends RecyclerView.ViewHolder{
+    class BikeViewHolder extends RecyclerView.ViewHolder {
         private TextView textViewBikeName;
         private TextView textViewBikeMake;
         private TextView textViewBikeModel;
@@ -66,7 +66,7 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
                     if (listener != null) {
                         int position = getAbsoluteAdapterPosition();
 
-                        if (position != RecyclerView.NO_POSITION){
+                        if (position != RecyclerView.NO_POSITION) {
                             listener.onItemClick(position, itemView, bikeList);
 
                         }
@@ -81,7 +81,7 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
                     if (listener != null) {
                         int position = getAbsoluteAdapterPosition();
 
-                        if (position != RecyclerView.NO_POSITION){
+                        if (position != RecyclerView.NO_POSITION) {
                             listener.onButtonClickRemove(position, bikeList);
                         }
                     }
@@ -96,7 +96,7 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
                     if (listener != null) {
                         int position = getAbsoluteAdapterPosition();
 
-                        if (position != RecyclerView.NO_POSITION){
+                        if (position != RecyclerView.NO_POSITION) {
                             listener.onButtonClickEdit(position, bikeList);
                         }
                     }
@@ -117,18 +117,17 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
         holder.textViewBikeModel.setText(currentViewBike.getBikeModel());
 
         //Add devices belonging to each bike
-        if (bikesWithDevicesList != null)
-        {
+        if (bikesWithDevicesList != null) {
             //loops through each bike, checking if it matches name of the current bike in the recyclerView
             holder.textViewBikeDevices.setText("");
             int listSize = bikesWithDevicesList.size();
             for (int i = 0; i < listSize; i++) {
                 String listBikeName = bikesWithDevicesList.get(i).bike.getBikeName();
-                if(listBikeName.equals(currentViewBikeName)){
-                    //loops through each device in the list and adds it to the textView, followed by a new line
+                if (listBikeName.equals(currentViewBikeName)) {
+                    //if names match, loops through each device in the list associated with that
+                    // bike and adds it to the textView, followed by a new line
                     int deviceListSize = bikesWithDevicesList.get(i).deviceList.size();
-                    for (int j = 0; j < deviceListSize; j++)
-                    {
+                    for (int j = 0; j < deviceListSize; j++) {
                         String listDeviceName = bikesWithDevicesList.get(i).deviceList.get(j).getDeviceAssignedName();
                         String listDeviceMacAddress = bikesWithDevicesList.get(i).deviceList.get(j).getDeviceMacAddress();
                         holder.textViewBikeDevices.append(listDeviceName + " " + listDeviceMacAddress + "\n");
@@ -139,16 +138,16 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
 
     }
 
-    public void setBikes(List<Bike> bikes){
-        if (bikeList == null){
+    public void setBikes(List<Bike> bikes) {
+        if (bikeList == null) {
             bikeList = new ArrayList<>();
         }
         bikeList = bikes;
         notifyDataSetChanged();
     }
 
-    public void setDevices(List<Device> devices){
-        if (deviceList == null){
+    public void setDevices(List<Device> devices) {
+        if (deviceList == null) {
             deviceList = new ArrayList<>();
         }
         deviceList = devices;
@@ -156,19 +155,17 @@ public class MyBikesAdapter extends RecyclerView.Adapter<MyBikesAdapter.BikeView
     }
 
 
-    public void setBikesWithDevices(List<BikeWithDevices> bikesWithDevices){
+    public void setBikesWithDevices(List<BikeWithDevices> bikesWithDevices) {
         bikesWithDevicesList = bikesWithDevices;
         notifyDataSetChanged();
     }
-
 
 
     @Override
     public int getItemCount() {
         if (bikeList != null) {
             return bikeList.size();
-        }
-        else {
+        } else {
             return 0;
         }
     }
