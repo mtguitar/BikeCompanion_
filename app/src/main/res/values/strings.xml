@@ -54,4 +54,5 @@
     <string name="grid_layout_manager" />
     <string name="button_connect">Connect</string>
     <string name="my_bikes">My Bikes</string>
+    <string name="add_new_bike">Add New Bike</string>
 </resources>

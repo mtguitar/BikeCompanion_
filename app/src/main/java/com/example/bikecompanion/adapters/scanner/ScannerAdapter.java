@@ -11,16 +11,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bikecompanion.R;
-import com.example.bikecompanion.ui.scanner.ScanResults;
+import com.example.bikecompanion.ui.scanner.ScannerListenerInterface;
 
 import java.util.ArrayList;
 
 public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerViewHolder> {
 
-    public ArrayList<ScanResults> scanResultsArrayList;
+    public ArrayList<ScannerListenerInterface> scanResultsArrayList;
     public RecyclerViewInterface recyclerViewInterface;
 
-    public ScannerAdapter(ArrayList<ScanResults> scanResultsArrayList, RecyclerViewInterface recyclerViewInterface) {
+    public ScannerAdapter(ArrayList<ScannerListenerInterface> scanResultsArrayList, RecyclerViewInterface recyclerViewInterface) {
         this.scanResultsArrayList = scanResultsArrayList;
         this.recyclerViewInterface = recyclerViewInterface;
     }
@@ -100,7 +100,7 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
 
     @Override
     public void onBindViewHolder(@NonNull ScannerAdapter.ScannerViewHolder holder, int position) {
-        ScanResults currentItem = scanResultsArrayList.get(position);
+        ScannerListenerInterface currentItem = scanResultsArrayList.get(position);
         holder.imageViewScanResults.setImageResource(currentItem.getImageResource());
         holder.textViewScannerDeviceMacAddress.setText(currentItem.getDeviceMacAddress());
         holder.textViewScannerDeviceName.setText(currentItem.getDeviceName());
@@ -112,11 +112,6 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
     public int getItemCount() {
         return scanResultsArrayList.size();
 
-    }
-
-    public String getItemName(int position){
-        String name = getItemName(position);
-        return name;
     }
 
 

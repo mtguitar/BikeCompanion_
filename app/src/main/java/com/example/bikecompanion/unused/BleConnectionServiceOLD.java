@@ -217,8 +217,8 @@ public class BleConnectionServiceOLD extends Service {
     }
 
 
-    /**
-     * Set up foreground service, and notification
+    /*
+      Set up foreground service, and notification
      */
 
 /*

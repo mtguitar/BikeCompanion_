@@ -24,10 +24,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="10dp"
-                android:tint="#000000"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:srcCompat="@drawable/ic_expand" />
+                app:srcCompat="@drawable/ic_expand"
+                app:tint="#000000" />
 
             <ImageView
                 android:id="@+id/image_view_home_light_mode"

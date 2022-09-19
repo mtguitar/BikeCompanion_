@@ -21,17 +21,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class SelectDeviceAdapter extends RecyclerView.Adapter<SelectDeviceAdapter.SelectDeviceViewHolder>{
+public class DeviceCheckBoxAdapter extends RecyclerView.Adapter<DeviceCheckBoxAdapter.SelectDeviceViewHolder> {
 
     private final static String TAG = "FlareLog SelectAdapt";
     private List<Device> device = new ArrayList<>();
-    private MyBikesListenerInterface listener;
+    private final MyBikesListenerInterface listener;
     private List<BikeWithDevices> bikeWithDevicesList;
     private List<DeviceWithBikes> deviceWithBikesList;
     private Bike bikeToEdit;
 
 
-    public SelectDeviceAdapter(MyBikesListenerInterface listener) {
+    public DeviceCheckBoxAdapter(MyBikesListenerInterface listener) {
         this.listener = listener;
     }
 
@@ -43,7 +43,7 @@ public class SelectDeviceAdapter extends RecyclerView.Adapter<SelectDeviceAdapte
         return new SelectDeviceViewHolder(itemView);
     }
 
-    class SelectDeviceViewHolder extends RecyclerView.ViewHolder{
+    class SelectDeviceViewHolder extends RecyclerView.ViewHolder {
         private CheckBox checkBox;
         private ImageView selectDeviceImageView;
 
@@ -61,7 +61,7 @@ public class SelectDeviceAdapter extends RecyclerView.Adapter<SelectDeviceAdapte
                     if (listener != null) {
                         int position = getAbsoluteAdapterPosition();
 
-                        if (position != RecyclerView.NO_POSITION){
+                        if (position != RecyclerView.NO_POSITION) {
                             listener.onCheckBoxClick(position, device, checkBox);
                         }
                     }
@@ -76,26 +76,30 @@ public class SelectDeviceAdapter extends RecyclerView.Adapter<SelectDeviceAdapte
     public void onBindViewHolder(@NonNull SelectDeviceViewHolder holder, int position) {
         Device currentDevice = device.get(position);
         String currentDeviceName = currentDevice.getDeviceBleName();
+        String currentDeviceMac = currentDevice.getDeviceMacAddress();
         holder.checkBox.setChecked(false);
-        holder.checkBox.setText(currentDevice.getDeviceBleName() + " " + currentDevice.getDeviceMacAddress());
+        String checkBoxText = currentDeviceName + " " + currentDeviceMac;
+        holder.checkBox.setText(checkBoxText);
+
+        //Check if bikeToEdit is set, in which case we are editing a bike, not creating a new one
         if (bikeToEdit != null) {
             String bikeToEditName = bikeToEdit.getBikeName();
-            Log.d(TAG, "bikeToEdit: " + bikeToEditName);
 
-            //get deviceWithBikes for currentDevice
-            //loop through list of bikes to see if bikeToEdit is in list
+            //loop through list deviceWithBikes to see if bikeToEdit is in list
             //if in list, check box, otherwise, uncheck box
             int deviceListSize = deviceWithBikesList.size();
             for (int i = 0; i < deviceListSize; i++) {
-                if (deviceWithBikesList.get(i).device.getDeviceBleName().equals(currentDeviceName)) {
+                String deviceWithBikesListMac = deviceWithBikesList.get(i).device.getDeviceMacAddress();
+                if (deviceWithBikesListMac.equals(currentDeviceMac)) {
                     int bikeListSize = deviceWithBikesList.get(i).bikeList.size();
                     for (int j = 0; j < bikeListSize; j++) {
                         String bikeListName = deviceWithBikesList.get(i).bikeList.get(j).getBikeName();
                         Log.d(TAG, "bikeListName: " + bikeListName + " bikeToEditName: " + bikeToEditName);
                         if (bikeListName.equals(bikeToEditName)) {
                             holder.checkBox.setChecked(true);
+                            Log.d(TAG, "Checkbox true");
                         } else {
-                            holder.checkBox.setChecked(false);
+                            Log.d(TAG, "Checkbox false");
                         }
                     }
 
@@ -117,17 +121,17 @@ public class SelectDeviceAdapter extends RecyclerView.Adapter<SelectDeviceAdapte
         }
     }
 
-    public void setCheckBoxes(List<Device> devices){
+    public void setCheckBoxes(List<Device> devices) {
         this.device = devices;
         notifyDataSetChanged();
     }
 
-    public void setBikeWithDevices(List<BikeWithDevices> bikeWithDevices){
+    public void setBikeWithDevices(List<BikeWithDevices> bikeWithDevices) {
         bikeWithDevicesList = bikeWithDevices;
         notifyDataSetChanged();
     }
 
-    public void setDeviceWithBikes(List<DeviceWithBikes> deviceWithBikes){
+    public void setDeviceWithBikes(List<DeviceWithBikes> deviceWithBikes) {
         deviceWithBikesList = deviceWithBikes;
         notifyDataSetChanged();
     }
@@ -143,8 +147,6 @@ public class SelectDeviceAdapter extends RecyclerView.Adapter<SelectDeviceAdapte
     public int getItemCount() {
         return device.size();
     }
-
-
 
 
 }

@@ -26,10 +26,10 @@ import com.example.bikecompanion.R;
 import com.example.bikecompanion.adapters.scanner.RecyclerViewInterface;
 import com.example.bikecompanion.adapters.scanner.ScannerAdapter;
 import com.example.bikecompanion.ble.BleScannerService;
-import com.example.bikecompanion.ble.RegisterBroadcastReceiver;
+import com.example.bikecompanion.unused.RegisterBroadcastReceiver;
 import com.example.bikecompanion.constants.Constants;
 import com.example.bikecompanion.databases.entities.Device;
-import com.example.bikecompanion.ui.myDevices.SharedEntitiesViewModel;
+import com.example.bikecompanion.ui.sharedViewModels.SharedEntitiesViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,7 +120,7 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
     }
 
     private void setupViews() {
-        buttonStopScan = (Button) view.findViewById(R.id.buttonStopScan);
+        buttonStopScan = view.findViewById(R.id.buttonStopScan);
         textViewScanTitle = view.findViewById(R.id.textViewScanTitle);
         progressBarScan = view.findViewById(R.id.progressBarScan);
         buttonAddToMyDevices = view.findViewById(R.id.button_scanner_add_to_my_devices);
@@ -149,8 +149,8 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
     }
     private void observeLiveData(){
         //Setup observer of livedata for recyclerView, calls updateRecyclerView when data changes
-        final Observer<ArrayList<ScanResults>> observerScanResults;
-        observerScanResults = new Observer<ArrayList<ScanResults>>(){
+        final Observer<ArrayList<ScannerListenerInterface>> observerScanResults;
+        observerScanResults = new Observer<ArrayList<ScannerListenerInterface>>(){
             public void onChanged(@Nullable final ArrayList scanResults) {
                 updateRecycleViewer(scanResults);
             }

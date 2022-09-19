@@ -3,14 +3,13 @@ package com.example.bikecompanion.sharedClasses;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.Observer;
 
 import com.example.bikecompanion.databases.entities.Device;
-import com.example.bikecompanion.ui.myDevices.SharedEntitiesViewModel;
+import com.example.bikecompanion.ui.sharedViewModels.SharedEntitiesViewModel;
 
 import java.util.ArrayList;
 import java.util.List;

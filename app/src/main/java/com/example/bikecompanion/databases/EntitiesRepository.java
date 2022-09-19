@@ -25,7 +25,6 @@ import com.example.bikecompanion.databases.relations.DeviceWithBikes;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-import java.util.Vector;
 
 /**
  * This repo holds all the data used to populate MyDevicesFragment.

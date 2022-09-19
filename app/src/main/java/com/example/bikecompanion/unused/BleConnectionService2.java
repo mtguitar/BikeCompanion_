@@ -217,9 +217,9 @@ public class BleConnectionService2 extends Service {
 
 
 
-    public static MutableLiveData<ArrayList<ScanResults>> scannerLiveDataList = new MutableLiveData<>();
+    public static MutableLiveData<ArrayList<ScannerListenerInterface>> scannerLiveDataList = new MutableLiveData<>();
 
-    public static MutableLiveData<ArrayList<ScanResults>> getScanResults () {
+    public static MutableLiveData<ArrayList<ScannerListenerInterface>> getScanResults () {
         return scannerLiveDataList;
     }
 
@@ -248,7 +248,7 @@ public class BleConnectionService2 extends Service {
         if (deviceName.contains("speed")) {
             image = R.drawable.ic_speed;
         }
-        scanResults.add(new ScanResults(image, deviceName, deviceMacAddress, deviceType));
+        scanResults.add(new ScannerListenerInterface(image, deviceName, deviceMacAddress, deviceType));
         scannerLiveDataList.postValue(scanResults);
         Log.d(TAG, "Posted scan result " + deviceName + deviceMacAddress);
     }

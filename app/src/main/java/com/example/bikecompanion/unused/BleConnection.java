@@ -16,8 +16,7 @@ import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.bikecompanion.ble.FormatBleData;
-import com.example.bikecompanion.ui.scanner.ScanResults;
+import com.example.bikecompanion.ui.scanner.ScannerListenerInterface;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -76,7 +75,7 @@ public class BleConnection {
     //scanResults vars
     private String discoveredMacAddress;
     private String deviceName;
-    private ArrayList<ScanResults> scannerList;
+    private ArrayList<ScannerListenerInterface> scannerList;
 
 
     public BleConnection() {

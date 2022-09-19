@@ -1,6 +1,7 @@
 package com.example.bikecompanion.ui.home;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,20 +11,29 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.bikecompanion.R;
 import com.example.bikecompanion.constants.Constants;
+import com.example.bikecompanion.databases.entities.Bike;
+import com.example.bikecompanion.databases.entities.Device;
+import com.example.bikecompanion.databases.relations.BikeWithDevices;
 import com.example.bikecompanion.databinding.FragmentHomeBinding;
-import com.example.bikecompanion.ui.myDevices.SharedEntitiesViewModel;
+import com.example.bikecompanion.ui.sharedViewModels.SharedEntitiesViewModel;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class HomeFragment extends Fragment {
 
     private final static String TAG = "FlareLog Home";
     private FragmentHomeBinding binding;
-    private SharedEntitiesViewModel myDevicesViewModel;
+    private SharedEntitiesViewModel sharedEntitiesViewModel;
+
+    private List<Bike> bikeList;
+    private List<Device> deviceList;
+    private List<BikeWithDevices> bikeWithDevicesList;
 
 
     private View view;
@@ -76,14 +86,17 @@ public class HomeFragment extends Fragment {
         HomeViewModel homeViewModel =
                 new ViewModelProvider(this).get(HomeViewModel.class);
 
+        sharedEntitiesViewModel = new ViewModelProvider(this).get(SharedEntitiesViewModel.class);
+        sharedEntitiesViewModel.bindService();
+
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        initViews();
+        initObservers();
 
-        myDevicesViewModel = new ViewModelProvider(this).get(SharedEntitiesViewModel.class);
-        myDevicesViewModel.bindService();
 
-        //initOnClickListeners();
+
 
 
         return view;
@@ -93,14 +106,87 @@ public class HomeFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-        myDevicesViewModel.disconnectDevice(Constants.AVENTON_FLARE_MAC_ADDRESS);
+        //sharedEntitiesViewModel.disconnectDevice(deviceToConnect);
+    }
+
+
+    public void initViews() {
+        //Front Light
+        buttonHomeBlinkSolidFront = view.findViewById(R.id.button_home_blink_solid_front);
+        buttonHomeDayNightFront = (Button) view.findViewById(R.id.button_home_day_night_front);
+        buttonHomeOffFront = view.findViewById(R.id.button_home_off_front);
+        imageViewHomeModeFront = view.findViewById(R.id.image_view_home_mode_front);
+        textViewFrontMode = view.findViewById(R.id.text_view_home_mode_front);
+        imageViewFrontBattery = view.findViewById(R.id.image_view_home_battery_front);
+
+        //Rear Light
+        buttonHomeBlinkSolidRear = view.findViewById(R.id.button_home_blink_solid_rear);
+        buttonHomeDayNightRear = view.findViewById(R.id.button_home_day_night_rear);
+        buttonHomeOffRear = view.findViewById(R.id.button_home_off_rear);
+        textViewRearMode = view.findViewById(R.id.text_view_home_mode_rear);
+        imageViewHomeModeRear = view.findViewById(R.id.image_view_home_mode_rear);
+        imageViewRearBattery = view.findViewById(R.id.image_view_home_battery_rear);
+
+        //Distance
+        textViewHomeDistance = view.findViewById(R.id.text_view_home_distance);
+
+        //Speed
+        textViewHomeSpeed = view.findViewById(R.id.text_view_home_speed);
+
+        //Cadence
+        textViewHomeCadence = view.findViewById(R.id.text_view_home_cadence);
+
+        //Bike Name
+        textViewHomeBikeName = view.findViewById(R.id.text_view_home_bike_name);
+    }
+
+    private void initObservers() {
+        sharedEntitiesViewModel.getAllDevices().observe(getViewLifecycleOwner(), new Observer<List<Device>>() {
+            @Override
+            public void onChanged(List<Device> devices) {
+
+                Log.d(TAG, "Received devices live data ");
+                deviceList = devices;
+
+            }
+        });
+
+        sharedEntitiesViewModel.getAllBikes().observe(getViewLifecycleOwner(), new Observer<List<Bike>>() {
+            @Override
+            public void onChanged(List<Bike> bikes) {
+                Log.d(TAG, "Received bikes live data ");
+                bikeList = bikes;
+                initBike();
+            }
+        });
+
+        sharedEntitiesViewModel.getBikeWithDevices().observe(getViewLifecycleOwner(), new Observer<List<BikeWithDevices>>() {
+            @Override
+            public void onChanged(List<BikeWithDevices> bikeWithDevices) {
+                Log.d(TAG, "Received BikeWithDevices live data ");
+                bikeWithDevicesList = bikeWithDevices;
+            }
+        });
+
+
+    }
+
+    private void initBike(){
+        if (bikeList == null)
+        {
+            return;
+        }
+        Bike bike = bikeList.get(0);
+        String bikeName = bike.getBikeName();
+
+        textViewHomeBikeName.setText(bikeName);
+
     }
 
 
 
-
     public void connectDevice(String deviceMacAddress){
-        myDevicesViewModel.connectDevice(deviceMacAddress);
+        //myDevicesViewModel.connectDevice(deviceMacAddress);
     }
 
 /*
@@ -202,35 +288,7 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    public void initViews() {
-        //Front Light
-        buttonHomeBlinkSolidFront = view.findViewById(R.id.button_home_blink_solid_front);
-        buttonHomeDayNightFront = (Button) view.findViewById(R.id.button_home_day_night_front);
-        buttonHomeOffFront = view.findViewById(R.id.button_home_off_front);
-        imageViewHomeModeFront = view.findViewById(R.id.image_view_home_mode_front);
-        textViewFrontMode = view.findViewById(R.id.text_view_home_mode_front);
-        imageViewFrontBattery = view.findViewById(R.id.image_view_home_battery_front);
 
-        //Rear Light
-        buttonHomeBlinkSolidRear = view.findViewById(R.id.button_home_blink_solid_rear);
-        buttonHomeDayNightRear = view.findViewById(R.id.button_home_day_night_rear);
-        buttonHomeOffRear = view.findViewById(R.id.button_home_off_rear);
-        textViewRearMode = view.findViewById(R.id.image_view_home_mode_rear);
-        imageViewHomeModeRear = view.findViewById(R.id.text_view_home_mode_rear);
-        imageViewRearBattery = view.findViewById(R.id.image_view_home_battery_rear);
-
-        //Distance
-        textViewHomeDistance = view.findViewById(R.id.text_view_home_distance);
-
-        //Speed
-        textViewHomeSpeed = view.findViewById(R.id.text_view_home_speed);
-
-        //Cadence
-        textViewHomeCadence = view.findViewById(R.id.text_view_home_cadence);
-
-        //Bike Name
-        textViewHomeBikeName = view.findViewById(R.id.text_view_home_bike_name);
-    }
 
     */
 

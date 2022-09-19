@@ -2,12 +2,9 @@ package com.example.bikecompanion.deviceTypes;
 
 import android.os.ParcelUuid;
 
-
 import com.example.bikecompanion.R;
 import com.example.bikecompanion.sharedClasses.Characteristic;
 
-import java.nio.charset.StandardCharsets;
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -91,7 +88,7 @@ public class FlareRTDeviceType{
 
 
 
-    public final static ParcelUuid getServiceUUID(){
+    public static ParcelUuid getServiceUUID(){
         return PARCELUUID_ADVERTISED_SERVICE_1;
     }
 

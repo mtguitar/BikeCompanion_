@@ -23,10 +23,8 @@ import androidx.lifecycle.Observer;
 import com.example.bikecompanion.R;
 import com.example.bikecompanion.constants.Constants;
 import com.example.bikecompanion.databases.EntitiesRepository;
-import com.example.bikecompanion.databases.entities.Bike;
 import com.example.bikecompanion.databases.entities.Device;
-import com.example.bikecompanion.ui.myDevices.SharedEntitiesViewModel;
-import com.example.bikecompanion.ui.scanner.ScanResults;
+import com.example.bikecompanion.ui.scanner.ScannerListenerInterface;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,7 +52,7 @@ public class BleScannerService extends LifecycleService {
     private String deviceType = "Unknown";
 
     //scanResults vars
-    private ArrayList<ScanResults> scanResults;
+    private ArrayList<ScannerListenerInterface> scanResults;
     private String deviceName;
     private String deviceMacAddress;
 
@@ -193,9 +191,9 @@ public class BleScannerService extends LifecycleService {
     /**
      * LiveData code
      */
-    public static MutableLiveData<ArrayList<ScanResults>> scannerLiveDataList = new MutableLiveData<>();
+    public static MutableLiveData<ArrayList<ScannerListenerInterface>> scannerLiveDataList = new MutableLiveData<>();
 
-    public static MutableLiveData<ArrayList<ScanResults>> getScanResults() {
+    public static MutableLiveData<ArrayList<ScannerListenerInterface>> getScanResults() {
         return scannerLiveDataList;
     }
 
@@ -243,7 +241,7 @@ public class BleScannerService extends LifecycleService {
             } else {
                 image = R.drawable.ic_device_type_other_sensor;
             }
-            scanResults.add(new ScanResults(image, deviceName, deviceMacAddress, deviceType));
+            scanResults.add(new ScannerListenerInterface(image, deviceName, deviceMacAddress, deviceType));
             scannerLiveDataList.postValue(scanResults);
         }
 

@@ -159,8 +159,8 @@ public class ScannerFragmentExtraCodeToUse extends Fragment implements RecyclerV
 
     private void observeLiveData(){
         //Setup observer of livedata for recyclerView, calls updateRecyclerView when data changes
-        final Observer<ArrayList<ScanResults>> observerScanResults;
-        observerScanResults = new Observer<ArrayList<ScanResults>>(){
+        final Observer<ArrayList<ScannerListenerInterface>> observerScanResults;
+        observerScanResults = new Observer<ArrayList<ScannerListenerInterface>>(){
             public void onChanged(@Nullable final ArrayList scanResults) {
                 updateRecycleViewer(scanResults);
             }

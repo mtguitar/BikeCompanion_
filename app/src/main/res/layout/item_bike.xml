@@ -63,7 +63,7 @@
                 android:id="@+id/image_view_bike"
                 android:layout_width="75dp"
                 android:layout_height="75dp"
-                android:tint="#000000"
+                app:tint="#000000"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

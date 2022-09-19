@@ -1,4 +1,4 @@
-package com.example.bikecompanion.ble;
+package com.example.bikecompanion.unused;
 
 public class FormatBleData {
 

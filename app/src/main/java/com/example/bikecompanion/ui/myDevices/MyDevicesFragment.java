@@ -26,6 +26,7 @@ import com.example.bikecompanion.constants.Constants;
 import com.example.bikecompanion.databases.entities.Device;
 import com.example.bikecompanion.deviceTypes.FlareRTDeviceType;
 import com.example.bikecompanion.deviceTypes.GenericDeviceType;
+import com.example.bikecompanion.ui.sharedViewModels.SharedEntitiesViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.HashMap;
@@ -281,7 +282,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
 
 
     private void updateConnectionState(){
-        if (textViewDeviceState != null && gattMacAddress.equals(textViewMacAddress.getText())) {
+        if (textViewDeviceState != null && gattMacAddress.contentEquals(textViewMacAddress.getText())) {
             textViewDeviceState.setText(connectionState);
         }
         if(connectionState.equals(Constants.GATT_CONNECTED)){

@@ -1,4 +1,4 @@
-package com.example.bikecompanion.ble;
+package com.example.bikecompanion.unused;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

@@ -20,6 +20,7 @@ import androidx.lifecycle.LifecycleService;
 
 import com.example.bikecompanion.constants.Constants;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -226,7 +227,7 @@ public class BleConnectionService extends LifecycleService {
         }
 
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-            Log.w(TAG, "Received characteristicChanged" + characteristic + " " + characteristic.getValue());
+            Log.w(TAG, "Received characteristicChanged" + characteristic + " " + Arrays.toString(characteristic.getValue()));
             broadcastUpdateCharacteristic(gatt, characteristic);
         }
 
@@ -295,8 +296,8 @@ public class BleConnectionService extends LifecycleService {
     }
 
 
-    /**
-     * Set up foreground service, and notification
+    /*
+      Set up foreground service, and notification
      */
 
 /*

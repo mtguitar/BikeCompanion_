@@ -1,16 +1,6 @@
 package com.example.bikecompanion.ui.myBikes;
 
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,16 +11,24 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.bikecompanion.R;
 import com.example.bikecompanion.adapters.myBikes.MyBikesAdapter;
 import com.example.bikecompanion.adapters.myBikes.MyBikesListenerInterface;
-import com.example.bikecompanion.adapters.myBikes.SelectDeviceAdapter;
+import com.example.bikecompanion.adapters.myBikes.DeviceCheckBoxAdapter;
 import com.example.bikecompanion.databases.entities.Bike;
-import com.example.bikecompanion.databases.entities.Device;
 import com.example.bikecompanion.databases.entities.BikeDeviceCrossRef;
+import com.example.bikecompanion.databases.entities.Device;
 import com.example.bikecompanion.databases.relations.BikeWithDevices;
 import com.example.bikecompanion.databases.relations.DeviceWithBikes;
-import com.example.bikecompanion.ui.myDevices.SharedEntitiesViewModel;
+import com.example.bikecompanion.ui.sharedViewModels.SharedEntitiesViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -43,7 +41,7 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
     private MyBikesViewModel mViewModel;
     private SharedEntitiesViewModel sharedEntitiesViewModel;
     private MyBikesAdapter bikeAdapter;
-    private SelectDeviceAdapter selectDeviceAdapter;
+    private DeviceCheckBoxAdapter selectDeviceAdapter;
 
     private View view;
     private View cardViewAddBike;
@@ -67,7 +65,7 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
     private List<Device> deviceList;
     private List<BikeWithDevices> bikeWithDevicesList;
     private List<DeviceWithBikes> deviceWithBikesList;
-    private List<String> checkedDevices;
+    private List<String> checkedDevicesList;
 
     public static MyBikesFragment newInstance() {
         return new MyBikesFragment();
@@ -161,7 +159,7 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
             public void onClick(View view) {
                 buttonUpdate.setVisibility(View.INVISIBLE);
                 buttonAddBike.setVisibility(View.VISIBLE);
-                textViewEditAddTitle.setText("Add New Bike");
+                textViewEditAddTitle.setText(R.string.add_new_bike);
                 cardViewAddBike.setVisibility(View.VISIBLE);
             }
         });
@@ -192,9 +190,10 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
 
 
                 //adds bike/device pair to crossReference table
-                int checkBoxListSize = getCheckedDevices().size();
+                int checkBoxListSize = getCheckedDevicesList().size();
+                List<String> checkedDevicesList = getCheckedDevicesList();
                 for (int i = 0; i < checkBoxListSize; i++) {
-                    String deviceMacAddress = getCheckedDevices().get(i);
+                    String deviceMacAddress = checkedDevicesList.get(i);
                     BikeDeviceCrossRef bikeDeviceCrossRef = new BikeDeviceCrossRef(deviceMacAddress, bikeName);
                     sharedEntitiesViewModel.insert(bikeDeviceCrossRef);
                 }
@@ -204,7 +203,7 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
                 editTextBikeName.getText().clear();
                 editTextBikeMake.getText().clear();
                 editTextBikeModel.getText().clear();
-                getCheckedDevices().clear();
+                getCheckedDevicesList().clear();
             }
 
         });
@@ -216,17 +215,89 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
                 String bikeName = String.valueOf(editTextBikeName.getText());
                 String bikeMake = String.valueOf(editTextBikeMake.getText());
                 String bikeModel = String.valueOf(editTextBikeModel.getText());
+
                 //checks if bikeName is blank
                 if (bikeName.equals("")) {
                     Toast.makeText(getActivity(), "Bike name cannot be empty", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
+                //checks if bikeName is already in Bike table (current state of db is assigned to bikeList)
+                for (int i = 0; i < bikeList.size(); i++) {
+                    String bikeListName = bikeList.get(i).getBikeName();
+                    int bikeListId = bikeList.get(i).getBikeId();
+                    int bikeToEditId = bikeToEdit.getBikeId();
+                    if (bikeListName.equals(bikeName) && bikeListId != bikeToEditId) {
+                        Toast.makeText(getActivity(), "Bike already exists. Please select a unique name.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+
+                //delete current device
+                sharedEntitiesViewModel.delete(bikeToEdit);
+
+                //inserts new bike into Bike table
+                Bike bike = new Bike(bikeName, bikeMake, bikeModel);
+                sharedEntitiesViewModel.insert(bike);
+
+
+                //adds bike/device pair to crossReference table
+                int checkBoxListSize = getCheckedDevicesList().size();
+                for (int i = 0; i < checkBoxListSize; i++) {
+                    String deviceMacAddress = getCheckedDevicesList().get(i);
+                    BikeDeviceCrossRef bikeDeviceCrossRef = new BikeDeviceCrossRef(deviceMacAddress, bikeName);
+                    sharedEntitiesViewModel.insert(bikeDeviceCrossRef);
+                }
+
+                /*
                 //updates bike in Bike table
                 bikeToEdit.setBikeName(bikeName);
                 bikeToEdit.setBikeMake(bikeMake);
                 bikeToEdit.setBikeModel(bikeModel);
                 sharedEntitiesViewModel.update(bikeToEdit);
+
+
+                int bikeWithDevicesListSize = bikeWithDevicesList.size();
+                for (int i = 0; i < bikeWithDevicesListSize; i++){
+                    Bike listBike = bikeWithDevicesList.get(i).bike;
+                    if (listBike.equals(bikeToEdit)){
+                        List<Device> getCheckedDevices = getCheckedDevices();
+                        bikeWithDevicesList.get(i).deviceList =
+                    }
+                }
+
+
+                bikeWithDevicesList.get(i).deviceList = New Device list
+
+                        Loop through bikeWithDevices until you find currentBike;
+                        Loop through currentBike.DeviceList looking for checkDevices[i]
+                        if found, continue;
+                        if not found, add checkDevices[i]
+
+
+
+                Loop through L2 looking for [i]
+                    If found - do nothing to db
+                    if not found - delete Li[i] from db
+
+                Loop through L1 looking for L2{[i]
+                    if found - do nothing
+                    if not found - add L2{[i] to db;
+
+
+
+                L1[i] true, L2[i] true, L3 = L1
+                In old list, not in new list; DELETE
+                Not in old list, in new list;
+
+
+                //adds bike/device pair to crossReference table
+                int checkBoxListSize = getCheckedDevices().size();
+                for (int i = 0; i < checkBoxListSize; i++) {
+                    String deviceMacAddress = getCheckedDevices().get(i);
+                    BikeDeviceCrossRef bikeDeviceCrossRef = new BikeDeviceCrossRef(deviceMacAddress, bikeName);
+                    sharedEntitiesViewModel.insert(bikeDeviceCrossRef);
+                }
 
                 //adds bike/device pair to crossReference table
                 int listSize = getCheckedDevices().size();
@@ -236,6 +307,8 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
                     sharedEntitiesViewModel.insert(bikeDeviceCrossRef);
                 }
 
+
+                 */
                 //cleans up views
                 cardViewAddBike.setVisibility(View.GONE);
                 editTextBikeName.getText().clear();
@@ -253,7 +326,7 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
                 editTextBikeName.getText().clear();
                 editTextBikeMake.getText().clear();
                 editTextBikeModel.getText().clear();
-                getCheckedDevices().clear();
+                getCheckedDevicesList().clear();
 
             }
         });
@@ -268,7 +341,7 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
 
         recyclerViewSelectDevice = view.findViewById(R.id.recycler_view_select_device);
         recyclerViewSelectDevice.setLayoutManager(new LinearLayoutManager(getActivity()));
-        selectDeviceAdapter = new SelectDeviceAdapter(this);
+        selectDeviceAdapter = new DeviceCheckBoxAdapter(this);
         recyclerViewSelectDevice.setAdapter(selectDeviceAdapter);
     }
 
@@ -299,6 +372,23 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
         editTextBikeMake.setText(bikeToEdit.getBikeMake());
         editTextBikeModel.setText(bikeToEdit.getBikeModel());
 
+        checkedDevicesList = getCheckedDevicesList();
+        checkedDevicesList.clear();
+
+        //add bikeToEdit devices to checkedDevicesList
+        int listSize = bikeWithDevicesList.size();
+        for (int i = 0; i < listSize; i++) {
+            int listBikeId = bikeWithDevicesList.get(i).bike.getBikeId();
+            int bikeToEditId = bikeToEdit.getBikeId();
+            if (listBikeId == bikeToEditId){
+                int deviceListSize = bikeWithDevicesList.get(i).deviceList.size();
+                for (int j = 0; j < deviceListSize; j++){
+                    checkedDevicesList.add(bikeWithDevicesList.get(i).deviceList.get(j).getDeviceMacAddress());
+                }
+
+            }
+        }
+
 
     }
 
@@ -306,19 +396,19 @@ public class MyBikesFragment extends Fragment implements MyBikesListenerInterfac
     public void onCheckBoxClick(int position, List<Device> device, CheckBox checkBox) {
         String mac = device.get(position).getDeviceMacAddress();
         if (checkBox.isChecked()) {
-            getCheckedDevices().add(mac);
+            getCheckedDevicesList().add(mac);
             Toast.makeText(getActivity(), "Added: " + mac, Toast.LENGTH_SHORT).show();
         } else {
-            getCheckedDevices().remove(mac);
+            getCheckedDevicesList().remove(mac);
             Toast.makeText(getActivity(), "Removed: " + mac, Toast.LENGTH_SHORT).show();
         }
     }
 
-    public List<String> getCheckedDevices() {
-        if (checkedDevices == null) {
-            checkedDevices = new ArrayList<>();
+    public List<String> getCheckedDevicesList() {
+        if (checkedDevicesList == null) {
+            checkedDevicesList = new ArrayList<>();
         }
-        return checkedDevices;
+        return checkedDevicesList;
     }
 
 }

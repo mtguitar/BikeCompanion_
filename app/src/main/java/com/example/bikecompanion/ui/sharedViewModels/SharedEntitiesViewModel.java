@@ -1,4 +1,4 @@
-package com.example.bikecompanion.ui.myDevices;
+package com.example.bikecompanion.ui.sharedViewModels;
 
 import android.app.Application;
 
@@ -29,8 +29,6 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
     private List<Device> deviceList;
 
 
-
-
     public SharedEntitiesViewModel(@NonNull Application application) {
         super(application);
         repository = new EntitiesRepository(application);
@@ -39,107 +37,93 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
 
     }
 
-    public void insert(Bike bike){
+    public void insert(Bike bike) {
         repository.insertBike(bike);
     }
 
-    public void update(Bike bike){
+    public void update(Bike bike) {
         repository.updateBike(bike);
     }
 
-    public void delete(Bike bike){
+    public void delete(Bike bike) {
         repository.deleteBike(bike);
     }
 
-    public void deleteAllBikes(){
+    public void deleteAllBikes() {
         repository.deleteAllBikes();
     }
 
-    public LiveData<List<Bike>> getAllBikes(){
+    public LiveData<List<Bike>> getAllBikes() {
         return allBikes;
     }
 
-    public List<Bike> getBikeList(){
+    public List<Bike> getBikeList() {
         return bikeList;
     }
 
-    public LiveData<List<BikeWithDevices>> getBikeWithDevices(){
+    public LiveData<List<BikeWithDevices>> getBikeWithDevices() {
         return repository.getBikesWithDevices();
     }
 
-    public LiveData<List<DeviceWithBikes>> getDeviceWithBikes(){
+    public LiveData<List<DeviceWithBikes>> getDeviceWithBikes() {
         return repository.getDeviceWithBikes();
     }
 
 
-    public void insert (BikeDeviceCrossRef bikeDeviceCrossRef){
+    public void insert(BikeDeviceCrossRef bikeDeviceCrossRef) {
         repository.insertBikeDeviceCrossRef(bikeDeviceCrossRef);
     }
 
 
-
-
-
-
-    public void insert(Device device){
+    public void insert(Device device) {
         repository.insertDevice(device);
     }
 
-    public void update(Device device){
+    public void update(Device device) {
         repository.updateDevice(device);
     }
 
-    public void delete(Device device){
+    public void delete(Device device) {
         repository.deleteDevice(device);
     }
 
-    public void deleteAllDevices(){
+    public void deleteAllDevices() {
         repository.deleteAllDevices();
     }
 
-    public LiveData<List<Device>> getAllDevices(){
+    public LiveData<List<Device>> getAllDevices() {
         return allDevices;
     }
 
 
-
-
     /**
      * BleConnection methods
-     *
      */
 
 
-/*
-    public void sendCommandToService (Class serviceClass, String action, Bundle extras) {
-        repository.sendCommandToService(serviceClass, action, extras);
-    }
-
- */
-
-    public void bindService(){
+    public void bindService() {
         repository.bindService();
     }
 
-    public void connectDevice(String deviceMacAddress){
+    public void connectDevice(String deviceMacAddress) {
         repository.connectDevice(deviceMacAddress);
     }
 
-    public void disconnectDevice(String deviceMacAddress){
+    public void disconnectDevice(String deviceMacAddress) {
         repository.disconnectDevice(deviceMacAddress);
     }
 
-    public void readCharacteristics(String deviceMacAddress, UUID serviceUUID, UUID characteristicUUID){
+    public void readCharacteristics(String deviceMacAddress, UUID serviceUUID, UUID characteristicUUID) {
         repository.readCharacteristic(deviceMacAddress, serviceUUID, characteristicUUID);
 
     }
 
-    public void writeCharacteristics(String deviceMacAddress, UUID serviceUUID, UUID characteristicUUID, byte[] payload){
+    public void writeCharacteristics(String deviceMacAddress, UUID serviceUUID, UUID characteristicUUID, byte[] payload) {
         repository.writeCharacteristic(deviceMacAddress, serviceUUID, characteristicUUID, payload);
 
     }
 
-    public void setCharacteristicNotification(String deviceMacAddress, UUID serviceUUID, UUID characteristicUUID, boolean enabled){
+    public void setCharacteristicNotification(String deviceMacAddress, UUID serviceUUID, UUID characteristicUUID, boolean enabled) {
         repository.setCharacteristicNotification(deviceMacAddress, serviceUUID, characteristicUUID, enabled);
 
     }
@@ -149,20 +133,17 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
      * LiveData getters
      */
 
-    public LiveData<HashMap> getConnectionStateHashMapLive(){
+    public LiveData<HashMap> getConnectionStateHashMapLive() {
         return repository.getConnectionStateHashMapLive();
     }
 
-    public LiveData<Boolean> getIsConnected(){
+    public LiveData<Boolean> getIsConnected() {
         return repository.getIsConnected();
     }
 
-    public LiveData<HashMap> getDeviceDataHashMapLive(){
+    public LiveData<HashMap> getDeviceDataHashMapLive() {
         return repository.getDeviceDataHashMapLive();
     }
-
-
-
 
 
 }

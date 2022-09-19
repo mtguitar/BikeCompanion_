@@ -19,8 +19,6 @@ import androidx.room.ForeignKey;
                 onUpdate = ForeignKey.CASCADE),
         }
 
-
-
         )
 public class BikeDeviceCrossRef {
 
