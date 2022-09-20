@@ -151,10 +151,14 @@ public class BleConnectionService extends LifecycleService {
             return;
         }
         Log.d(TAG, String.valueOf(gatt));
-        BluetoothGattCharacteristic characteristicToRead = gatt.getService(service).getCharacteristic(characteristic);
-        Log.d(TAG, String.valueOf(characteristicToRead));
-        gatt.readCharacteristic(characteristicToRead);
-        Log.w(TAG, "Reading characteristic");
+
+            BluetoothGattCharacteristic characteristicToRead = gatt.getService(service).getCharacteristic(characteristic);
+            Log.d(TAG, String.valueOf(characteristicToRead));
+            gatt.readCharacteristic(characteristicToRead);
+            Log.w(TAG, "Reading characteristic");
+
+
+
 
     }
 
@@ -167,9 +171,13 @@ public class BleConnectionService extends LifecycleService {
             return;
         }
         this.dataType = dataType;
-        BluetoothGattCharacteristic characteristicToSubscribe = gatt.getService(service).getCharacteristic(characteristic);
-        gatt.setCharacteristicNotification(characteristicToSubscribe, enabled);
-        Log.w(TAG, "Subscribed to characteristic " + characteristic);
+
+        if (gatt.getServices().contains(service) && gatt.getService(service).getCharacteristic(characteristic) != null){
+            BluetoothGattCharacteristic characteristicToSubscribe = gatt.getService(service).getCharacteristic(characteristic);
+            gatt.setCharacteristicNotification(characteristicToSubscribe, enabled);
+            Log.w(TAG, "Subscribed to characteristic " + characteristic);
+        }
+
     }
 
 
@@ -254,20 +262,16 @@ public class BleConnectionService extends LifecycleService {
         String characteristicMacAddress = gatt.getDevice().getAddress();
         String characteristicUUID = (characteristic.getUuid()).toString();
         String characteristicValueString = characteristic.getStringValue(0);
-        byte[] characteristicValue = characteristic.getValue();
         int characteristicValueInt = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 
-        Log.d(TAG, "Bundle: " + characteristicMacAddress + " " + characteristicUUID + " " + characteristicValueString + " " + characteristicValue[0]);
+        Log.d(TAG, "Bundle: " + characteristicMacAddress + " " + characteristicUUID + " " + characteristicValueString + " " + characteristicValueInt);
 
 
         Bundle characteristicBundle = new Bundle();
         characteristicBundle.putString(Constants.GATT_MAC_ADDRESS,characteristicMacAddress);
         characteristicBundle.putString(Constants.CHARACTERISTIC_UUID, characteristicUUID);
-        characteristicBundle.putByteArray(Constants.CHARACTERISTIC_BYTE_ARRAY, characteristicValue);
         characteristicBundle.putString(Constants.CHARACTERISTIC_VALUE_STRING, characteristicValueString);
-        characteristicBundle.putByte(Constants.CHARACTERISTIC_VALUE_BYTE, characteristicValue[0]);
         characteristicBundle.putInt(Constants.CHARACTERISTIC_VALUE_INT, characteristicValueInt);
-
 
         final Intent intent = new Intent(action);
         intent.putExtra(Constants.EXTRA_DATA, characteristicBundle);

@@ -11,9 +11,11 @@ import java.util.UUID;
 
 public class FlareRTDeviceType{
 
+
     private ArrayList<Characteristic> characteristicsList;
 
     public final static String DEVICE_TYPE = "Light";
+    public static final String MODEL = "553852";
 
     public final static int icon = R.drawable.ic_device_type_light;
 

@@ -219,14 +219,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <Switch
-                        android:id="@+id/switch_primary_bike"
-                        android:layout_width="74dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Auto Connect"
-                        android:textColor="@color/primaryTextColor" />
-
                     <TextView
                         android:id="@+id/textView12"
                         android:layout_width="wrap_content"

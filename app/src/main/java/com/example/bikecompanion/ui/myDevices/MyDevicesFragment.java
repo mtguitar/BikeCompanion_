@@ -62,9 +62,8 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     private TextView textViewDeviceModel;
     private TextView textViewDeviceMode;
     private TextView textViewDeviceManufacturer;
-    private Button switchAutoConnect;
     private Button buttonRemoveDevice;
-    private Button buttonDisconnectDevice;
+    private Button buttonConnectDisconnectDevice;
     private TextView textViewDeviceState;
     private TextView textViewDeviceName;
     private TextView textViewMacAddress;
@@ -179,7 +178,6 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         });
 
 
-        /*
 
         sharedEntitiesViewModel.getIsConnected().observe(getActivity(), new Observer<Boolean>(){
             @Override
@@ -189,7 +187,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             }
         });
 
-         */
+
 
 
     }
@@ -208,9 +206,8 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         textViewDeviceState = itemView.findViewById(R.id.text_view_device_state);
         clearTextViews();
 
-        switchAutoConnect = itemView.findViewById(R.id.switch_primary_bike);
         buttonRemoveDevice = itemView.findViewById(R.id.button_device_remove);
-        buttonDisconnectDevice = itemView.findViewById(R.id.button_device_connect);
+        buttonConnectDisconnectDevice = itemView.findViewById(R.id.button_device_connect);
         imageViewArrow = itemView.findViewById(R.id.image_view_arrow);
 
         constraintLayoutDeviceInfo = itemView.findViewById(R.id.constraint_layout_device_info);
@@ -293,14 +290,14 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         if(connectionState.equals(Constants.GATT_CONNECTED)){
             connectedDeviceMacAddress = gattMacAddress;
             if (gattMacAddress.equals(visibleDeviceMacAddress)){
-                buttonDisconnectDevice.setText("Disconnect");
+                buttonConnectDisconnectDevice.setText("Disconnect");
             }
             isConnected = true;
         }
         //if disconnected, changes button to "Connect," sets isConnected to false, and deletes connectedDeviceMacAddress
         if(connectionState.equals(Constants.GATT_DISCONNECTED)){
             if (gattMacAddress.equals(visibleDeviceMacAddress)){
-                buttonDisconnectDevice.setText("Connect");
+                buttonConnectDisconnectDevice.setText("Connect");
             }
             connectedDeviceMacAddress = "";
             isConnected = false;
@@ -346,14 +343,13 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             textViewDeviceModel.setText("Retrieving . . .");
             sharedEntitiesViewModel.readCharacteristics(gattMacAddress, GenericDeviceType.UUID_SERVICE_DEVICE_MODEL, GenericDeviceType.UUID_CHARACTERISTIC_DEVICE_MODEL);
         }
-        /*
+
         else if(textViewDeviceMode.getText().equals("")){
             textViewDeviceMode.setText("Retrieving . . .");
             sharedEntitiesViewModel.setCharacteristicNotification(gattMacAddress, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, true);
             sharedEntitiesViewModel.readCharacteristics(gattMacAddress, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE);
-
         }
-         */
+
 
     }
 
