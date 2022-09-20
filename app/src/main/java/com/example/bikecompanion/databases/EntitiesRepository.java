@@ -373,13 +373,13 @@ public class EntitiesRepository {
                 gattMacAddress = extras.getString(Constants.GATT_MAC_ADDRESS);
                 String characteristicUUID = extras.getString(Constants.CHARACTERISTIC_UUID);
                 String characteristicValueString = extras.getString(Constants.CHARACTERISTIC_VALUE_STRING);
-                byte characteristicValueByte = extras.getByte(Constants.CHARACTERISTIC_VALUE_BYTE);
+                int characteristicValueInt = extras.getInt(Constants.CHARACTERISTIC_VALUE_INT);
 
                 //put connectionState and macAddress into hashmap
                 getDeviceDataHashMap().put(Constants.GATT_MAC_ADDRESS, gattMacAddress);
                 getDeviceDataHashMap().put(Constants.CHARACTERISTIC_UUID, characteristicUUID);
                 getDeviceDataHashMap().put(Constants.CHARACTERISTIC_VALUE_STRING, characteristicValueString);
-                getDeviceDataHashMap().put(Constants.CHARACTERISTIC_VALUE_BYTE, String.valueOf(characteristicValueByte));
+                getDeviceDataHashMap().put(Constants.CHARACTERISTIC_VALUE_INT, String.valueOf(characteristicValueInt));
 
                 //put hashmap into MutableLiveData
                 getDeviceDataHashMapLive().postValue(getDeviceDataHashMap());

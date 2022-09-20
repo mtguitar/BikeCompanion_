@@ -82,6 +82,8 @@ public class Constants {
     public static final String CHARACTERISTIC_UUID = "CHARACTERISTIC_UUID";
     public static final String CHARACTERISTIC_VALUE_BYTE = "CHARACTERISTIC_VALUE_BYTE";
     public static final String CHARACTERISTIC_VALUE_STRING = "CHARACTERISTIC_VALUE_STRING";
+    public static final String CHARACTERISTIC_BYTE_ARRAY = "CHARACTERISTIC_BYTE_ARRAY";
+    public static final String CHARACTERISTIC_VALUE_INT = "CHARACTERISTIC_VALUE_INT";
 
 
     public final static String GATT_CONNECTED = "Connected";
@@ -99,6 +101,8 @@ public class Constants {
     //Device types
     public static final CharSequence DEVICE_TYPE_LIGHT = "light";
     public static final CharSequence DEVICE_TYPE_SPEED = "speed";
+
+
 }
 
 

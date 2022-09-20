@@ -91,12 +91,12 @@ public class FlareRTDeviceType{
 
 
 
-    public final static byte DAY_SOLID_MODE_STRING = 1;
-    public final static byte DAY_BLINK_MODE_STRING = 7;
-    public final static byte DAY_BLINK_MODE_2_STRING = 8;
-    public final static byte NIGHT_SOLID_MODE_STRING = 5;
-    public final static byte NIGHT_BLINK_MODE_STRING = 63;
-    public final static byte OFF_MODE_STRING = 0;
+    public final static String DAY_SOLID_MODE_INT = "1";
+    public final static String DAY_BLINK_MODE_INT = "7";
+    public final static String DAY_BLINK_MODE_2_INT = "8";
+    public final static String NIGHT_SOLID_MODE_INT = "5";
+    public final static String NIGHT_BLINK_MODE_INT = "63";
+    public final static String OFF_MODE_INT = "0";
 
     public final static byte[] DAY_SOLID_MODE_BYTE = {1};
     public final static byte[] DAY_BLINK_MODE_BYTE = {7};

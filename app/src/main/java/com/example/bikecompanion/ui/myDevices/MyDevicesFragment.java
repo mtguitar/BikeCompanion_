@@ -56,7 +56,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     private HashMap<String, String> connectionStateHashMap;
     private String characteristicUUID;
     private String characteristicValueString;
-    private String characteristicValueByte;
+    private String characteristicValueInt;
 
     private TextView textViewDeviceBattery;
     private TextView textViewDeviceModel;
@@ -171,8 +171,8 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
                 gattMacAddress = (String) deviceDataHashMap.get(Constants.GATT_MAC_ADDRESS);
                 characteristicUUID = (String) deviceDataHashMap.get(Constants.CHARACTERISTIC_UUID);
                 characteristicValueString = (String) deviceDataHashMap.get(Constants.CHARACTERISTIC_VALUE_STRING);
-                characteristicValueByte = (String) deviceDataHashMap.get(Constants.CHARACTERISTIC_VALUE_BYTE);
-                Log.d(TAG, "Received device data: " + gattMacAddress + " " + characteristicUUID + " " + characteristicValueString + " " + characteristicValueByte);
+                characteristicValueInt = (String) deviceDataHashMap.get(Constants.CHARACTERISTIC_VALUE_INT);
+                Log.d(TAG, "Received device data: " + gattMacAddress + " " + characteristicUUID + " " + characteristicValueString + " " + characteristicValueInt);
 
                 updateCharacteristics();
             }
@@ -314,7 +314,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             return;
         }
         if(characteristicUUID.equals(GenericDeviceType.UUID_CHARACTERISTIC_BATTERY.toString())){
-            textViewDeviceBattery.setText(characteristicValueByte);
+            textViewDeviceBattery.setText(characteristicValueInt);
             Log.d(TAG, "Set Battery");
         }
         if(characteristicUUID.equals(GenericDeviceType.UUID_CHARACTERISTIC_DEVICE_MANUFACTURER.toString())){
@@ -326,11 +326,10 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             Log.d(TAG, "Set Model");
         }
         if(characteristicUUID.equals(FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE.toString())){
-            String lightMode = convertLightMode(characteristicValueByte);
+            String lightMode = convertLightMode(characteristicValueInt);
             textViewDeviceMode.setText(lightMode);
             Log.d(TAG, "Set Light Mode");
         }
-
 
         if(textViewDeviceBattery.getText().equals("")){
             textViewDeviceBattery.setText("Retrieving . . .");
@@ -366,24 +365,24 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         textViewDeviceState.setText("");
     }
 
-    String convertLightMode(String characteristicValueByte){
+    String convertLightMode(String characteristicValueInt){
         String lightModeString;
-        if (characteristicValueByte.equals(String.valueOf(FlareRTDeviceType.DAY_SOLID_MODE_BYTE[0]))){
+        if (characteristicValueInt.equals(FlareRTDeviceType.DAY_SOLID_MODE_INT)){
             lightModeString = FlareRTDeviceType.DAY_SOLID_MODE_NAME;
         }
-        else if (characteristicValueByte.equals(String.valueOf(FlareRTDeviceType.DAY_BLINK_MODE_BYTE[0]))){
+        else if (characteristicValueInt.equals(FlareRTDeviceType.DAY_BLINK_MODE_INT)){
             lightModeString = FlareRTDeviceType.DAY_BLINK_MODE_NAME;
         }
-        else if (characteristicValueByte.equals(String.valueOf(FlareRTDeviceType.DAY_BLINK_MODE_2_BYTE[0]))){
+        else if (characteristicValueInt.equals(FlareRTDeviceType.DAY_BLINK_MODE_2_INT)){
             lightModeString = FlareRTDeviceType.DAY_BLINK_MODE_2_NAME;
         }
-        else if (characteristicValueByte.equals(String.valueOf(FlareRTDeviceType.NIGHT_SOLID_MODE_BYTE[0]))){
+        else if (characteristicValueInt.equals(FlareRTDeviceType.NIGHT_SOLID_MODE_INT)){
             lightModeString = FlareRTDeviceType.NIGHT_SOLID_MODE_NAME;
         }
-        else if (characteristicValueByte.equals(String.valueOf(FlareRTDeviceType.NIGHT_BLINK_MODE_BYTE[0]))){
+        else if (characteristicValueInt.equals(FlareRTDeviceType.NIGHT_BLINK_MODE_INT)){
             lightModeString = FlareRTDeviceType.NIGHT_BLINK_MODE_NAME;
         }
-        else if (characteristicValueByte.equals(String.valueOf(FlareRTDeviceType.OFF_MODE_BYTE[0]))){
+        else if (characteristicValueInt.equals(FlareRTDeviceType.OFF_MODE_INT)){
             lightModeString = FlareRTDeviceType.OFF_MODE_NAME;
         }
         else {

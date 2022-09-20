@@ -255,6 +255,7 @@ public class BleConnectionService extends LifecycleService {
         String characteristicUUID = (characteristic.getUuid()).toString();
         String characteristicValueString = characteristic.getStringValue(0);
         byte[] characteristicValue = characteristic.getValue();
+        int characteristicValueInt = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 
         Log.d(TAG, "Bundle: " + characteristicMacAddress + " " + characteristicUUID + " " + characteristicValueString + " " + characteristicValue[0]);
 
@@ -262,8 +263,10 @@ public class BleConnectionService extends LifecycleService {
         Bundle characteristicBundle = new Bundle();
         characteristicBundle.putString(Constants.GATT_MAC_ADDRESS,characteristicMacAddress);
         characteristicBundle.putString(Constants.CHARACTERISTIC_UUID, characteristicUUID);
+        characteristicBundle.putByteArray(Constants.CHARACTERISTIC_BYTE_ARRAY, characteristicValue);
         characteristicBundle.putString(Constants.CHARACTERISTIC_VALUE_STRING, characteristicValueString);
         characteristicBundle.putByte(Constants.CHARACTERISTIC_VALUE_BYTE, characteristicValue[0]);
+        characteristicBundle.putInt(Constants.CHARACTERISTIC_VALUE_INT, characteristicValueInt);
 
 
         final Intent intent = new Intent(action);
