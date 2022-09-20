@@ -54,7 +54,8 @@
             app:nullable="true" />
         <action
             android:id="@+id/action_nav_scanner_to_nav_my_devices"
-            app:destination="@id/nav_my_devices" />
+            app:destination="@id/nav_my_devices"
+            app:popUpTo="@id/nav_add_device" />
     </fragment>
     <fragment
         android:id="@+id/nav_my_devices"

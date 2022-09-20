@@ -336,17 +336,19 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             textViewDeviceManufacturer.setText("Retrieving . . .");
             sharedEntitiesViewModel.readCharacteristics(gattMacAddress, GenericDeviceType.UUID_SERVICE_MANUFACTURER, GenericDeviceType.UUID_CHARACTERISTIC_MANUFACTURER);
         }
-
         else if(textViewDeviceModel.getText().equals("")){
             Log.d(TAG, "Checking Model");
             textViewDeviceModel.setText("Retrieving . . .");
             sharedEntitiesViewModel.readCharacteristics(gattMacAddress, GenericDeviceType.UUID_SERVICE_MODEL, GenericDeviceType.UUID_CHARACTERISTIC_MODEL);
         }
+        /*
         else if(textViewDeviceMode.getText().equals("")){
             textViewDeviceMode.setText("Retrieving . . .");
             sharedEntitiesViewModel.setCharacteristicNotification(gattMacAddress, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, true);
             sharedEntitiesViewModel.readCharacteristics(gattMacAddress, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE);
+
         }
+         */
 
     }
 

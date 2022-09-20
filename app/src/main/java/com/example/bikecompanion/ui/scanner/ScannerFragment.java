@@ -26,7 +26,7 @@ import com.example.bikecompanion.R;
 import com.example.bikecompanion.adapters.scanner.RecyclerViewInterface;
 import com.example.bikecompanion.adapters.scanner.ScannerAdapter;
 import com.example.bikecompanion.ble.BleScannerService;
-import com.example.bikecompanion.unused.RegisterBroadcastReceiver;
+import com.example.bikecompanion.sharedClasses.RegisterBroadcastReceiver;
 import com.example.bikecompanion.constants.Constants;
 import com.example.bikecompanion.databases.entities.Device;
 import com.example.bikecompanion.ui.sharedViewModels.SharedEntitiesViewModel;

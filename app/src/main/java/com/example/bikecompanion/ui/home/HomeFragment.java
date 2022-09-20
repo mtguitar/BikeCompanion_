@@ -208,14 +208,14 @@ public class HomeFragment extends Fragment {
 
     //todo add parameter to specify which bike to initiate
     private void initBike(){
-        if (bikeList == null)
+        if (bikeList.size() > 0)
         {
-            return;
-        }
-        Bike bike = bikeList.get(0);
-        String bikeName = bike.getBikeName();
+            Bike bike = bikeList.get(0);
+            String bikeName = bike.getBikeName();
 
-        textViewHomeBikeName.setText(bikeName);
+            textViewHomeBikeName.setText(bikeName);
+        }
+
 
     }
 
