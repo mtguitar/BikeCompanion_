@@ -58,7 +58,6 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     private String characteristicValueString;
     private String characteristicValueByte;
 
-
     private TextView textViewDeviceBattery;
     private TextView textViewDeviceModel;
     private TextView textViewDeviceMode;
@@ -138,6 +137,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     }
 
     private void initObservers(){
+        //list of devices from devices_table
         sharedEntitiesViewModel.getAllDevices().observe(getViewLifecycleOwner(), new Observer<List<Device>>() {
             @Override
             public void onChanged(List<Device> devices) {
@@ -147,6 +147,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
 
         });
 
+        //connectionStateHashmap key = macAddress, value = connectionState (connected, services discovered, disconnected)
         sharedEntitiesViewModel.getConnectionStateHashMapLive().observe(getActivity(), new Observer<HashMap>() {
             @Override
             public void onChanged(HashMap connectionStateHashMapArg) {
@@ -163,14 +164,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             }
         });
 
-        sharedEntitiesViewModel.getIsConnected().observe(getActivity(), new Observer<Boolean>(){
-            @Override
-            public void onChanged(Boolean isConnectedBoolean) {
-                isConnected = isConnectedBoolean;
-
-            }
-        });
-
+        //updates on read or notify event.  HashMap includes macAddress, characteristic UUID, characteristic value
         sharedEntitiesViewModel.getDeviceDataHashMapLive().observe(getActivity(), new Observer<HashMap>() {
             @Override
             public void onChanged(HashMap deviceDataHashMap) {
@@ -185,7 +179,17 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         });
 
 
+        /*
 
+        sharedEntitiesViewModel.getIsConnected().observe(getActivity(), new Observer<Boolean>(){
+            @Override
+            public void onChanged(Boolean isConnectedBoolean) {
+                isConnected = isConnectedBoolean;
+
+            }
+        });
+
+         */
 
 
     }
@@ -253,7 +257,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     }
 
     @Override
-    public void onButtonClickRemove(int position, List<Device> devices) {
+    public void onButtonClickRemoveDevice(int position, List<Device> devices) {
         sharedEntitiesViewModel.disconnectDevice(connectedDeviceMacAddress);
         Device currentDevice = devices.get(position);
         sharedEntitiesViewModel.delete(currentDevice);
@@ -262,29 +266,30 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     }
 
     @Override
-    public void onButtonClickDisconnect(int position, List<Device> devices) {
+    public void onButtonClickConnectDisconnect(int position, List<Device> devices) {
         Device currentDevice = devices.get(position);
         String deviceMacAddress = currentDevice.getDeviceMacAddress();
-        if (connectionStateHashMap.get(deviceMacAddress).equals(Constants.GATT_DISCONNECTED)){
+        String deviceConnectionState = connectionStateHashMap.get(deviceMacAddress);
+
+        if (deviceConnectionState.equals(Constants.GATT_DISCONNECTED)){
             sharedEntitiesViewModel.connectDevice(deviceMacAddress);
-            Log.d(TAG, "Button Clicked, sent connect command to: " + deviceMacAddress);
+            Log.d(TAG, "Button Clicked, connecting: " + deviceMacAddress);
         }
         else {
             sharedEntitiesViewModel.disconnectDevice(deviceMacAddress);
-            Log.d(TAG, "Button Clicked, sent disconnect command to: " + deviceMacAddress);
+            Log.d(TAG, "Button Clicked, disconnecting: " + deviceMacAddress);
         }
 
-
         clearTextViews();
-
-
     }
 
 
     private void updateConnectionState(){
+        //displays connection state in textView
         if (textViewDeviceState != null && gattMacAddress.contentEquals(textViewMacAddress.getText())) {
             textViewDeviceState.setText(connectionState);
         }
+        //if connected, changes button to "disconnect" and sets isConnected to true
         if(connectionState.equals(Constants.GATT_CONNECTED)){
             connectedDeviceMacAddress = gattMacAddress;
             if (gattMacAddress.equals(visibleDeviceMacAddress)){
@@ -292,6 +297,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             }
             isConnected = true;
         }
+        //if disconnected, changes button to "Connect," sets isConnected to false, and deletes connectedDeviceMacAddress
         if(connectionState.equals(Constants.GATT_DISCONNECTED)){
             if (gattMacAddress.equals(visibleDeviceMacAddress)){
                 buttonDisconnectDevice.setText("Connect");
@@ -307,19 +313,19 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             Log.d(TAG, "Received info for different device");
             return;
         }
-        if(characteristicUUID.equals(GenericDeviceType.STRING_CHARACTERISTIC_BATTERY)){
+        if(characteristicUUID.equals(GenericDeviceType.UUID_CHARACTERISTIC_BATTERY.toString())){
             textViewDeviceBattery.setText(characteristicValueByte);
             Log.d(TAG, "Set Battery");
         }
-        if(characteristicUUID.equals(GenericDeviceType.STRING_CHARACTERISTIC_MANUFACTURER)){
+        if(characteristicUUID.equals(GenericDeviceType.UUID_CHARACTERISTIC_DEVICE_MANUFACTURER.toString())){
             textViewDeviceManufacturer.setText(characteristicValueString);
             Log.d(TAG, "Set Manufacturer");
         }
-        if(characteristicUUID.equals(GenericDeviceType.STRING_CHARACTERISTIC_MODEL)){
+        if(characteristicUUID.equals(GenericDeviceType.UUID_CHARACTERISTIC_DEVICE_MODEL.toString())){
             textViewDeviceModel.setText(characteristicValueString);
             Log.d(TAG, "Set Model");
         }
-        if(characteristicUUID.equals(FlareRTDeviceType.STRING_CHARACTERISTIC_LIGHT_MODE)){
+        if(characteristicUUID.equals(FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE.toString())){
             String lightMode = convertLightMode(characteristicValueByte);
             textViewDeviceMode.setText(lightMode);
             Log.d(TAG, "Set Light Mode");
@@ -334,12 +340,12 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         else if(textViewDeviceManufacturer.getText().equals("")){
             Log.d(TAG, "Checking Manufacturer");
             textViewDeviceManufacturer.setText("Retrieving . . .");
-            sharedEntitiesViewModel.readCharacteristics(gattMacAddress, GenericDeviceType.UUID_SERVICE_MANUFACTURER, GenericDeviceType.UUID_CHARACTERISTIC_MANUFACTURER);
+            sharedEntitiesViewModel.readCharacteristics(gattMacAddress, GenericDeviceType.UUID_SERVICE_DEVICE_MANUFACTURER, GenericDeviceType.UUID_CHARACTERISTIC_DEVICE_MANUFACTURER);
         }
         else if(textViewDeviceModel.getText().equals("")){
             Log.d(TAG, "Checking Model");
             textViewDeviceModel.setText("Retrieving . . .");
-            sharedEntitiesViewModel.readCharacteristics(gattMacAddress, GenericDeviceType.UUID_SERVICE_MODEL, GenericDeviceType.UUID_CHARACTERISTIC_MODEL);
+            sharedEntitiesViewModel.readCharacteristics(gattMacAddress, GenericDeviceType.UUID_SERVICE_DEVICE_MODEL, GenericDeviceType.UUID_CHARACTERISTIC_DEVICE_MODEL);
         }
         /*
         else if(textViewDeviceMode.getText().equals("")){
@@ -383,7 +389,6 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         else {
             lightModeString = "Unknown";
         }
-
         return lightModeString;
 
     }

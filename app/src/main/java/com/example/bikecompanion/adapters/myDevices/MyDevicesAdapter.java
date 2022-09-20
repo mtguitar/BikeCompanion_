@@ -86,7 +86,7 @@ public class MyDevicesAdapter extends RecyclerView.Adapter<MyDevicesAdapter.Devi
                         int position = getAbsoluteAdapterPosition();
 
                         if (position != RecyclerView.NO_POSITION){
-                            listener.onButtonClickRemove(position, devices);
+                            listener.onButtonClickRemoveDevice(position, devices);
                         }
                     }
 
@@ -101,7 +101,7 @@ public class MyDevicesAdapter extends RecyclerView.Adapter<MyDevicesAdapter.Devi
                         int position = getAbsoluteAdapterPosition();
 
                         if (position != RecyclerView.NO_POSITION){
-                            listener.onButtonClickDisconnect(position, devices);
+                            listener.onButtonClickConnectDisconnect(position, devices);
                         }
                     }
 

@@ -141,7 +141,6 @@ public class EntitiesRepository {
      */
 
 
-
     private static class InsertBikeDeviceCrossRefAsyncTask extends android.os.AsyncTask<BikeDeviceCrossRef, Void, Void> {
         private EntitiesDao entitiesDao;
 
@@ -215,8 +214,6 @@ public class EntitiesRepository {
             return null;
         }
     }
-
-
 
 
 

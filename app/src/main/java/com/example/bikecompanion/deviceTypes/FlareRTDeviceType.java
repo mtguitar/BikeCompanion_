@@ -11,12 +11,11 @@ import java.util.UUID;
 
 public class FlareRTDeviceType{
 
+    private ArrayList<Characteristic> characteristicsList;
+
     public final static String DEVICE_TYPE = "Light";
 
     public final static int icon = R.drawable.ic_device_type_light;
-
-
-
 
     //Advertised service UUIDs
     public final static String STRING_SERVICE_ADVERTISED_1 = "0000180a-0000-1000-8000-00805f9b34fb";
@@ -32,12 +31,8 @@ public class FlareRTDeviceType{
     public final static ParcelUuid PARCELUUID_ADVERTISED_SERVICE_3 = new ParcelUuid(UUID_SERVICE_ADVERTISED_3);
 
     // Light mode UUIDs
-    public final static String STRING_SERVICE_LIGHT_MODE = "71261000-3692-ae93-e711-472ba41689c9";
-    public final static String STRING_CHARACTERISTIC_LIGHT_MODE = "71261001-3692-ae93-e711-472ba41689c9";
-
-
-    public final static UUID UUID_SERVICE_LIGHT_MODE = UUID.fromString(STRING_SERVICE_LIGHT_MODE);
-    public final static UUID UUID_CHARACTERISTIC_LIGHT_MODE = UUID.fromString(STRING_CHARACTERISTIC_LIGHT_MODE);
+    public final static UUID UUID_SERVICE_LIGHT_MODE = UUID.fromString("71261000-3692-ae93-e711-472ba41689c9");
+    public final static UUID UUID_CHARACTERISTIC_LIGHT_MODE = UUID.fromString("71261001-3692-ae93-e711-472ba41689c9");
     public final static String DATA_TYPE_LIGHT_MODE = "byte[]";
 
     // Battery UUIDs
@@ -72,16 +67,18 @@ public class FlareRTDeviceType{
     Characteristic model = new Characteristic("model", UUID_SERVICE_DEVICE_MODEL, UUID_CHARACTERISTIC_DEVICE_MODEL, true, false, false );
 
 
+
     public ArrayList<Characteristic> getCharacteristicsList() {
-        ArrayList<Characteristic> characteristicsList = new ArrayList<Characteristic>();
-        characteristicsList.add(battery);
-        characteristicsList.add(lightMode);
-        characteristicsList.add(name);
-        characteristicsList.add(manufacturer);
-        characteristicsList.add(model);
+        if (characteristicsList == null){
+            characteristicsList = new ArrayList<>();
+            characteristicsList.add(battery);
+            characteristicsList.add(name);
+            characteristicsList.add(manufacturer);
+            characteristicsList.add(model);
+            characteristicsList.add(lightMode);
+        }
         return characteristicsList;
     }
-
 
 
 
