@@ -19,7 +19,6 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleService;
 
 import com.example.bikecompanion.constants.Constants;
-import com.example.bikecompanion.sharedClasses.Characteristic;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,6 +45,8 @@ public class BleConnectionService extends LifecycleService {
     private UUID serviceToRead;
     private String dataType;
     private String deviceName;
+    private int servicesCounter;
+    private int connectionCounter;
 
     HashMap<String, BluetoothGatt> bluetoothDevicesMap;
 
@@ -134,13 +135,40 @@ public class BleConnectionService extends LifecycleService {
             Log.w(TAG, "BluetoothGatt not initialized");
             return;
         }
-        int writeType = BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE;
 
-        BluetoothGattCharacteristic characteristicToWrite = gatt.getService(service).getCharacteristic(characteristic);
+        //Check if device has characteristic
+        boolean containsCharacteristic = false;
+        int serviceListSize = gatt.getServices().size();
+        for (int i = 0; i < serviceListSize; i++){
+            UUID listServiceUUID = gatt.getServices().get(i).getUuid();
+            if (listServiceUUID.equals(service)) {
+                int charListSize = gatt.getService(service).getCharacteristics().size();
+                for (int j = 0; j < charListSize; j++) {
+                    UUID listCharUUID = gatt.getService(service).getCharacteristics().get(j).getUuid();
+                    if (listCharUUID.equals(characteristic)) {
+                        containsCharacteristic = true;
+                    }
+                }
+            }
+        }
 
-        characteristicToWrite.setWriteType(writeType);
-        characteristicToWrite.setValue(payload);
-        gatt.writeCharacteristic(characteristicToWrite);
+        //If device has characteristic, check if readable, then read
+        if (containsCharacteristic){
+            BluetoothGattCharacteristic characteristicToWrite = gatt.getService(service).getCharacteristic(characteristic);
+            if (characteristicToWrite != null && isCharacteristicWritable(characteristicToWrite)){
+                int writeType = BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE;
+                characteristicToWrite.setWriteType(writeType);
+                characteristicToWrite.setValue(payload);
+                gatt.writeCharacteristic(characteristicToWrite);
+                Log.d(TAG, "Writing characteristic: " + characteristicToWrite);
+
+            }
+            else{
+                Log.d(TAG, "Char not writable");
+            }
+
+        }
+
     }
 
     // Read characteristic
@@ -169,12 +197,17 @@ public class BleConnectionService extends LifecycleService {
             }
         }
 
-        //If device has characteristic, set notify to true/false
-        if (containsCharacteristic && gatt.getService(service).getCharacteristic(characteristic) != null){
+        //If device has characteristic, check if readable, then read
+        if (containsCharacteristic){
             BluetoothGattCharacteristic characteristicToRead = gatt.getService(service).getCharacteristic(characteristic);
-            Log.d(TAG, String.valueOf(characteristicToRead));
-            gatt.readCharacteristic(characteristicToRead);
-            Log.w(TAG, "Reading characteristic");
+            if (characteristicToRead != null && isCharacteristicReadable(characteristicToRead)){
+                gatt.readCharacteristic(characteristicToRead);
+                Log.d(TAG, "Reading characteristic: " + characteristicToRead);
+
+            }
+            else{
+                Log.d(TAG, "Char not readable");
+            }
         }
 
     }
@@ -207,9 +240,17 @@ public class BleConnectionService extends LifecycleService {
 
         //If device has characteristic, set notify to true/false
         if (containsCharacteristic){
+
             BluetoothGattCharacteristic characteristicToSubscribe = gatt.getService(service).getCharacteristic(characteristic);
-            gatt.setCharacteristicNotification(characteristicToSubscribe, enabled);
-            Log.w(TAG, "Subscribed to characteristic " + characteristic);
+
+            if (isCharacteristicWritable(characteristicToSubscribe)){
+                gatt.setCharacteristicNotification(characteristicToSubscribe, enabled);
+                Log.d(TAG, "Subscribed to characteristic " + characteristic);
+            }
+            else {
+                Log.d(TAG, "Char does not support notifications");
+            }
+
         }
 
     }
@@ -222,25 +263,39 @@ public class BleConnectionService extends LifecycleService {
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             String gattMacAddress = gatt.getDevice().getAddress();
             Log.w(TAG, "New State: " + newState);
-            if(newState == BluetoothProfile.STATE_CONNECTED){
-                broadcastUpdateState(Constants.GATT_CONNECTED, gatt);
-                Log.d(TAG, "Device Connected " + gattMacAddress);
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                connectionCounter = 0;
+                if (newState == BluetoothProfile.STATE_CONNECTED) {
+                    broadcastUpdateState(Constants.GATT_CONNECTED, gatt);
+                    Log.d(TAG, "Device Connected " + gattMacAddress);
 
-                getBluetoothDevicesMap().put(gattMacAddress, gatt);
-                Log.d(TAG, "Put in hashMap: " + gattMacAddress);
+                    getBluetoothDevicesMap().put(gattMacAddress, gatt);
+                    Log.d(TAG, "Put in hashMap: " + gattMacAddress);
 
+                    gatt.discoverServices();
+                    Log.i(TAG, "Start service discovery " + gattMacAddress);
 
+                } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                    broadcastUpdateState(Constants.GATT_DISCONNECTED, gatt);
+                    Log.d(TAG, "Device disconnected " + gattMacAddress);
 
-                gatt.discoverServices();
-                Log.i(TAG, "Start service discovery " + gattMacAddress);
+                    getBluetoothDevicesMap().remove(gattMacAddress);
+                    Log.d(TAG, "Removed from hashMap: " + gattMacAddress);
 
+                }
             }
-            else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                broadcastUpdateState(Constants.GATT_DISCONNECTED, gatt);
-                Log.d(TAG, "Device disconnected " + gattMacAddress);
-
-                getBluetoothDevicesMap().remove(gattMacAddress);
-                Log.d(TAG, "Removed from hashMap: " + gattMacAddress);
+            else{
+                if (connectionCounter < 2){
+                    gatt.close();
+                    Log.d(TAG, "Problem connecting/disconnecting. Trying again.");
+                    connectionCounter++;
+                    connectDevice(gattMacAddress);
+                }
+                else{
+                    gatt.close();
+                    connectionCounter = 0;
+                    Log.d(TAG, "Problem connecting/disconnecting");
+                }
 
             }
 
@@ -253,10 +308,21 @@ public class BleConnectionService extends LifecycleService {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 broadcastUpdateState(Constants.GATT_SERVICES_DISCOVERED, gatt);
                 Log.w(TAG, "Service discovery successful");
+                servicesCounter = 0;
 
 
             } else {
-                Log.w(TAG, "Service discovery failed");
+                if (servicesCounter < 2) {
+                    servicesCounter++;
+                    String address = gatt.getDevice().getAddress();
+                    connectDevice(address);
+                    Log.w(TAG, "Service discovery failed. Trying again");
+                }
+                else {
+                    servicesCounter = 0;
+                    Log.w(TAG, "Service discovery failed");
+                }
+
             }
         }
 
@@ -391,6 +457,28 @@ public class BleConnectionService extends LifecycleService {
     }
 
  */
+
+
+    /**
+     * @return Returns true if property is writable
+     */
+    public static boolean isCharacteristicWritable(BluetoothGattCharacteristic characteristic) {
+        return (characteristic.getProperties() & (BluetoothGattCharacteristic.PROPERTY_WRITE | BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)) != 0;
+    }
+
+    /**
+     * @return Returns true if property is readable
+     */
+    public static boolean isCharacteristicReadable(BluetoothGattCharacteristic characteristic) {
+        return ((characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_READ) != 0);
+    }
+
+    /**
+     * @return Returns true if property supports notification
+     */
+    public boolean isCharacteristicNotifiable(BluetoothGattCharacteristic characteristic) {
+        return (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0;
+    }
 
 
 
