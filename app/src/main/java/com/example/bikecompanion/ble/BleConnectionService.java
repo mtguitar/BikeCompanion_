@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleService;
 
 import com.example.bikecompanion.constants.Constants;
+import com.example.bikecompanion.sharedClasses.Characteristic;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -152,13 +153,29 @@ public class BleConnectionService extends LifecycleService {
         }
         Log.d(TAG, String.valueOf(gatt));
 
+        //Check if device has characteristic
+        boolean containsCharacteristic = false;
+        int serviceListSize = gatt.getServices().size();
+        for (int i = 0; i < serviceListSize; i++){
+            UUID listServiceUUID = gatt.getServices().get(i).getUuid();
+            if (listServiceUUID.equals(service)) {
+                int charListSize = gatt.getService(service).getCharacteristics().size();
+                for (int j = 0; j < charListSize; j++) {
+                    UUID listCharUUID = gatt.getService(service).getCharacteristics().get(j).getUuid();
+                    if (listCharUUID.equals(characteristic)) {
+                        containsCharacteristic = true;
+                    }
+                }
+            }
+        }
+
+        //If device has characteristic, set notify to true/false
+        if (containsCharacteristic && gatt.getService(service).getCharacteristic(characteristic) != null){
             BluetoothGattCharacteristic characteristicToRead = gatt.getService(service).getCharacteristic(characteristic);
             Log.d(TAG, String.valueOf(characteristicToRead));
             gatt.readCharacteristic(characteristicToRead);
             Log.w(TAG, "Reading characteristic");
-
-
-
+        }
 
     }
 
@@ -172,7 +189,24 @@ public class BleConnectionService extends LifecycleService {
         }
         this.dataType = dataType;
 
-        if (gatt.getServices().contains(service) && gatt.getService(service).getCharacteristic(characteristic) != null){
+        //Check if device has service and characteristic
+        boolean containsCharacteristic = false;
+        int serviceListSize = gatt.getServices().size();
+        for (int i = 0; i < serviceListSize; i++){
+            UUID listServiceUUID = gatt.getServices().get(i).getUuid();
+            if (listServiceUUID.equals(service)) {
+                int charListSize = gatt.getService(service).getCharacteristics().size();
+                for (int j = 0; j < charListSize; j++) {
+                    UUID listCharUUID = gatt.getService(service).getCharacteristics().get(j).getUuid();
+                    if (listCharUUID.equals(characteristic)) {
+                        containsCharacteristic = true;
+                    }
+                }
+            }
+        }
+
+        //If device has characteristic, set notify to true/false
+        if (containsCharacteristic){
             BluetoothGattCharacteristic characteristicToSubscribe = gatt.getService(service).getCharacteristic(characteristic);
             gatt.setCharacteristicNotification(characteristicToSubscribe, enabled);
             Log.w(TAG, "Subscribed to characteristic " + characteristic);
