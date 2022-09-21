@@ -197,14 +197,6 @@ public class BleConnectionService extends LifecycleService {
                 }
             }
         }
-        //If device has characteristic, check if readable, then read
-        if (containsCharacteristic){
-            BluetoothGattCharacteristic characteristicToRead = gatt.getService(service).getCharacteristic(characteristic);
-            gatt.readCharacteristic(characteristicToRead);
-            Log.d(TAG, "Reading characteristic: " + characteristicToRead);
-        }
-
-        /*
 
         //If device has characteristic, check if readable, then read
         if (containsCharacteristic){
@@ -218,8 +210,6 @@ public class BleConnectionService extends LifecycleService {
                 Log.d(TAG, "Char not readable");
             }
         }
-
-         */
 
 
     }
