@@ -1,5 +1,7 @@
 package com.example.bikecompanion.constants;
 
+import java.util.UUID;
+
 public class Constants {
     public final static String ACTION_BLE_SCANNING_STARTED =
             "com.example.bluetooth.le.ACTION_BLE_SCANNING_STARTED";
@@ -103,6 +105,7 @@ public class Constants {
     public static final CharSequence DEVICE_TYPE_SPEED = "speed";
 
 
+    public static final UUID CCCD = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 }
 
 

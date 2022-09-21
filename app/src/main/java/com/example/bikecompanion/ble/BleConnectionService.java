@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
@@ -31,6 +32,7 @@ import static com.example.bikecompanion.constants.Constants.ACTION_READ_CHARACTE
 @SuppressLint("MissingPermission")
 
 public class BleConnectionService extends LifecycleService {
+
 
     public boolean isFirstRun = true;
     private final static String TAG = "FlareLog ConnectService";
@@ -74,7 +76,6 @@ public class BleConnectionService extends LifecycleService {
         if (action.contains(ACTION_READ_CHARACTERISTIC)){
 
             String characteristic = intent.getStringExtra(Constants.EXTRA_DATA);
-            //readCharacteristic(characteristic);
             Log.d(TAG, characteristic);
 
         }
@@ -173,7 +174,7 @@ public class BleConnectionService extends LifecycleService {
 
     // Read characteristic
     public void readCharacteristic(String deviceMacAddress, UUID service, UUID characteristic) {
-        Log.w(TAG, "Received request to read characteristic");
+        Log.w(TAG, "Received request to read characteristic: " + characteristic);
         BluetoothGatt gatt = getBluetoothDevicesMap().get(deviceMacAddress);
         if (gatt == null) {
             Log.w(TAG, "BluetoothGatt not initialized");
@@ -196,6 +197,14 @@ public class BleConnectionService extends LifecycleService {
                 }
             }
         }
+        //If device has characteristic, check if readable, then read
+        if (containsCharacteristic){
+            BluetoothGattCharacteristic characteristicToRead = gatt.getService(service).getCharacteristic(characteristic);
+            gatt.readCharacteristic(characteristicToRead);
+            Log.d(TAG, "Reading characteristic: " + characteristicToRead);
+        }
+
+        /*
 
         //If device has characteristic, check if readable, then read
         if (containsCharacteristic){
@@ -210,6 +219,9 @@ public class BleConnectionService extends LifecycleService {
             }
         }
 
+         */
+
+
     }
 
     // Subscribe to characteristic notifications
@@ -220,7 +232,6 @@ public class BleConnectionService extends LifecycleService {
             Log.w(TAG, "BluetoothGatt not initialized");
             return;
         }
-        this.dataType = dataType;
 
         //Check if device has service and characteristic
         boolean containsCharacteristic = false;
@@ -242,10 +253,21 @@ public class BleConnectionService extends LifecycleService {
         if (containsCharacteristic){
 
             BluetoothGattCharacteristic characteristicToSubscribe = gatt.getService(service).getCharacteristic(characteristic);
+            byte[] payload;
+            UUID cccdUuid = Constants.CCCD;
+            BluetoothGattDescriptor descriptor = characteristicToSubscribe.getDescriptor(cccdUuid);
 
-            if (isCharacteristicWritable(characteristicToSubscribe)){
-                gatt.setCharacteristicNotification(characteristicToSubscribe, enabled);
-                Log.d(TAG, "Subscribed to characteristic " + characteristic);
+            if (isCharacteristicNotifiable(characteristicToSubscribe) && gatt.setCharacteristicNotification(characteristicToSubscribe, enabled)){
+
+                payload = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE;
+                writeDescriptor(gatt, descriptor, payload);
+                Log.d(TAG, "Set notification for characteristic " + characteristic);
+            }
+            else if(isCharacteristicIndicatable(characteristicToSubscribe) && gatt.setCharacteristicNotification(characteristicToSubscribe, enabled)){
+                payload = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE;
+                writeDescriptor(gatt, descriptor, payload);
+                Log.d(TAG, "Set indicator for characteristic " + characteristic);
+
             }
             else {
                 Log.d(TAG, "Char does not support notifications");
@@ -253,6 +275,12 @@ public class BleConnectionService extends LifecycleService {
 
         }
 
+    }
+
+
+    private void writeDescriptor(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, byte[] payload) {
+        descriptor.setValue(payload);
+        gatt.writeDescriptor(descriptor);
     }
 
 
@@ -478,6 +506,13 @@ public class BleConnectionService extends LifecycleService {
      */
     public boolean isCharacteristicNotifiable(BluetoothGattCharacteristic characteristic) {
         return (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0;
+    }
+
+    /**
+     * @return Returns true if property supports indications
+     */
+    public boolean isCharacteristicIndicatable(BluetoothGattCharacteristic characteristic) {
+        return (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_INDICATE) != 0;
     }
 
 

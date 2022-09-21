@@ -346,8 +346,13 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
 
         else if(textViewDeviceMode.getText().equals("")){
             textViewDeviceMode.setText("Retrieving . . .");
-            sharedEntitiesViewModel.setCharacteristicNotification(gattMacAddress, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, true);
             sharedEntitiesViewModel.readCharacteristics(gattMacAddress, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE);
+            Log.d(TAG, "Reading Mode");
+
+        }
+        else if(!textViewDeviceMode.getText().equals("") && !textViewDeviceMode.getText().equals("Retrieving . . .")){
+            sharedEntitiesViewModel.setCharacteristicNotification(gattMacAddress, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, true);
+            Log.d(TAG, "Trying to subscribe to Mode");
         }
 
 
