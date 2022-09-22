@@ -35,6 +35,7 @@ public class FlareRTDeviceType{
     // Light mode UUIDs
     public final static UUID UUID_SERVICE_LIGHT_MODE = UUID.fromString("71261000-3692-ae93-e711-472ba41689c9");
     public final static UUID UUID_CHARACTERISTIC_LIGHT_MODE = UUID.fromString("71261001-3692-ae93-e711-472ba41689c9");
+    public final static String UUID_CHARACTERISTIC_LIGHT_MODE_STRING = "71261001-3692-ae93-e711-472ba41689c9";
     public final static String DATA_TYPE_LIGHT_MODE = "byte[]";
 
     // Battery UUIDs

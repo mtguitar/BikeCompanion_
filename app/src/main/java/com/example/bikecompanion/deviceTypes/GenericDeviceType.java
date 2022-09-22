@@ -17,21 +17,26 @@ public class GenericDeviceType {
     // Battery UUIDs
     public final static UUID UUID_SERVICE_BATTERY = UUID.fromString("0000180f-0000-1000-8000-00805f9b34fb");
     public final static UUID UUID_CHARACTERISTIC_BATTERY = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
+    public final static String UUID_CHARACTERISTIC_BATTERY_STRING = "00002a19-0000-1000-8000-00805f9b34fb";
+
     public final static String DATA_TYPE_BATTERY = "byte[]";
 
     // Device Name UUIDs
     public final static UUID UUID_SERVICE_DEVICE_NAME = UUID.fromString("00001800-0000-1000-8000-00805f9b34fb");
     public final static UUID UUID_CHARACTERISTIC_DEVICE_NAME = UUID.fromString("00002a00-0000-1000-8000-00805f9b34fb");
+    public final static String UUID_CHARACTERISTIC_DEVICE_NAME_STRING = "00002a00-0000-1000-8000-00805f9b34fb";
     public final static String DATA_TYPE_DEVICE_NAME = "String";
 
     // Device Manufacturer UUIDs
     public final static UUID UUID_SERVICE_DEVICE_MANUFACTURER = UUID.fromString("0000180a-0000-1000-8000-00805f9b34fb");
     public final static UUID UUID_CHARACTERISTIC_DEVICE_MANUFACTURER = UUID.fromString("00002a29-0000-1000-8000-00805f9b34fb");
+    public final static String UUID_CHARACTERISTIC_DEVICE_MANUFACTURER_STRING = "00002a29-0000-1000-8000-00805f9b34fb";
     public final static String DATA_TYPE_DEVICE_MANUFACTURER = "String";
 
     // Device Manufacturer UUIDs
     public final static UUID UUID_SERVICE_DEVICE_MODEL = UUID.fromString("0000180a-0000-1000-8000-00805f9b34fb");
     public final static UUID UUID_CHARACTERISTIC_DEVICE_MODEL = UUID.fromString("00002a24-0000-1000-8000-00805f9b34fb");
+    public final static String UUID_CHARACTERISTIC_DEVICE_MODEL_STRING = "00002a24-0000-1000-8000-00805f9b34fb";
     public final static String DATA_TYPE_DEVICE_MODEL = "String";
 
 

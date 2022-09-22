@@ -156,7 +156,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
 
                 updateConnectionState();
                 if (connectionState.equals(Constants.GATT_SERVICES_DISCOVERED)){
-                    sharedEntitiesViewModel.readCharacteristics(gattMacAddress, GenericDeviceType.UUID_SERVICE_BATTERY, GenericDeviceType.UUID_CHARACTERISTIC_BATTERY);
+                    readCharacteristics();
                 }
 
                 textViewDeviceTest.setText(gattMacAddress + ": " + connectionState);
@@ -280,7 +280,6 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         clearTextViews();
     }
 
-
     private void updateConnectionState(){
         //displays connection state in textView
         if (textViewDeviceState != null && gattMacAddress.contentEquals(textViewMacAddress.getText())) {
@@ -302,60 +301,39 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             connectedDeviceMacAddress = "";
             isConnected = false;
         }
-
     }
 
+    private void readCharacteristics(){
+        sharedEntitiesViewModel.readCharacteristics(gattMacAddress, GenericDeviceType.UUID_SERVICE_BATTERY, GenericDeviceType.UUID_CHARACTERISTIC_BATTERY);
+        sharedEntitiesViewModel.setCharacteristicNotification(gattMacAddress, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, true);
+        sharedEntitiesViewModel.readCharacteristics(gattMacAddress, GenericDeviceType.UUID_SERVICE_DEVICE_MANUFACTURER, GenericDeviceType.UUID_CHARACTERISTIC_DEVICE_MANUFACTURER);
+        sharedEntitiesViewModel.readCharacteristics(gattMacAddress, GenericDeviceType.UUID_SERVICE_DEVICE_MODEL, GenericDeviceType.UUID_CHARACTERISTIC_DEVICE_MODEL);
+        sharedEntitiesViewModel.readCharacteristics(gattMacAddress, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE);
+    }
     private void updateCharacteristics(){
         if(!gattMacAddress.equals(visibleDeviceMacAddress)){
             Log.d(TAG, "Received info for different device");
             return;
         }
-        if(characteristicUUID.equals(GenericDeviceType.UUID_CHARACTERISTIC_BATTERY.toString())){
-            textViewDeviceBattery.setText(characteristicValueInt);
-            Log.d(TAG, "Set Battery");
+        switch (characteristicUUID){
+            case (GenericDeviceType.UUID_CHARACTERISTIC_BATTERY_STRING):
+                textViewDeviceBattery.setText(characteristicValueInt);
+                Log.d(TAG, "Set Battery");
+                break;
+            case (GenericDeviceType.UUID_CHARACTERISTIC_DEVICE_MANUFACTURER_STRING):
+                textViewDeviceManufacturer.setText(characteristicValueString);
+                Log.d(TAG, "Set Manufacturer");
+                break;
+            case (GenericDeviceType.UUID_CHARACTERISTIC_DEVICE_MODEL_STRING):
+                textViewDeviceModel.setText(characteristicValueString);
+                Log.d(TAG, "Set Model");
+                break;
+            case (FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE_STRING):
+                String lightMode = convertLightMode(characteristicValueInt);
+                textViewDeviceMode.setText(lightMode);
+                Log.d(TAG, "Set Light Mode");
+                break;
         }
-        if(characteristicUUID.equals(GenericDeviceType.UUID_CHARACTERISTIC_DEVICE_MANUFACTURER.toString())){
-            textViewDeviceManufacturer.setText(characteristicValueString);
-            Log.d(TAG, "Set Manufacturer");
-        }
-        if(characteristicUUID.equals(GenericDeviceType.UUID_CHARACTERISTIC_DEVICE_MODEL.toString())){
-            textViewDeviceModel.setText(characteristicValueString);
-            Log.d(TAG, "Set Model");
-        }
-        if(characteristicUUID.equals(FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE.toString())){
-            String lightMode = convertLightMode(characteristicValueInt);
-            textViewDeviceMode.setText(lightMode);
-            Log.d(TAG, "Set Light Mode");
-        }
-
-        if(textViewDeviceBattery.getText().equals("")){
-            textViewDeviceBattery.setText("Retrieving . . .");
-            sharedEntitiesViewModel.readCharacteristics(gattMacAddress, GenericDeviceType.UUID_SERVICE_BATTERY, GenericDeviceType.UUID_CHARACTERISTIC_BATTERY);
-        }
-
-        else if(textViewDeviceManufacturer.getText().equals("")){
-            Log.d(TAG, "Checking Manufacturer");
-            textViewDeviceManufacturer.setText("Retrieving . . .");
-            sharedEntitiesViewModel.readCharacteristics(gattMacAddress, GenericDeviceType.UUID_SERVICE_DEVICE_MANUFACTURER, GenericDeviceType.UUID_CHARACTERISTIC_DEVICE_MANUFACTURER);
-        }
-        else if(textViewDeviceModel.getText().equals("")){
-            Log.d(TAG, "Checking Model");
-            textViewDeviceModel.setText("Retrieving . . .");
-            sharedEntitiesViewModel.readCharacteristics(gattMacAddress, GenericDeviceType.UUID_SERVICE_DEVICE_MODEL, GenericDeviceType.UUID_CHARACTERISTIC_DEVICE_MODEL);
-        }
-
-        else if(textViewDeviceMode.getText().equals("")){
-            textViewDeviceMode.setText("Retrieving . . .");
-            sharedEntitiesViewModel.readCharacteristics(gattMacAddress, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE);
-            Log.d(TAG, "Reading Mode");
-
-        }
-        else if(!textViewDeviceMode.getText().equals("") && !textViewDeviceMode.getText().equals("Retrieving . . .")){
-            sharedEntitiesViewModel.setCharacteristicNotification(gattMacAddress, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, true);
-            Log.d(TAG, "Trying to subscribe to Mode");
-        }
-
-
     }
 
     private void clearTextViews(){

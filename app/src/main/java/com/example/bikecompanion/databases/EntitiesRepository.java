@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -16,6 +17,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.bikecompanion.ble.BleConnectionService;
 import com.example.bikecompanion.ble.gattOperations.GattCharacteristicReadOperation;
+import com.example.bikecompanion.ble.gattOperations.GattOperation;
 import com.example.bikecompanion.constants.Constants;
 import com.example.bikecompanion.databases.entities.Bike;
 import com.example.bikecompanion.databases.entities.BikeDeviceCrossRef;
@@ -44,6 +46,11 @@ public class EntitiesRepository {
 
     private LiveData<List<Device>> allDevices;
     private LiveData<List<Bike>> allBikes;
+
+    private ConcurrentLinkedQueue<GattOperation> queue;
+    private boolean operationRunning = false;
+    Handler handler;
+    private static final long OPERATION_TIMEOUT =3000;
 
     private BleConnectionService bleConnectionService;
     private ConcurrentLinkedQueue operationQueue;
@@ -267,6 +274,65 @@ public class EntitiesRepository {
 
 
     /**
+     * Queue
+     */
+
+    private ConcurrentLinkedQueue getQueue(){
+        if (queue == null){
+            queue = new ConcurrentLinkedQueue<>();
+        }
+        return queue;
+    }
+
+    private void addToQueue(GattOperation operation){
+        getQueue();
+        queue.add(operation);
+        Log.d(TAG, "Added to queue: " + operation);
+        processQueue();
+    }
+
+    private void processQueue(){
+        Log.d(TAG, "Processing queue");
+        if (queue != null && !queue.isEmpty()){
+            if(handler != null) {
+                handler.removeCallbacksAndMessages(null);
+            }
+            executeQueue();
+        }
+        else{
+            return;
+        }
+    }
+
+    private void executeQueue(){
+        if (!operationRunning){
+            operationRunning = true;
+            GattOperation currentOperation = queue.poll();
+            executeOperation(currentOperation);
+            Log.d(TAG, "Executing queue");
+
+            // Sets a timer
+            handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (operationRunning) {
+                        operationRunning = false;
+                    }
+                }
+            }, OPERATION_TIMEOUT);
+
+        }
+        else{
+            return;
+        }
+    }
+
+    private void executeOperation(GattOperation operation){
+        operation.execute();
+    }
+
+    /**
      * methods to interact with BleConnectionService
      */
 
@@ -279,10 +345,12 @@ public class EntitiesRepository {
     }
 
 
-
     public void readCharacteristic(String deviceMacAddress, UUID service, UUID characteristic) {
-        GattCharacteristicReadOperation gattCharacteristicReadOperation = new GattCharacteristicReadOperation();
-        gattCharacteristicReadOperation.readCharacteristic(deviceMacAddress, service, characteristic, bleConnectionService);
+        GattCharacteristicReadOperation gattCharacteristicReadOperation = new GattCharacteristicReadOperation(deviceMacAddress, service, characteristic, bleConnectionService);
+        //gattCharacteristicReadOperation.readCharacteristic(deviceMacAddress, service, characteristic, bleConnectionService);
+        addToQueue(gattCharacteristicReadOperation);
+
+
     }
     /*
     public void readCharacteristic(String deviceMacAddress, UUID service, UUID characteristic) {
@@ -347,6 +415,9 @@ public class EntitiesRepository {
             String connectionState;
             String gattMacAddress;
 
+            operationRunning = false;
+            Log.d(TAG, "Operation finished");
+            processQueue();
             final String action = intent.getAction();
             Bundle extras = intent.getBundleExtra(Constants.EXTRA_DATA);
 
@@ -429,6 +500,9 @@ public class EntitiesRepository {
         }
         return deviceDataHashMapLive;
     }
+
+
+
 
 
 }
