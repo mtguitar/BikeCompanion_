@@ -25,10 +25,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 
-import static com.example.bikecompanion.constants.Constants.ACTION_CONNECT_TO_DEVICE;
-import static com.example.bikecompanion.constants.Constants.ACTION_DISCONNECT_DEVICE;
-import static com.example.bikecompanion.constants.Constants.ACTION_READ_CHARACTERISTIC;
-
 @SuppressLint("MissingPermission")
 
 public class BleConnectionService extends LifecycleService {
@@ -38,9 +34,9 @@ public class BleConnectionService extends LifecycleService {
     private final static String TAG = "FlareLog ConnectService";
 
     //connection vars
-    private BluetoothManager mBluetoothManager;
-    private BluetoothAdapter mBluetoothAdapter;
-    private BluetoothGatt mBluetoothGatt;
+    private BluetoothManager bluetoothManager;
+    private BluetoothAdapter bluetoothAdapter;
+    private BluetoothGatt bluetoothGatt;
     private String deviceMacAddress;
     private String action;
     private UUID characteristicToRead;
@@ -54,7 +50,7 @@ public class BleConnectionService extends LifecycleService {
 
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
-
+/*
         getBluetoothDeviceMap();
 
         action = intent.getAction();
@@ -76,6 +72,8 @@ public class BleConnectionService extends LifecycleService {
             Log.d(TAG, characteristic);
         }
 
+ */
+
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -84,15 +82,15 @@ public class BleConnectionService extends LifecycleService {
      */
 
     public boolean initialize() {
-        if (mBluetoothManager == null) {
-            mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-            if (mBluetoothManager == null) {
+        if (bluetoothManager == null) {
+            bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+            if (bluetoothManager == null) {
                 Log.e(TAG, "Unable to initialize BluetoothManager.");
                 return false;
             }
         }
-        mBluetoothAdapter = mBluetoothManager.getAdapter();
-        if (mBluetoothAdapter == null) {
+        bluetoothAdapter = bluetoothManager.getAdapter();
+        if (bluetoothAdapter == null) {
             Log.e(TAG, "Unable to obtain a BluetoothAdapter.");
             return false;
         }
@@ -106,18 +104,18 @@ public class BleConnectionService extends LifecycleService {
 
     public boolean connectDevice(String deviceMacAddress) {
         initialize();
-        if (mBluetoothAdapter == null){
+        if (bluetoothAdapter == null){
             Log.w(TAG, "Bluetooth not initialized.");
             return false;
         }
 
-        final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(deviceMacAddress);
+        final BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceMacAddress);
         if (device == null) {
             Log.w(TAG, "Device not found.  Unable to connect.");
             return false;
         }
 
-        mBluetoothGatt = device.connectGatt(this, false, mBluetoothGattCallback);
+        device.connectGatt(this, false, mBluetoothGattCallback);
         Log.d(TAG, "Connecting . . .");
         return true;
     }
@@ -128,7 +126,7 @@ public class BleConnectionService extends LifecycleService {
 
     public boolean disconnectDevice(String deviceMacAddress) {
         BluetoothGatt gatt = getBluetoothDeviceMap().get(deviceMacAddress);
-        if (gatt == null || mBluetoothAdapter == null){
+        if (gatt == null || bluetoothAdapter == null){
             Log.w(TAG, "BluetoothAdapter or gatt not initialized. Gatt: " + gatt);
             return false;
         }
@@ -146,7 +144,7 @@ public class BleConnectionService extends LifecycleService {
         BluetoothGatt gatt = getBluetoothDeviceMap().get(deviceMacAddress);
 
         // Check if bluetooth is initialized
-        if (gatt == null || mBluetoothAdapter == null) {
+        if (gatt == null || bluetoothAdapter == null) {
             Log.w(TAG, "BluetoothGatt not initialized");
             return;
         }
@@ -194,7 +192,7 @@ public class BleConnectionService extends LifecycleService {
     public void readCharacteristic(String deviceMacAddress, UUID service, UUID characteristic) {
         Log.w(TAG, "Received request to read characteristic: " + characteristic);
         BluetoothGatt gatt = getBluetoothDeviceMap().get(deviceMacAddress);
-        if (gatt == null || mBluetoothAdapter == null) {
+        if (gatt == null || bluetoothAdapter == null) {
             Log.w(TAG, "BluetoothGatt not initialized");
             return;
         }
@@ -238,7 +236,7 @@ public class BleConnectionService extends LifecycleService {
     public void setCharacteristicNotification(String deviceMacAddress, UUID service, UUID characteristic, boolean enabled) {
         BluetoothGatt gatt = getBluetoothDeviceMap().get(deviceMacAddress);
         Log.w(TAG, "Received request to set characteristic notification");
-        if (gatt == null || mBluetoothAdapter == null) {
+        if (gatt == null || bluetoothAdapter == null) {
             Log.w(TAG, "BluetoothGatt not initialized");
             return;
         }
@@ -298,6 +296,7 @@ public class BleConnectionService extends LifecycleService {
         @SuppressLint("MissingPermission")
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+            bluetoothGatt = gatt;
             String gattMacAddress = gatt.getDevice().getAddress();
             Log.w(TAG, "New State: " + newState);
             if (status == BluetoothGatt.GATT_SUCCESS) {
@@ -343,7 +342,6 @@ public class BleConnectionService extends LifecycleService {
                 broadcastUpdateState(Constants.GATT_SERVICES_DISCOVERED, gatt);
                 Log.w(TAG, "Service discovery successful");
                 servicesCounter = 0;
-
 
             } else {
                 if (servicesCounter < 2) {

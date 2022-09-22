@@ -15,16 +15,16 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.bikecompanion.ble.BleConnectionService;
+import com.example.bikecompanion.ble.gattOperations.GattCharacteristicReadOperation;
 import com.example.bikecompanion.constants.Constants;
 import com.example.bikecompanion.databases.entities.Bike;
-import com.example.bikecompanion.databases.entities.Device;
 import com.example.bikecompanion.databases.entities.BikeDeviceCrossRef;
+import com.example.bikecompanion.databases.entities.Device;
 import com.example.bikecompanion.databases.relations.BikeWithDevices;
 import com.example.bikecompanion.databases.relations.DeviceWithBikes;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -278,9 +278,18 @@ public class EntitiesRepository {
         bleConnectionService.disconnectDevice(deviceMacAddress);
     }
 
+
+
+    public void readCharacteristic(String deviceMacAddress, UUID service, UUID characteristic) {
+        GattCharacteristicReadOperation gattCharacteristicReadOperation = new GattCharacteristicReadOperation();
+        gattCharacteristicReadOperation.readCharacteristic(deviceMacAddress, service, characteristic, bleConnectionService);
+    }
+    /*
     public void readCharacteristic(String deviceMacAddress, UUID service, UUID characteristic) {
         bleConnectionService.readCharacteristic(deviceMacAddress, service, characteristic);
     }
+
+     */
 
     public void writeCharacteristic(String deviceMacAddress, UUID service, UUID characteristic, byte[] payload) {
         bleConnectionService.writeCharacteristic(deviceMacAddress, service, characteristic, payload);
