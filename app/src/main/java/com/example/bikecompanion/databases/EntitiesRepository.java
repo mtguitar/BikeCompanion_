@@ -24,7 +24,9 @@ import com.example.bikecompanion.databases.relations.DeviceWithBikes;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * This repo holds all the data used to populate MyDevicesFragment.
@@ -33,7 +35,7 @@ import java.util.UUID;
  * It binds to BleConnectionService.
  * It uses BleConnectionService to check connection, read, write, setNotify for devices in myDevices database.
  * It receives info updates from BleConnectionService via a broadcastReceiver.
- * MyDevicesFragment interacts with this repo entirely through MyDevicesViewModel.
+ * MyDevicesFragment interacts with this repo through MyDevicesViewModel.
  */
 
 public class EntitiesRepository {
@@ -44,6 +46,7 @@ public class EntitiesRepository {
     private LiveData<List<Bike>> allBikes;
 
     private BleConnectionService bleConnectionService;
+    private ConcurrentLinkedQueue operationQueue;
 
     private HashMap<String, String> connectionStateHashMap;
     private static MutableLiveData<HashMap> connectionStateHashMapLive;
@@ -59,92 +62,83 @@ public class EntitiesRepository {
 
     private Context context;
 
-    public EntitiesRepository(Application application){
+    public EntitiesRepository(Application application) {
         EntitiesDataBase entitiesDataBase = EntitiesDataBase.getInstance(application);
         entitiesDao = entitiesDataBase.entitiesDao();
         allDevices = entitiesDao.getAllDevices();
         allBikes = entitiesDao.getAllBikes();
 
         context = application.getApplicationContext();
+        operationQueue = new ConcurrentLinkedQueue<>();
         registerBroadcastReceiver(context);
     }
 
-    public LiveData<List<BikeWithDevices>> getBikesWithDevices(){
+    public LiveData<List<BikeWithDevices>> getBikesWithDevices() {
         LiveData<List<BikeWithDevices>> bikesWithDevices = entitiesDao.getBikesWithDevices();
         return bikesWithDevices;
 
     }
 
-    public LiveData<List<DeviceWithBikes>> getDeviceWithBikes(){
+    public LiveData<List<DeviceWithBikes>> getDeviceWithBikes() {
         LiveData<List<DeviceWithBikes>> devicesWithBikes = entitiesDao.getDevicesWithBikes();
         return devicesWithBikes;
     }
 
-    public void insertBikeDeviceCrossRef(BikeDeviceCrossRef bikeDeviceCrossRef)
-    {
+    public void insertBikeDeviceCrossRef(BikeDeviceCrossRef bikeDeviceCrossRef) {
         new InsertBikeDeviceCrossRefAsyncTask(entitiesDao).execute(bikeDeviceCrossRef);
     }
 
 
-    public void insertBike(Bike bike){
+    public void insertBike(Bike bike) {
         new InsertBikeAsyncTask(entitiesDao).execute(bike);
     }
 
-    public void updateBike(Bike bike){
+    public void updateBike(Bike bike) {
         new UpdateBikeAsyncTask(entitiesDao).execute(bike);
     }
 
-    public void deleteBike(Bike bike){
+    public void deleteBike(Bike bike) {
         new DeleteBikeAsyncTask(entitiesDao).execute(bike);
     }
 
-    public void deleteAllBikes (){
+    public void deleteAllBikes() {
         new DeleteAllDevicesAsyncTask(entitiesDao).execute();
     }
 
-    public LiveData<List<Bike>> getAllBikes(){
+    public LiveData<List<Bike>> getAllBikes() {
         return allBikes;
     }
 
 
-
-
-
-    public void insertDevice(Device device){
+    public void insertDevice(Device device) {
         new InsertDeviceAsyncTask(entitiesDao).execute(device);
     }
 
-    public void updateDevice(Device device){
+    public void updateDevice(Device device) {
         new UpdateDeviceAsyncTask(entitiesDao).execute(device);
     }
 
-    public void deleteDevice(Device device){
+    public void deleteDevice(Device device) {
         new DeleteDeviceAsyncTask(entitiesDao).execute(device);
     }
 
-    public void deleteAllDevices (){
+    public void deleteAllDevices() {
         new DeleteAllDevicesAsyncTask(entitiesDao).execute();
     }
 
-    public LiveData<List<Device>> getAllDevices(){
+    public LiveData<List<Device>> getAllDevices() {
         return allDevices;
     }
-
-
-
-
-
 
 
     /**
      * AsyncTasks for writing/reading to/from db to ensure that we are not working on the main thread
      */
 
-
     private static class InsertBikeDeviceCrossRefAsyncTask extends android.os.AsyncTask<BikeDeviceCrossRef, Void, Void> {
         private EntitiesDao entitiesDao;
 
-        private InsertBikeDeviceCrossRefAsyncTask(EntitiesDao entitiesDao){
+        private InsertBikeDeviceCrossRefAsyncTask(EntitiesDao entitiesDao) {
             this.entitiesDao = entitiesDao;
         }
 
@@ -159,7 +153,7 @@ public class EntitiesRepository {
     private static class InsertBikeAsyncTask extends android.os.AsyncTask<Bike, Void, Void> {
         private EntitiesDao entitiesDao;
 
-        private InsertBikeAsyncTask(EntitiesDao entitiesDao){
+        private InsertBikeAsyncTask(EntitiesDao entitiesDao) {
             this.entitiesDao = entitiesDao;
         }
 
@@ -171,12 +165,10 @@ public class EntitiesRepository {
     }
 
 
-
-
     private static class UpdateBikeAsyncTask extends android.os.AsyncTask<Bike, Void, Void> {
         private EntitiesDao entitiesDao;
 
-        private UpdateBikeAsyncTask(EntitiesDao entitiesDao){
+        private UpdateBikeAsyncTask(EntitiesDao entitiesDao) {
             this.entitiesDao = entitiesDao;
         }
 
@@ -190,7 +182,7 @@ public class EntitiesRepository {
     private static class DeleteBikeAsyncTask extends android.os.AsyncTask<Bike, Void, Void> {
         private EntitiesDao entitiesDao;
 
-        private DeleteBikeAsyncTask(EntitiesDao entitiesDao){
+        private DeleteBikeAsyncTask(EntitiesDao entitiesDao) {
             this.entitiesDao = entitiesDao;
         }
 
@@ -204,7 +196,7 @@ public class EntitiesRepository {
     private static class DeleteAllBikesAsyncTask extends android.os.AsyncTask<Void, Void, Void> {
         private EntitiesDao entitiesDao;
 
-        private DeleteAllBikesAsyncTask(EntitiesDao entitiesDao){
+        private DeleteAllBikesAsyncTask(EntitiesDao entitiesDao) {
             this.entitiesDao = entitiesDao;
         }
 
@@ -216,12 +208,11 @@ public class EntitiesRepository {
     }
 
 
-
     //Devices
     private static class InsertDeviceAsyncTask extends android.os.AsyncTask<Device, Void, Void> {
         private EntitiesDao entitiesDao;
 
-        private InsertDeviceAsyncTask(EntitiesDao entitiesDao){
+        private InsertDeviceAsyncTask(EntitiesDao entitiesDao) {
             this.entitiesDao = entitiesDao;
         }
 
@@ -235,7 +226,7 @@ public class EntitiesRepository {
     private static class UpdateDeviceAsyncTask extends android.os.AsyncTask<Device, Void, Void> {
         private EntitiesDao entitiesDao;
 
-        private UpdateDeviceAsyncTask(EntitiesDao entitiesDao){
+        private UpdateDeviceAsyncTask(EntitiesDao entitiesDao) {
             this.entitiesDao = entitiesDao;
         }
 
@@ -249,7 +240,7 @@ public class EntitiesRepository {
     private static class DeleteDeviceAsyncTask extends android.os.AsyncTask<Device, Void, Void> {
         private EntitiesDao entitiesDao;
 
-        private DeleteDeviceAsyncTask(EntitiesDao entitiesDao){
+        private DeleteDeviceAsyncTask(EntitiesDao entitiesDao) {
             this.entitiesDao = entitiesDao;
         }
 
@@ -263,7 +254,7 @@ public class EntitiesRepository {
     private static class DeleteAllDevicesAsyncTask extends android.os.AsyncTask<Void, Void, Void> {
         private EntitiesDao entitiesDao;
 
-        private DeleteAllDevicesAsyncTask(EntitiesDao entitiesDao){
+        private DeleteAllDevicesAsyncTask(EntitiesDao entitiesDao) {
             this.entitiesDao = entitiesDao;
         }
 
@@ -279,7 +270,6 @@ public class EntitiesRepository {
      * methods to interact with BleConnectionService
      */
 
-
     public void connectDevice(String deviceMacAddress) {
         bleConnectionService.connectDevice(deviceMacAddress);
     }
@@ -288,20 +278,20 @@ public class EntitiesRepository {
         bleConnectionService.disconnectDevice(deviceMacAddress);
     }
 
-    public void readCharacteristic(String deviceMacAddress, UUID service, UUID characteristic){
+    public void readCharacteristic(String deviceMacAddress, UUID service, UUID characteristic) {
         bleConnectionService.readCharacteristic(deviceMacAddress, service, characteristic);
     }
 
-    public void writeCharacteristic(String deviceMacAddress, UUID service, UUID characteristic, byte[] payload){
+    public void writeCharacteristic(String deviceMacAddress, UUID service, UUID characteristic, byte[] payload) {
         bleConnectionService.writeCharacteristic(deviceMacAddress, service, characteristic, payload);
     }
 
-    public void setCharacteristicNotification(String deviceMacAddress, UUID service, UUID characteristic, boolean enabled){
+    public void setCharacteristicNotification(String deviceMacAddress, UUID service, UUID characteristic, boolean enabled) {
         bleConnectionService.setCharacteristicNotification(deviceMacAddress, service, characteristic, enabled);
     }
 
 
-    public void bindService(){
+    public void bindService() {
         if (!boundToService) {
             Intent intent = new Intent(context, BleConnectionService.class);
             context.bindService(intent, serviceConnection, context.BIND_AUTO_CREATE);
@@ -317,20 +307,21 @@ public class EntitiesRepository {
             boundToService = true;
             Log.d(TAG, "Bound to service from repository");
         }
+
         @Override
         public void onServiceDisconnected(ComponentName name) {
             bleConnectionService = null;
         }
     };
 
-    public void registerBroadcastReceiver(Context context){
+    public void registerBroadcastReceiver(Context context) {
         //Set intent filters and register receiver to listen for updates
         createIntentFilter();
         context.registerReceiver(gattUpdateReceiver, createIntentFilter());
     }
 
     //Intent filters for receiving intents
-    public static IntentFilter createIntentFilter () {
+    public static IntentFilter createIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.ACTION_GATT_STATE_CHANGE);
         intentFilter.addAction(Constants.ACTION_DATA_AVAILABLE);
@@ -350,7 +341,7 @@ public class EntitiesRepository {
             final String action = intent.getAction();
             Bundle extras = intent.getBundleExtra(Constants.EXTRA_DATA);
 
-            if(action.equals(Constants.ACTION_GATT_STATE_CHANGE)){
+            if (action.equals(Constants.ACTION_GATT_STATE_CHANGE)) {
                 //get connectionState and macAddress from intent extras
                 connectionState = extras.getString(Constants.GATT_CONNECTION_STATE);
                 gattMacAddress = extras.getString(Constants.GATT_MAC_ADDRESS);
@@ -361,14 +352,14 @@ public class EntitiesRepository {
 
                 //put hashmap into MutableLiveData
                 getConnectionStateHashMapLive().postValue(getConnectionStateHashMap());
-                if(connectionState.equals(Constants.GATT_CONNECTED)){
+                if (connectionState.equals(Constants.GATT_CONNECTED)) {
                     getIsConnected().postValue(true);
                 }
-                if(connectionState.equals(Constants.GATT_DISCONNECTED)){
+                if (connectionState.equals(Constants.GATT_DISCONNECTED)) {
                     getIsConnected().postValue(false);
                 }
             }
-            if(action.equals(Constants.ACTION_DATA_AVAILABLE)){
+            if (action.equals(Constants.ACTION_DATA_AVAILABLE)) {
                 //get data and macAddress from intent extras
                 gattMacAddress = extras.getString(Constants.GATT_MAC_ADDRESS);
                 String characteristicUUID = extras.getString(Constants.CHARACTERISTIC_UUID);
@@ -384,9 +375,6 @@ public class EntitiesRepository {
                 //put hashmap into MutableLiveData
                 getDeviceDataHashMapLive().postValue(getDeviceDataHashMap());
 
-
-
-
             }
 
         }
@@ -397,21 +385,21 @@ public class EntitiesRepository {
      * LiveData
      */
 
-    public HashMap<String, String> getConnectionStateHashMap(){
+    public HashMap<String, String> getConnectionStateHashMap() {
         if (connectionStateHashMap == null) {
             connectionStateHashMap = new HashMap<String, String>();
         }
         return connectionStateHashMap;
     }
 
-    public static MutableLiveData<HashMap> getConnectionStateHashMapLive(){
+    public static MutableLiveData<HashMap> getConnectionStateHashMapLive() {
         if (connectionStateHashMapLive == null) {
             connectionStateHashMapLive = new MutableLiveData<>();
         }
         return connectionStateHashMapLive;
     }
 
-    public MutableLiveData<Boolean> getIsConnected(){
+    public MutableLiveData<Boolean> getIsConnected() {
         if (isConnected == null) {
             isConnected = new MutableLiveData<>();
         }
@@ -419,20 +407,19 @@ public class EntitiesRepository {
     }
 
 
-    public HashMap<String, String> getDeviceDataHashMap(){
+    public HashMap<String, String> getDeviceDataHashMap() {
         if (deviceDataHashMap == null) {
             deviceDataHashMap = new HashMap<String, String>();
         }
         return deviceDataHashMap;
     }
 
-    public static MutableLiveData<HashMap> getDeviceDataHashMapLive(){
+    public static MutableLiveData<HashMap> getDeviceDataHashMapLive() {
         if (deviceDataHashMapLive == null) {
             deviceDataHashMapLive = new MutableLiveData<>();
         }
         return deviceDataHashMapLive;
     }
-
 
 
 }
