@@ -309,7 +309,6 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         sharedEntitiesViewModel.readCharacteristics(gattMacAddress, GenericDeviceType.UUID_SERVICE_DEVICE_MODEL, GenericDeviceType.UUID_CHARACTERISTIC_DEVICE_MODEL);
         sharedEntitiesViewModel.readCharacteristics(gattMacAddress, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE);
         sharedEntitiesViewModel.setCharacteristicNotification(gattMacAddress, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, true);
-
     }
     private void updateCharacteristics(){
         if(!gattMacAddress.equals(visibleDeviceMacAddress)){
@@ -347,32 +346,30 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
 
     String convertLightMode(String characteristicValueInt){
         String lightModeString;
-        if (characteristicValueInt.equals(FlareRTDeviceType.DAY_SOLID_MODE_INT)){
-            lightModeString = FlareRTDeviceType.DAY_SOLID_MODE_NAME;
-        }
-        else if (characteristicValueInt.equals(FlareRTDeviceType.DAY_BLINK_MODE_INT)){
-            lightModeString = FlareRTDeviceType.DAY_BLINK_MODE_NAME;
-        }
-        else if (characteristicValueInt.equals(FlareRTDeviceType.DAY_BLINK_MODE_2_INT)){
-            lightModeString = FlareRTDeviceType.DAY_BLINK_MODE_2_NAME;
-        }
-        else if (characteristicValueInt.equals(FlareRTDeviceType.NIGHT_SOLID_MODE_INT)){
-            lightModeString = FlareRTDeviceType.NIGHT_SOLID_MODE_NAME;
-        }
-        else if (characteristicValueInt.equals(FlareRTDeviceType.NIGHT_BLINK_MODE_INT)){
-            lightModeString = FlareRTDeviceType.NIGHT_BLINK_MODE_NAME;
-        }
-        else if (characteristicValueInt.equals(FlareRTDeviceType.OFF_MODE_INT)){
-            lightModeString = FlareRTDeviceType.OFF_MODE_NAME;
-        }
-        else {
-            lightModeString = "Unknown";
+        switch(characteristicValueInt) {
+            case (FlareRTDeviceType.DAY_SOLID_MODE_INT):
+                lightModeString = FlareRTDeviceType.DAY_SOLID_MODE_NAME;
+                break;
+            case (FlareRTDeviceType.DAY_BLINK_MODE_INT):
+                lightModeString = FlareRTDeviceType.DAY_BLINK_MODE_NAME;
+                break;
+            case (FlareRTDeviceType.DAY_BLINK_MODE_2_INT):
+                lightModeString = FlareRTDeviceType.DAY_BLINK_MODE_2_NAME;
+                break;
+            case (FlareRTDeviceType.NIGHT_SOLID_MODE_INT):
+                lightModeString = FlareRTDeviceType.NIGHT_SOLID_MODE_NAME;
+                break;
+            case (FlareRTDeviceType.NIGHT_BLINK_MODE_INT):
+                lightModeString = FlareRTDeviceType.NIGHT_BLINK_MODE_NAME;
+                break;
+            case (FlareRTDeviceType.OFF_MODE_INT):
+                lightModeString = FlareRTDeviceType.OFF_MODE_NAME;
+                break;
+            default:
+                lightModeString = "Unknown";
         }
         return lightModeString;
 
     }
-
-
-
 
 }
