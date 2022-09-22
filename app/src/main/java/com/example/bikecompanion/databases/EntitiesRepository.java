@@ -50,7 +50,7 @@ public class EntitiesRepository {
     private ConcurrentLinkedQueue<GattOperation> queue;
     private boolean operationRunning = false;
     Handler handler;
-    private static final long OPERATION_TIMEOUT =3000;
+    private static final long OPERATION_TIMEOUT =1000;
 
     private BleConnectionService bleConnectionService;
     private ConcurrentLinkedQueue operationQueue;
@@ -318,6 +318,7 @@ public class EntitiesRepository {
                 public void run() {
                     if (operationRunning) {
                         operationRunning = false;
+                        processQueue();
                     }
                 }
             }, OPERATION_TIMEOUT);
