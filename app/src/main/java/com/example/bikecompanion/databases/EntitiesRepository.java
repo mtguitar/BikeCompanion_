@@ -293,15 +293,18 @@ public class EntitiesRepository {
 
     private void processQueue(){
         Log.d(TAG, "Processing queue");
-        if (queue != null && !queue.isEmpty()){
-            if(handler != null) {
-                handler.removeCallbacksAndMessages(null);
-            }
-            executeQueue();
-        }
-        else{
+        if (queue == null){
+            getQueue();
             return;
         }
+        if (queue.isEmpty()){
+            Log.d(TAG, "Queue is empty");
+            return;
+        }
+        if(handler != null) {
+            handler.removeCallbacksAndMessages(null);
+        }
+        executeQueue();
     }
 
     private void executeQueue(){
@@ -317,6 +320,7 @@ public class EntitiesRepository {
                 @Override
                 public void run() {
                     if (operationRunning) {
+                        Log.d(TAG, "Timeout");
                         operationRunning = false;
                         processQueue();
                     }
