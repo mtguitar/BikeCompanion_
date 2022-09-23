@@ -177,7 +177,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             }
         });
 
-
+/*
 
         sharedEntitiesViewModel.getIsConnected().observe(getActivity(), new Observer<Boolean>(){
             @Override
@@ -186,6 +186,8 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
 
             }
         });
+
+ */
 
 
 

@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.example.bikecompanion.ble.GattManager;
 import com.example.bikecompanion.databases.entities.Bike;
 import com.example.bikecompanion.databases.entities.Device;
 import com.example.bikecompanion.databases.EntitiesRepository;
@@ -22,6 +23,7 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
     private final static String TAG = "FlareLog MDViewModel";
 
     private EntitiesRepository repository;
+    private GattManager gattManager;
     private LiveData<List<Device>> allDevices;
     private LiveData<String> connectionState;
     private LiveData<List<Bike>> allBikes;
@@ -32,6 +34,7 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
     public SharedEntitiesViewModel(@NonNull Application application) {
         super(application);
         repository = new EntitiesRepository(application);
+        gattManager = new GattManager(application);
         allDevices = repository.getAllDevices();
         allBikes = repository.getAllBikes();
 
@@ -102,6 +105,37 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
 
 
     public void bindService() {
+        gattManager.bindService();
+    }
+
+    public void connectDevice(String deviceMacAddress) {
+        gattManager.connectDevice(deviceMacAddress);
+    }
+
+    public void disconnectDevice(String deviceMacAddress) {
+        gattManager.disconnectDevice(deviceMacAddress);
+    }
+
+    public void readCharacteristics(String deviceMacAddress, UUID serviceUUID, UUID characteristicUUID) {
+        gattManager.readCharacteristic(deviceMacAddress, serviceUUID, characteristicUUID);
+
+    }
+
+    public void writeCharacteristics(String deviceMacAddress, UUID serviceUUID, UUID characteristicUUID, byte[] payload) {
+        gattManager.writeCharacteristic(deviceMacAddress, serviceUUID, characteristicUUID, payload);
+
+    }
+
+    public void setCharacteristicNotification(String deviceMacAddress, UUID serviceUUID, UUID characteristicUUID, boolean enabled) {
+        gattManager.setCharacteristicNotification(deviceMacAddress, serviceUUID, characteristicUUID, enabled);
+
+    }
+
+
+    /*
+
+
+    public void bindService() {
         repository.bindService();
     }
 
@@ -128,21 +162,20 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
 
     }
 
+     */
+
 
     /**
      * LiveData getters
      */
 
     public LiveData<HashMap> getConnectionStateHashMapLive() {
-        return repository.getConnectionStateHashMapLive();
+        return gattManager.getConnectionStateHashMapLive();
     }
 
-    public LiveData<Boolean> getIsConnected() {
-        return repository.getIsConnected();
-    }
 
     public LiveData<HashMap> getDeviceDataHashMapLive() {
-        return repository.getDeviceDataHashMapLive();
+        return gattManager.getDeviceDataHashMapLive();
     }
 
 

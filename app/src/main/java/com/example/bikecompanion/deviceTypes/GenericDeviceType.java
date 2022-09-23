@@ -11,15 +11,13 @@ public class GenericDeviceType {
 
     public final static String DATA_TYPE_BYTE_ARRAY = "DATA_TYPE_BYTE_ARRAY";
     public final static String DATA_TYPE_STRING = "DATA_TYPE_STRING";
-
     public final static String DEVICE_TYPE = "Unknown";
 
     // Battery UUIDs
     public final static UUID UUID_SERVICE_BATTERY = UUID.fromString("0000180f-0000-1000-8000-00805f9b34fb");
     public final static UUID UUID_CHARACTERISTIC_BATTERY = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
     public final static String UUID_CHARACTERISTIC_BATTERY_STRING = "00002a19-0000-1000-8000-00805f9b34fb";
-
-    public final static String DATA_TYPE_BATTERY = "byte[]";
+    public final static String DATA_TYPE_BATTERY = "int";
 
     // Device Name UUIDs
     public final static UUID UUID_SERVICE_DEVICE_NAME = UUID.fromString("00001800-0000-1000-8000-00805f9b34fb");

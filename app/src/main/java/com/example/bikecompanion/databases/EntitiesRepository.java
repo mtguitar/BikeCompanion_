@@ -49,8 +49,8 @@ public class EntitiesRepository {
 
     private ConcurrentLinkedQueue<GattOperation> queue;
     private boolean operationRunning = false;
-    Handler handler;
-    private static final long OPERATION_TIMEOUT =1000;
+    private Handler handler;
+    private static final long OPERATION_TIMEOUT = 1000;
 
     private BleConnectionService bleConnectionService;
     private ConcurrentLinkedQueue operationQueue;
@@ -214,7 +214,6 @@ public class EntitiesRepository {
         }
     }
 
-
     //Devices
     private static class InsertDeviceAsyncTask extends android.os.AsyncTask<Device, Void, Void> {
         private EntitiesDao entitiesDao;
@@ -276,6 +275,7 @@ public class EntitiesRepository {
     /**
      * Queue
      */
+    /*
 
     private ConcurrentLinkedQueue getQueue(){
         if (queue == null){
@@ -337,9 +337,13 @@ public class EntitiesRepository {
         operation.execute();
     }
 
+     */
+
     /**
      * methods to interact with BleConnectionService
      */
+
+    /*
 
     public void connectDevice(String deviceMacAddress) {
         bleConnectionService.connectDevice(deviceMacAddress);
@@ -351,18 +355,9 @@ public class EntitiesRepository {
 
 
     public void readCharacteristic(String deviceMacAddress, UUID service, UUID characteristic) {
-        GattCharacteristicReadOperation gattCharacteristicReadOperation = new GattCharacteristicReadOperation(deviceMacAddress, service, characteristic, bleConnectionService);
-        //gattCharacteristicReadOperation.readCharacteristic(deviceMacAddress, service, characteristic, bleConnectionService);
-        addToQueue(gattCharacteristicReadOperation);
-
-
-    }
-    /*
-    public void readCharacteristic(String deviceMacAddress, UUID service, UUID characteristic) {
         bleConnectionService.readCharacteristic(deviceMacAddress, service, characteristic);
     }
 
-     */
 
     public void writeCharacteristic(String deviceMacAddress, UUID service, UUID characteristic, byte[] payload) {
         bleConnectionService.writeCharacteristic(deviceMacAddress, service, characteristic, payload);
@@ -396,6 +391,8 @@ public class EntitiesRepository {
         }
     };
 
+     */
+
     public void registerBroadcastReceiver(Context context) {
         //Set intent filters and register receiver to listen for updates
         createIntentFilter();
@@ -422,7 +419,7 @@ public class EntitiesRepository {
 
             operationRunning = false;
             Log.d(TAG, "Operation finished");
-            processQueue();
+            //processQueue();
             final String action = intent.getAction();
             Bundle extras = intent.getBundleExtra(Constants.EXTRA_DATA);
 

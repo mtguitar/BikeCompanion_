@@ -353,7 +353,6 @@ public class BleConnectionService extends LifecycleService {
                     servicesCounter = 0;
                     Log.w(TAG, "Service discovery failed");
                 }
-
             }
         }
 
@@ -377,7 +376,7 @@ public class BleConnectionService extends LifecycleService {
      * Broadcast updates
      */
 
-    // Broadcast updates to connection state changes
+    // Broadcast updates to conn ection state changes
     private void broadcastUpdateState(final String connectionState, BluetoothGatt gatt) {
         String action = Constants.ACTION_GATT_STATE_CHANGE;
         String gattMacAddress = gatt.getDevice().getAddress();
@@ -385,7 +384,6 @@ public class BleConnectionService extends LifecycleService {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.GATT_MAC_ADDRESS, gattMacAddress);
         bundle.putString(Constants.GATT_CONNECTION_STATE, connectionState);
-
 
         final Intent intent = new Intent(action);
         intent.putExtra(Constants.EXTRA_DATA, bundle);
@@ -398,7 +396,7 @@ public class BleConnectionService extends LifecycleService {
         String characteristicMacAddress = gatt.getDevice().getAddress();
         String characteristicUUID = (characteristic.getUuid()).toString();
         String characteristicValueString = characteristic.getStringValue(0);
-        int characteristicValueInt = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
+        int characteristicValueInt = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_SINT8, 0);
 
         Log.d(TAG, "Bundle: " + characteristicMacAddress + " " + characteristicUUID + " " + characteristicValueString + " " + characteristicValueInt);
 
