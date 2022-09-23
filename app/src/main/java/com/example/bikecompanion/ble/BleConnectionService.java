@@ -29,7 +29,6 @@ import java.util.UUID;
 
 public class BleConnectionService extends LifecycleService {
 
-
     public boolean isFirstRun = true;
     private final static String TAG = "FlareLog ConnectService";
 
@@ -50,29 +49,6 @@ public class BleConnectionService extends LifecycleService {
 
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
-/*
-        getBluetoothDeviceMap();
-
-        action = intent.getAction();
-        Log.d(TAG, "Received intent from fragment: " + action);
-
-        if (action.equals(ACTION_CONNECT_TO_DEVICE) && intent.hasExtra("deviceMacAddress")) {
-            deviceMacAddress = intent.getStringExtra("deviceMacAddress");
-            connectDevice(deviceMacAddress);
-            Log.d(TAG, "Received intent extra: " + deviceMacAddress);
-        }
-        if (action.equals(ACTION_DISCONNECT_DEVICE) && intent.hasExtra("deviceMacAddress")) {
-            deviceMacAddress = intent.getStringExtra("deviceMacAddress");
-            disconnectDevice(deviceMacAddress);
-            Log.d(TAG, "Received intent extra: " + deviceMacAddress);
-        }
-        if (action.contains(ACTION_READ_CHARACTERISTIC)) {
-
-            String characteristic = intent.getStringExtra(Constants.EXTRA_DATA);
-            Log.d(TAG, characteristic);
-        }
-
- */
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -119,6 +95,22 @@ public class BleConnectionService extends LifecycleService {
         Log.d(TAG, "Connecting . . .");
         return true;
     }
+
+    /**
+     * Discover services
+     */
+
+    public boolean discoverServices (String deviceMacAddress){
+        BluetoothGatt gatt = getBluetoothDeviceMap().get(deviceMacAddress);
+        if (gatt == null || bluetoothAdapter == null){
+            Log.w(TAG, "BluetoothAdapter or gatt not initialized. Gatt: " + gatt);
+            return false;
+        }
+        gatt.discoverServices();
+        Log.i(TAG, "Start service discovery: " + deviceMacAddress);
+        return true;
+    }
+
 
     /**
      * Disconnect from device
@@ -307,9 +299,6 @@ public class BleConnectionService extends LifecycleService {
 
                     getBluetoothDeviceMap().put(gattMacAddress, gatt);
                     Log.d(TAG, "Put in hashMap: " + gattMacAddress);
-
-                    gatt.discoverServices();
-                    Log.i(TAG, "Start service discovery " + gattMacAddress);
 
                 } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                     broadcastUpdateState(Constants.GATT_DISCONNECTED, gatt);
