@@ -365,7 +365,7 @@ public class BleConnectionService extends LifecycleService {
      * Broadcast updates
      */
 
-    // Broadcast updates to conn ection state changes
+    // Broadcast updates to connection state changes
     private void broadcastUpdateState(final String connectionState, BluetoothGatt gatt) {
         String action = Constants.ACTION_GATT_STATE_CHANGE;
         String gattMacAddress = gatt.getDevice().getAddress();

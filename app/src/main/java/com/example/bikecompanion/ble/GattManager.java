@@ -27,14 +27,14 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class GattManager {
+/**
+ * This class binds to BleConnectionService.
+ * It uses BleConnectionService to check connection, read, write, setNotify for devices in myDevices database.
+ * It receives info updates from BleConnectionService via a broadcastReceiver.
+ * MyDevicesFragment interacts with this repo through MyDevicesViewModel.
+ */
 
-    /**
-     * This class binds to BleConnectionService.
-     * It uses BleConnectionService to check connection, read, write, setNotify for devices in myDevices database.
-     * It receives info updates from BleConnectionService via a broadcastReceiver.
-     * MyDevicesFragment interacts with this repo through MyDevicesViewModel.
-     */
+public class GattManager {
 
     private final static String TAG = "FlareLog GattManager";
 
@@ -55,7 +55,6 @@ public class GattManager {
 
     private Context context;
 
-
     public GattManager(Application application) {
         context = application.getApplicationContext();
         registerBroadcastReceiver(context);
@@ -64,9 +63,15 @@ public class GattManager {
 
 
     /**
-     * Queue
+     * Operations Queue
+     * rapid ble reads/writes get lost, so this queue makes sure only one operation is processing at
+     * a time.  It does not execute the next operation until receiving a response from the broadcast
+     * receiver concerning the current operation or the operation times out.
+     * TODO: 1. make this a singledton
+     * TODO: 2. figure out a way to match each operation with its callback to ensure a new operation does not execute
+     * until all previous operations have finished or timed out
+     *
      */
-
 
     private void addToQueue(GattOperation operation){
         operationQueue.add(operation);
