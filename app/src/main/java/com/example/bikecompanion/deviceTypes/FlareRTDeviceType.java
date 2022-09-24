@@ -115,21 +115,18 @@ public class FlareRTDeviceType{
     public final static String NIGHT_BLINK_MODE_NAME = "Night Blink";
     public final static String OFF_MODE_NAME = "Off";
 
-    public HashMap<String, byte[]> lightModeHashMap;
 
-    public HashMap<String, byte[]> getLightModeHashMap(){
-        if (lightModeHashMap == null) {
-            lightModeHashMap = new HashMap<>();
-        }
-        lightModeHashMap.put(DAY_SOLID_MODE_NAME, DAY_SOLID_MODE_BYTE);
-        lightModeHashMap.put(DAY_BLINK_MODE_NAME, DAY_BLINK_MODE_BYTE);
-        lightModeHashMap.put(DAY_BLINK_MODE_2_NAME, DAY_BLINK_MODE_2_BYTE);
-        lightModeHashMap.put(NIGHT_SOLID_MODE_NAME, NIGHT_SOLID_MODE_BYTE);
-        lightModeHashMap.put(NIGHT_BLINK_MODE_NAME, NIGHT_BLINK_MODE_BYTE);
-        lightModeHashMap.put(OFF_MODE_NAME, OFF_MODE_BYTE);
+    public static HashMap<Integer, String> getLightModeHashMap(){
+        HashMap<Integer, String> lightModeHashMap= new HashMap<>();
+
+        lightModeHashMap.put(1, DAY_SOLID_MODE_NAME);
+        lightModeHashMap.put(7, DAY_BLINK_MODE_NAME);
+        lightModeHashMap.put(8, DAY_BLINK_MODE_2_NAME);
+        lightModeHashMap.put(5, NIGHT_SOLID_MODE_NAME);
+        lightModeHashMap.put(63, NIGHT_BLINK_MODE_NAME);
+        lightModeHashMap.put(0, OFF_MODE_NAME);
 
         return lightModeHashMap;
-
     }
 
 

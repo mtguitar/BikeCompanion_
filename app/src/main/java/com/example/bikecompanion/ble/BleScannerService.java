@@ -14,7 +14,6 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.ParcelUuid;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleService;
@@ -33,8 +32,6 @@ import java.util.List;
 
 @SuppressLint("MissingPermission")
 public class BleScannerService extends LifecycleService {
-
-    //TODO:  identify device using BluetoothDevice handle (getDevice()) rather than macAddress since macAddress can change
 
     public boolean isFirstRun = true;
     private final static String TAG = "FlareLog ScannerService";
@@ -140,7 +137,6 @@ public class BleScannerService extends LifecycleService {
         sendIntentToFragment(Constants.ACTION_BLE_SCANNING_STARTED);
     }
 
-
     //scanCallback object to receive scan results
     ScanCallback scanCallback = new ScanCallback() {
         @Override
@@ -153,8 +149,6 @@ public class BleScannerService extends LifecycleService {
                 deviceName = "Unknown";
             }
             addScanResults(deviceName, deviceMacAddress, deviceType);
-
-
         }
     };
 

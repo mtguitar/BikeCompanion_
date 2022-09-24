@@ -184,7 +184,7 @@ public class HomeFragment extends Fragment {
                 connectionState = connectionStateHashMap.get(gattMacAddress);
 
                 //If services discovered, calls read characteristic method
-                if (connectionState.equals(Constants.GATT_SERVICES_DISCOVERED)) {
+                if (connectionState.equals(Constants.CONNECTION_STATE_SERVICES_DISCOVERED)) {
 
                 }
 

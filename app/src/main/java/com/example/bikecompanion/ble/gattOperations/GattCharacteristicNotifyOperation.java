@@ -1,15 +1,17 @@
 package com.example.bikecompanion.ble.gattOperations;
 
 import com.example.bikecompanion.ble.BleConnectionService;
+import com.example.bikecompanion.constants.Constants;
 
 import java.util.UUID;
 
 public class GattCharacteristicNotifyOperation extends GattOperation{
-    String deviceMacAddress;
-    UUID service;
-    UUID characteristic;
-    boolean enabled;
-    BleConnectionService bleConnectionService;
+    private String deviceMacAddress;
+    private UUID service;
+    private UUID characteristic;
+    private boolean enabled;
+    private BleConnectionService bleConnectionService;
+    private String operationType = Constants.OPERATION_DESCRIPTOR_WRITE;
 
     public GattCharacteristicNotifyOperation(String deviceMacAddress, UUID service, UUID characteristic, boolean enabled, BleConnectionService bleConnectionService) {
         this.deviceMacAddress = deviceMacAddress;
@@ -29,4 +31,12 @@ public class GattCharacteristicNotifyOperation extends GattOperation{
     public boolean hasAvailableCompletionCallback() {
         return false;
     }
+
+    @Override
+    public String getOperationType(){
+        return operationType;
+    }
+
+
+
 }

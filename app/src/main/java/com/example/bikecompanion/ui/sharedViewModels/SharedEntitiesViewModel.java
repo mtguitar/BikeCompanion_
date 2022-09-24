@@ -7,16 +7,17 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.example.bikecompanion.ble.GattManager;
-import com.example.bikecompanion.databases.entities.Bike;
-import com.example.bikecompanion.databases.entities.Device;
 import com.example.bikecompanion.databases.EntitiesRepository;
+import com.example.bikecompanion.databases.entities.Bike;
 import com.example.bikecompanion.databases.entities.BikeDeviceCrossRef;
+import com.example.bikecompanion.databases.entities.Device;
 import com.example.bikecompanion.databases.relations.BikeWithDevices;
 import com.example.bikecompanion.databases.relations.DeviceWithBikes;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class SharedEntitiesViewModel extends AndroidViewModel {
 
@@ -176,6 +177,10 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
 
     public LiveData<HashMap> getDeviceDataHashMapLive() {
         return gattManager.getDeviceDataHashMapLive();
+    }
+
+    public LiveData<ConcurrentLinkedQueue> getCharacteristicQueueLive(){
+        return gattManager.getCharacteristicQueueLive();
     }
 
 

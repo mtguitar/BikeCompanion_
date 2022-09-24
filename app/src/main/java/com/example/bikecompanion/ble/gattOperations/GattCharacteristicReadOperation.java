@@ -3,14 +3,17 @@ package com.example.bikecompanion.ble.gattOperations;
 import android.util.Log;
 
 import com.example.bikecompanion.ble.BleConnectionService;
+import com.example.bikecompanion.constants.Constants;
 
 import java.util.UUID;
 
 public class GattCharacteristicReadOperation extends GattOperation{
-    String deviceMacAddress;
-    UUID service;
-    UUID characteristic;
-    BleConnectionService bleConnectionService;
+    private String deviceMacAddress;
+    private UUID service;
+    private UUID characteristic;
+    private BleConnectionService bleConnectionService;
+    public final String operationType = Constants.OPERATION_CHARACTERISTIC_READ;
+
 
     public GattCharacteristicReadOperation(String deviceMacAddress, UUID service, UUID characteristic, BleConnectionService bleConnectionService) {
         this.deviceMacAddress = deviceMacAddress;
@@ -37,6 +40,11 @@ public class GattCharacteristicReadOperation extends GattOperation{
     @Override
     public boolean hasAvailableCompletionCallback() {
         return true;
+    }
+
+    @Override
+    public String getOperationType(){
+        return operationType;
     }
 
 }
