@@ -61,7 +61,21 @@ public class GattManager {
 
     private Context context;
 
-    public GattManager(Application application) {
+    private static GattManager instance;
+
+    public static GattManager getInstance(Application application){
+        if (instance == null) {
+            synchronized (GattManager.class){
+                if (instance == null){
+                    instance = new GattManager(application);
+                }
+            }
+
+        }
+        return instance;
+    }
+
+    private GattManager(Application application) {
         context = application.getApplicationContext();
         registerBroadcastReceiver(context);
         operationQueue = new ConcurrentLinkedQueue<>();
@@ -73,7 +87,7 @@ public class GattManager {
      * rapid ble reads/writes get lost, so this queue makes sure only one operation is processing at
      * a time.  It does not execute the next operation until receiving a response from the broadcast
      * receiver concerning the current operation or the operation times out.
-     * TODO: 1. make this a singledton
+     * TODO: 1. make this a singledton?
      * until all previous operations have finished or timed out
      *
      */
@@ -235,23 +249,23 @@ public class GattManager {
                 connectionState = extras.getString(Constants.CONNECTION_STATE);
                 gattMacAddress = extras.getString(Constants.GATT_MAC_ADDRESS);
 
-                //If device is now connected, start operation to discover its services
-                if (connectionState.equals(Constants.CONNECTION_STATE_CONNECTED)) {
-                    //discoverServices(gattMacAddress);
-                }
-
                 //Update connectionStateHashMap
                 // Values associated with status and macAddress keys will be overwritten each time,i.e.
                 // there will only be one row for each at any given time.  This lets the fragment know
                 // which device's data was most recently updated and the status of the update.
                 // There can be many rows of macAddresses - this way we keep a running list of each device
                 // and its current connection state.
+                connectionStateHashMap = getConnectionStateHashMap();
+                //Checks to see if key value pair is already in HashMap
+                if (connectionStateHashMap.get(gattMacAddress) != null && connectionStateHashMap.get(gattMacAddress).equals(connectionState)){
+                    return;
+                }
                 getConnectionStateHashMap().put(Constants.GATT_STATUS, String.valueOf(gattStatus));
                 getConnectionStateHashMap().put(Constants.GATT_MAC_ADDRESS, gattMacAddress);
                 getConnectionStateHashMap().put(gattMacAddress, connectionState);
 
                 //put hashmap into MutableLiveData
-                Log.d(TAG, "connectionStateHashMapLive");
+                Log.d(TAG, "connectionStateHashMapLive: " + gattMacAddress + " " + connectionState);
                 getConnectionStateHashMapLive().postValue(getConnectionStateHashMap());
             }
             if (action.equals(Constants.ACTION_CHARACTERISTIC_CHANGE_BYTE)) {

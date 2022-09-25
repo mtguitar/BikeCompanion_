@@ -286,21 +286,33 @@ public class BleConnectionService extends LifecycleService {
             int operationType;
             int gattStatus;
             String connectionState;
+            Log.d(TAG, "hashmaplive: " + gatt.getDevice().getAddress() + " " + newState);
 
             Log.w(TAG, "New State: " + newState);
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 connectionCounter = 0;
                 gattStatus = Constants.GATT_SUCCESS;
-                if (newState == BluetoothProfile.STATE_CONNECTED) {
-                    connectionState = Constants.CONNECTION_STATE_CONNECTED;
-                    operationType = Constants.OPERATION_CONNECT_DEVICE;
-                } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                    connectionState = Constants.CONNECTION_STATE_DISCONNECTED;
-                    operationType = Constants.OPERATION_DISCONNECT_DEVICE;
-                } else {
-                    operationType = Constants.OPERATION_UNKNOWN;
-                    connectionState = Constants.CONNECTION_STATE_UNKNOWN;
-                }
+                switch (newState) {
+                    case (BluetoothProfile.STATE_CONNECTING):
+                        connectionState = Constants.CONNECTION_STATE_CONNECTING;
+                        operationType = Constants.OPERATION_CONNECT_DEVICE;
+                        break;
+                    case (BluetoothProfile.STATE_CONNECTED):
+                        connectionState = Constants.CONNECTION_STATE_CONNECTED;
+                        operationType = Constants.OPERATION_CONNECT_DEVICE;
+                        break;
+                    case (BluetoothProfile.STATE_DISCONNECTING):
+                        connectionState = Constants.CONNECTION_STATE_DISCONNECTING;
+                        operationType = Constants.OPERATION_DISCONNECT_DEVICE;
+                        break;
+                    case (BluetoothProfile.STATE_DISCONNECTED):
+                        connectionState = Constants.CONNECTION_STATE_DISCONNECTED;
+                        operationType = Constants.OPERATION_DISCONNECT_DEVICE;
+                        break;
+                    default:
+                        operationType = Constants.OPERATION_UNKNOWN;
+                        connectionState = Constants.CONNECTION_STATE_UNKNOWN;
+                    }
 
                 broadcastUpdateState(operationType, gatt, connectionState, gattStatus);
                 Log.d(TAG, "New State: " + gattMacAddress + " " + newState);
@@ -335,6 +347,8 @@ public class BleConnectionService extends LifecycleService {
             String connectionState;
             int operationType;
             int gattStatus;
+
+            Log.d(TAG, "hashmaplive: " + gatt.getDevice().getAddress() + "Services discovered" );
 
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 connectionState = Constants.CONNECTION_STATE_SERVICES_DISCOVERED;
@@ -410,7 +424,7 @@ public class BleConnectionService extends LifecycleService {
      * Broadcast updates
      */
 
-    // Broadcast updates to connection state changes
+// Broadcast updates to connection state changes
     private void broadcastUpdateState(int operationType, BluetoothGatt gatt, String connectionState, int status) {
         String action = Constants.ACTION_GATT_STATE_CHANGE;
         String gattMacAddress = gatt.getDevice().getAddress();
@@ -464,6 +478,7 @@ public class BleConnectionService extends LifecycleService {
         final Intent intent = new Intent(action);
         intent.putExtra(Constants.EXTRA_DATA, characteristicBundle);
         sendBroadcast(intent);
+
     }
 
 
@@ -471,11 +486,12 @@ public class BleConnectionService extends LifecycleService {
      * Binder
      */
 
-    //Allows fragments to bind to this service
+//Allows fragments to bind to this service
     public class LocalBinder extends Binder {
         public BleConnectionService getService() {
             return BleConnectionService.this;
         }
+
     }
 
     private final IBinder binder = new LocalBinder();

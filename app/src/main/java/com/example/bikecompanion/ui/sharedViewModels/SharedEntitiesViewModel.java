@@ -35,10 +35,9 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
     public SharedEntitiesViewModel(@NonNull Application application) {
         super(application);
         repository = new EntitiesRepository(application);
-        gattManager = new GattManager(application);
+        gattManager = GattManager.getInstance(application);
         allDevices = repository.getAllDevices();
         allBikes = repository.getAllBikes();
-
     }
 
     public void insert(Bike bike) {
@@ -103,7 +102,6 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
     /**
      * BleConnection methods
      */
-
 
     public void bindService() {
         gattManager.bindService();

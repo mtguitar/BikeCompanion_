@@ -63,14 +63,19 @@ public class Constants {
 
     //Gatt connection states
     public static final String CONNECTION_STATE = "CONNECTION_STATE";
-    public static final int CONNECTION_STATE_CONNECTED_INT = 0;
-    public static final int CONNECTION_STATE_DISCONNECTED_INT = 1;
-    public static final int CONNECTION_STATE_SERVICES_DISCOVERED_INT = 2;
-    public static final int CONNECTION_STATE_SERVICES_UNKNOWN_INT = 3;
+
+    public static final int CONNECTION_STATE_DISCONNECTED_INT = 0;
+    public static final int CONNECTION_STATE_CONNECTING_INT = 1;
+    public static final int CONNECTION_STATE_CONNECTED_INT = 2;
+    public static final int CONNECTION_STATE_DISCONNECTING_INT = 3;
+    public static final int CONNECTION_STATE_SERVICES_DISCOVERED_INT = 4;
+    public static final int CONNECTION_STATE_SERVICES_UNKNOWN_INT = 5;
     public static final int CONNECTION_STATE_UNKNOWN_INT = 9;
 
-    public static final String CONNECTION_STATE_CONNECTED = String.valueOf(CONNECTION_STATE_CONNECTED_INT);
     public static final String CONNECTION_STATE_DISCONNECTED = String.valueOf(CONNECTION_STATE_DISCONNECTED_INT);
+    public static final String CONNECTION_STATE_CONNECTING = String.valueOf(CONNECTION_STATE_CONNECTING_INT);
+    public static final String CONNECTION_STATE_CONNECTED = String.valueOf(CONNECTION_STATE_CONNECTED_INT);
+    public static final String CONNECTION_STATE_DISCONNECTING = String.valueOf(CONNECTION_STATE_DISCONNECTING_INT);
     public static final String CONNECTION_STATE_SERVICES_DISCOVERED = String.valueOf(CONNECTION_STATE_SERVICES_DISCOVERED_INT);
     public static final String CONNECTION_STATE_SERVICES_UNKNOWN = String.valueOf(CONNECTION_STATE_SERVICES_UNKNOWN_INT);
     public static final String CONNECTION_STATE_UNKNOWN = String.valueOf(CONNECTION_STATE_UNKNOWN_INT);

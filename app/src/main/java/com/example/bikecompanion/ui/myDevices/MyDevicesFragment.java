@@ -108,21 +108,22 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "On pause");
         if (itemsOpen >= 1) {
             lastItemOpen.setVisibility(View.GONE);
             lastArrowOpen.setRotation(0);
             itemsOpen--;
             hideRows();
-
-            //Loop through devices in hashmap and disconnect any device that is connected
-            for (Map.Entry<String, String> entry : connectionStateHashMap.entrySet()) {
-                String macAddress = entry.getKey();
-                String connectionState = entry.getValue();
-                if (connectionState.equals(Constants.CONNECTION_STATE_CONNECTED)) {
-                    sharedEntitiesViewModel.disconnectDevice(macAddress);
-                }
+        }
+        //Loop through devices in hashmap and disconnect any device that is connected
+        for (Map.Entry<String, String> entry : connectionStateHashMap.entrySet()) {
+            String macAddress = entry.getKey();
+            String connectionState = entry.getValue();
+            if (!connectionState.equals(Constants.CONNECTION_STATE_DISCONNECTED)) {
+                sharedEntitiesViewModel.disconnectDevice(macAddress);
+                Log.d(TAG, "Disconnect device: " + macAddress);
             }
         }
     }
@@ -152,7 +153,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         sharedEntitiesViewModel.getAllDevices().observe(getViewLifecycleOwner(), new Observer<List<Device>>() {
             @Override
             public void onChanged(List<Device> devices) {
-                Log.d(TAG, "Received devices live data");
+                Log.d(TAG, "Received devices live data from db");
                 deviceAdapter.setDevices(devices);
             }
         });
@@ -165,12 +166,13 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
                 String gattMacAddress = connectionStateHashMap.get(Constants.GATT_MAC_ADDRESS);
                 String connectionState = connectionStateHashMap.get(gattMacAddress);
                 String gattStatus = connectionStateHashMap.get(Constants.GATT_STATUS);
-                Log.d(TAG, "Received ConnectionStateHashMapLive connectionState: " + connectionState);
+                Log.d(TAG, "Received ConnectionStateHashMapLive connectionState: " + gattMacAddress + " " + connectionState);
                 updateConnectionState(connectionState);
                 if (gattStatus.equals(Constants.GATT_ERROR)){
                     return;
                 }
                 if (connectionState.equals(Constants.CONNECTION_STATE_CONNECTED)){
+                    Log.d(TAG, "Discover services: " + gattMacAddress);
                     sharedEntitiesViewModel.discoverServices(gattMacAddress);
                 }
                 else if (connectionState.equals(Constants.CONNECTION_STATE_SERVICES_DISCOVERED)) {
@@ -250,20 +252,20 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
                 }
                 String lastVisibleDeviceConnectionState = connectionStateHashMap.get(lastVisibleDevice);
                 if (lastVisibleDeviceConnectionState != null &&
-                        lastVisibleDeviceConnectionState.equals(Constants.CONNECTION_STATE_CONNECTED)) {
+                        !lastVisibleDeviceConnectionState.equals(Constants.CONNECTION_STATE_DISCONNECTED)) {
                     sharedEntitiesViewModel.disconnectDevice(lastVisibleDevice);
                     Log.d(TAG, "Item clicked, trying to disconnect: " + lastVisibleDevice);
                 }
             }
             //If no recyclerView items are currently expanded
             if (itemsOpen == 0) {
-
                 constraintLayoutDeviceInfo.setVisibility(View.VISIBLE);
                 hideRows();
                 imageViewArrow.setRotation(180);
 
                 visibleDeviceMacAddress = currentDevice.getDeviceMacAddress();
                 sharedEntitiesViewModel.connectDevice(visibleDeviceMacAddress);
+                Log.d(TAG, "Connect device: " + visibleDeviceMacAddress);
 
                 buttonConnectDisconnectDevice.setText(Constants.BUTTON_TEXT_CONNECTING);
                 buttonConnectDisconnectDevice.setEnabled(false);
@@ -286,9 +288,10 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
                 return;
             }
             String visibleDeviceConnectionState = connectionStateHashMap.get(visibleDeviceMacAddress);
-            if (visibleDeviceConnectionState.equals(Constants.CONNECTION_STATE_CONNECTED)) {
+            if (!visibleDeviceConnectionState.equals(Constants.CONNECTION_STATE_DISCONNECTED)) {
                 Log.d(TAG, "Item clicked, trying to disconnect: " + visibleDeviceMacAddress);
                 sharedEntitiesViewModel.disconnectDevice(visibleDeviceMacAddress);
+                Log.d(TAG, "Disconnect device: " + visibleDeviceMacAddress);
             }
         }
     }
@@ -300,9 +303,13 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         //Disconnect device if it's connected
         if (currentDeviceMacAddress.equals(connectedDeviceMacAddress)){
             sharedEntitiesViewModel.disconnectDevice(currentDeviceMacAddress);
+            Log.d(TAG, "Disconnect device: " + currentDeviceMacAddress);
+
         }
         //Delete device from db
         sharedEntitiesViewModel.delete(currentDevice);
+        Log.d(TAG, "Delete device: " + currentDevice);
+
         //When a device is removed, the next device in the list is automatically inflated, so this deflates it
         constraintLayoutDeviceInfo.setVisibility(View.GONE);
     }
@@ -353,6 +360,8 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
 
     private void requestDeviceCharacteristic() {
         RequestDeviceCharacteristic.updateCharacteristic(sharedEntitiesViewModel, currentDevice);
+        Log.d(TAG, "Request device characteristics: " + currentDevice);
+
     }
 
     private void updateCharacteristicViews(String macAddress, String characteristicUUIDString, byte[] characteristicValue) {
