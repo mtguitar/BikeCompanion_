@@ -113,6 +113,10 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
         gattManager.connectDevice(deviceMacAddress);
     }
 
+    public void discoverServices(String deviceMacAddress) {
+        gattManager.discoverServices(deviceMacAddress);
+    }
+
     public void disconnectDevice(String deviceMacAddress) {
         gattManager.disconnectDevice(deviceMacAddress);
     }
@@ -129,41 +133,7 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
 
     public void setCharacteristicNotification(String deviceMacAddress, UUID serviceUUID, UUID characteristicUUID, boolean enabled) {
         gattManager.setCharacteristicNotification(deviceMacAddress, serviceUUID, characteristicUUID, enabled);
-
     }
-
-
-    /*
-
-
-    public void bindService() {
-        repository.bindService();
-    }
-
-    public void connectDevice(String deviceMacAddress) {
-        repository.connectDevice(deviceMacAddress);
-    }
-
-    public void disconnectDevice(String deviceMacAddress) {
-        repository.disconnectDevice(deviceMacAddress);
-    }
-
-    public void readCharacteristics(String deviceMacAddress, UUID serviceUUID, UUID characteristicUUID) {
-        repository.readCharacteristic(deviceMacAddress, serviceUUID, characteristicUUID);
-
-    }
-
-    public void writeCharacteristics(String deviceMacAddress, UUID serviceUUID, UUID characteristicUUID, byte[] payload) {
-        repository.writeCharacteristic(deviceMacAddress, serviceUUID, characteristicUUID, payload);
-
-    }
-
-    public void setCharacteristicNotification(String deviceMacAddress, UUID serviceUUID, UUID characteristicUUID, boolean enabled) {
-        repository.setCharacteristicNotification(deviceMacAddress, serviceUUID, characteristicUUID, enabled);
-
-    }
-
-     */
 
 
     /**
@@ -173,7 +143,6 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
     public LiveData<HashMap> getConnectionStateHashMapLive() {
         return gattManager.getConnectionStateHashMapLive();
     }
-
 
 
     public LiveData<ConcurrentLinkedQueue> getCharacteristicQueueLive(){

@@ -42,6 +42,7 @@ public class GattManager {
     private ConcurrentLinkedQueue<GattOperation> operationQueue;
     private GattOperation pendingOperation;
 
+
     private ConcurrentLinkedQueue<CharacteristicData> characteristicQueue;
 
     private Handler handler;
@@ -236,7 +237,7 @@ public class GattManager {
 
                 //If device is now connected, start operation to discover its services
                 if (connectionState.equals(Constants.CONNECTION_STATE_CONNECTED)) {
-                    discoverServices(gattMacAddress);
+                    //discoverServices(gattMacAddress);
                 }
 
                 //Update connectionStateHashMap
@@ -250,6 +251,7 @@ public class GattManager {
                 getConnectionStateHashMap().put(gattMacAddress, connectionState);
 
                 //put hashmap into MutableLiveData
+                Log.d(TAG, "connectionStateHashMapLive");
                 getConnectionStateHashMapLive().postValue(getConnectionStateHashMap());
             }
             if (action.equals(Constants.ACTION_CHARACTERISTIC_CHANGE_BYTE)) {
@@ -296,6 +298,7 @@ public class GattManager {
         }
         return characteristicQueueLive;
     }
+
 
 
 

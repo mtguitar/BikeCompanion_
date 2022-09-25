@@ -27,8 +27,8 @@ import com.example.bikecompanion.databases.entities.Device;
 import com.example.bikecompanion.deviceTypes.FlareRTDeviceType;
 import com.example.bikecompanion.deviceTypes.GenericDeviceType;
 import com.example.bikecompanion.deviceTypes.SpeedCadenceDeviceType;
-import com.example.bikecompanion.sharedClasses.Characteristic;
 import com.example.bikecompanion.sharedClasses.CharacteristicData;
+import com.example.bikecompanion.sharedClasses.RequestDeviceCharacteristic;
 import com.example.bikecompanion.ui.sharedViewModels.SharedEntitiesViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -37,14 +37,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class MyDevicesFragment extends Fragment implements MyDevicesListenerInterface {
 
     private final static String TAG = "FlareLog MyDevicesFrag";
 
-    private boolean boundToService = false;
+    private View view;
+    private MyDevicesAdapter deviceAdapter;
 
     private int itemsOpen = 0;
     private View lastItemOpen;
@@ -54,28 +54,24 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     private String visibleDeviceMacAddress;
 
     private SharedEntitiesViewModel sharedEntitiesViewModel;
-    private List<Device> devices;
     private View constraintLayoutDeviceInfo;
 
-    private String gattMacAddress;
-    private String connectionState;
+    //private String connectionState;
+    private Device currentDevice;
     private HashMap<String, String> connectionStateHashMap;
-    private String characteristicUUID;
-    private String characteristicValueString;
-    private String characteristicValueInt;
 
+    private TextView textViewDeviceName;
+    private TextView textViewMacAddress;
     private TextView textViewDeviceBattery;
     private TextView textViewDeviceModel;
     private TextView textViewDeviceMode;
     private TextView textViewDeviceManufacturer;
-    private Button buttonRemoveDevice;
-    private Button buttonConnectDisconnectDevice;
-    private TextView textViewDeviceState;
-    private TextView textViewDeviceName;
-    private TextView textViewMacAddress;
-    private TextView textViewDeviceTest;
     private TextView textViewDeviceLocation;
     private TextView textViewDeviceFeature;
+    private TextView textViewDeviceState;
+
+    private Button buttonRemoveDevice;
+    private Button buttonConnectDisconnectDevice;
 
     private ImageView imageViewArrow;
 
@@ -91,16 +87,10 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
 
     private ArrayList<View> rowList;
 
-    private Device currentDevice;
-
-    private View view;
-    private MyDevicesAdapter deviceAdapter;
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         sharedEntitiesViewModel = new ViewModelProvider(this).get(SharedEntitiesViewModel.class);
         sharedEntitiesViewModel.bindService();
     }
@@ -110,9 +100,6 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
                              @Nullable Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment_my_devices, container, false);
-
-        textViewDeviceTest = view.findViewById(R.id.text_view_devices_test);
-
         initFAB();
         initRecyclerViewer();
         initObservers();
@@ -127,9 +114,9 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             lastItemOpen.setVisibility(View.GONE);
             lastArrowOpen.setRotation(0);
             itemsOpen--;
-            clearTextViews();
+            hideRows();
 
-            //Loop through devices in hashmap and disconnect any that is connected
+            //Loop through devices in hashmap and disconnect any device that is connected
             for (Map.Entry<String, String> entry : connectionStateHashMap.entrySet()) {
                 String macAddress = entry.getKey();
                 String connectionState = entry.getValue();
@@ -174,20 +161,25 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         sharedEntitiesViewModel.getConnectionStateHashMapLive().observe(getActivity(), new Observer<HashMap>() {
             @Override
             public void onChanged(HashMap connectionStateHashMapArg) {
-                Log.d(TAG, "Received ConnectionStateHashMapLive");
                 connectionStateHashMap = connectionStateHashMapArg;
-                gattMacAddress = connectionStateHashMap.get(Constants.GATT_MAC_ADDRESS);
-                connectionState = connectionStateHashMap.get(gattMacAddress);
+                String gattMacAddress = connectionStateHashMap.get(Constants.GATT_MAC_ADDRESS);
+                String connectionState = connectionStateHashMap.get(gattMacAddress);
+                String gattStatus = connectionStateHashMap.get(Constants.GATT_STATUS);
                 Log.d(TAG, "Received ConnectionStateHashMapLive connectionState: " + connectionState);
-
-                updateConnectionState();
-                if (connectionState.equals(Constants.CONNECTION_STATE_SERVICES_DISCOVERED)) {
-                    readCharacteristics();
-                    Log.d(TAG, "Reading characteristics");
+                updateConnectionState(connectionState);
+                if (gattStatus.equals(Constants.GATT_ERROR)){
+                    return;
+                }
+                if (connectionState.equals(Constants.CONNECTION_STATE_CONNECTED)){
+                    sharedEntitiesViewModel.discoverServices(gattMacAddress);
+                }
+                else if (connectionState.equals(Constants.CONNECTION_STATE_SERVICES_DISCOVERED)) {
+                    requestDeviceCharacteristic();
                 }
             }
         });
 
+        //Queue of characteristic objects.  A new object is added to the queue everytime there is a change to a characteristic
         sharedEntitiesViewModel.getCharacteristicQueueLive().observe(getActivity(), new Observer<ConcurrentLinkedQueue>() {
             @Override
             public void onChanged(ConcurrentLinkedQueue concurrentLinkedQueue) {
@@ -200,13 +192,14 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
                 String characteristicUUID = characteristicData.getCharacteristicUUID();
                 byte[] characteristicValueByte = characteristicData.getCharacteristicValue();
 
-                updateCharacteristics(gattMacAddress, characteristicUUID, characteristicValueByte);
+                updateCharacteristicViews(gattMacAddress, characteristicUUID, characteristicValueByte);
             }
         });
 
     }
 
 
+    //On click listener for clicking on an "device" item in the recyclerView
     @Override
     public void onItemClick(int position, View itemView, List<Device> devices) {
         currentDevice = devices.get(position);
@@ -223,6 +216,10 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         textViewDeviceState = itemView.findViewById(R.id.text_view_device_state);
         textViewDeviceLocation = itemView.findViewById(R.id.text_view_CSC_location);
         textViewDeviceFeature = itemView.findViewById(R.id.text_view_CSC_mode);
+        buttonRemoveDevice = itemView.findViewById(R.id.button_device_remove);
+        buttonConnectDisconnectDevice = itemView.findViewById(R.id.button_device_connect);
+        imageViewArrow = itemView.findViewById(R.id.image_view_arrow);
+        constraintLayoutDeviceInfo = itemView.findViewById(R.id.constraint_layout_device_info);
 
         rowList = new ArrayList<>();
         Collections.addAll(rowList,
@@ -235,24 +232,22 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
                 rowFeature = itemView.findViewById(R.id.row_CSC_mode)
         );
 
-        clearTextViews();
 
-        buttonRemoveDevice = itemView.findViewById(R.id.button_device_remove);
-        buttonConnectDisconnectDevice = itemView.findViewById(R.id.button_device_connect);
-        imageViewArrow = itemView.findViewById(R.id.image_view_arrow);
-
-        constraintLayoutDeviceInfo = itemView.findViewById(R.id.constraint_layout_device_info);
 
         //if the clicked recyclerView item is not currently expanded
         if (constraintLayoutDeviceInfo.getVisibility() == View.GONE) {
-            //If one or more recyclerView items are already expanded
+            //If another recyclerView items is already expanded
             if (itemsOpen >= 1) {
+                //deflate the item, rotate the arrow, hide its rows, subtract 1 from itemsOpen
                 lastItemOpen.setVisibility(View.GONE);
                 lastArrowOpen.setRotation(0);
+                //hideRows();
                 itemsOpen--;
-                clearTextViews();
 
                 //Disconnect the last visible device if currently connected
+                if (connectionStateHashMap == null){
+                    return;
+                }
                 String lastVisibleDeviceConnectionState = connectionStateHashMap.get(lastVisibleDevice);
                 if (lastVisibleDeviceConnectionState != null &&
                         lastVisibleDeviceConnectionState.equals(Constants.CONNECTION_STATE_CONNECTED)) {
@@ -262,8 +257,9 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             }
             //If no recyclerView items are currently expanded
             if (itemsOpen == 0) {
+
                 constraintLayoutDeviceInfo.setVisibility(View.VISIBLE);
-                clearTextViews();
+                hideRows();
                 imageViewArrow.setRotation(180);
 
                 visibleDeviceMacAddress = currentDevice.getDeviceMacAddress();
@@ -278,16 +274,17 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
                 itemsOpen++;
             }
         }
-        //If the clicked recyclerView item is already expanded
+        //If the clicked recyclerView item is already expanded -> deflate view, rotate arrow, hide old rows
         else {
-            //Deflate the item
+            //Deflate the item, change the arrow rotation,
             constraintLayoutDeviceInfo.setVisibility(View.GONE);
-            //Change the arrow rotation
             imageViewArrow.setRotation(0);
-            //clear the item's textViews so they don't show up next time it's expanded
-            clearTextViews();
+            hideRows();
 
             //Disconnect the visible device if currently connected
+            if (connectionStateHashMap == null || visibleDeviceMacAddress == null || connectionStateHashMap.get(visibleDeviceMacAddress) == null){
+                return;
+            }
             String visibleDeviceConnectionState = connectionStateHashMap.get(visibleDeviceMacAddress);
             if (visibleDeviceConnectionState.equals(Constants.CONNECTION_STATE_CONNECTED)) {
                 Log.d(TAG, "Item clicked, trying to disconnect: " + visibleDeviceMacAddress);
@@ -298,10 +295,15 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
 
     @Override
     public void onButtonClickRemoveDevice(int position, List<Device> devices) {
-        sharedEntitiesViewModel.disconnectDevice(connectedDeviceMacAddress);
         Device currentDevice = devices.get(position);
+        String currentDeviceMacAddress = currentDevice.getDeviceMacAddress();
+        //Disconnect device if it's connected
+        if (currentDeviceMacAddress.equals(connectedDeviceMacAddress)){
+            sharedEntitiesViewModel.disconnectDevice(currentDeviceMacAddress);
+        }
+        //Delete device from db
         sharedEntitiesViewModel.delete(currentDevice);
-
+        //When a device is removed, the next device in the list is automatically inflated, so this deflates it
         constraintLayoutDeviceInfo.setVisibility(View.GONE);
     }
 
@@ -322,11 +324,11 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             buttonConnectDisconnectDevice.setEnabled(false);
             Log.d(TAG, "Button Clicked, disconnecting: " + deviceMacAddress);
         }
-
-        clearTextViews();
+        hideRows();
     }
 
-    private void updateConnectionState() {
+    private void updateConnectionState(String connectionState) {
+        String gattMacAddress = currentDevice.getDeviceMacAddress();
         //displays connection state in textView
         if (textViewDeviceState != null && gattMacAddress.contentEquals(textViewMacAddress.getText())) {
             textViewDeviceState.setText(connectionState);
@@ -345,32 +347,15 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
                 buttonConnectDisconnectDevice.setEnabled(true);
                 buttonConnectDisconnectDevice.setText("Connect");
             }
-            connectedDeviceMacAddress = "";
+            connectedDeviceMacAddress = null;
         }
     }
 
-    private void readCharacteristics() {
-        ArrayList<Characteristic> characteristicList = GenericDeviceType.getCharacteristicList();
-        if (currentDevice.getDeviceType().equals(FlareRTDeviceType.DEVICE_TYPE)) {
-            characteristicList.addAll(FlareRTDeviceType.getCharacteristicList());
-        }
-        if (currentDevice.getDeviceType().equals(SpeedCadenceDeviceType.DEVICE_TYPE)) {
-            characteristicList.addAll(SpeedCadenceDeviceType.getCharacteristicList());
-        }
-        int size = characteristicList.size();
-        for (int i = 0; i < size; i++) {
-            UUID serviceUUID = characteristicList.get(i).getServiceUUID();
-            UUID characteristicUUID = characteristicList.get(i).getCharacteristicUUID();
-            if (characteristicList.get(i).isReadable()) {
-                sharedEntitiesViewModel.readCharacteristics(gattMacAddress, serviceUUID, characteristicUUID);
-            }
-            if (characteristicList.get(i).isNotify()) {
-                sharedEntitiesViewModel.setCharacteristicNotification(gattMacAddress, serviceUUID, characteristicUUID, true);
-            }
-        }
+    private void requestDeviceCharacteristic() {
+        RequestDeviceCharacteristic.updateCharacteristic(sharedEntitiesViewModel, currentDevice);
     }
 
-    private void updateCharacteristics(String macAddress, String characteristicUUIDString, byte[] characteristicValue) {
+    private void updateCharacteristicViews(String macAddress, String characteristicUUIDString, byte[] characteristicValue) {
         if (!macAddress.equals(visibleDeviceMacAddress)) {
             Log.d(TAG, "Received info for different device");
             return;
@@ -415,72 +400,11 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         }
     }
 
-
-    /*
-
-    private void updateCharacteristics(String macAddress, String charUuidString, String characteristicValueString, String charValueInt) {
-        if (!macAddress.equals(visibleDeviceMacAddress)) {
-            Log.d(TAG, "Received info for different device");
-            return;
-        }
-        switch (charUuidString) {
-            case (GenericDeviceType.UUID_CHARACTERISTIC_BATTERY_STRING):
-                textViewDeviceBattery.setText(charValueInt);
-                rowBattery.setVisibility(View.VISIBLE);
-                Log.d(TAG, "Set Battery");
-                break;
-            case (GenericDeviceType.UUID_CHARACTERISTIC_DEVICE_MANUFACTURER_STRING):
-                textViewDeviceManufacturer.setText(characteristicValueString);
-                rowManufacturer.setVisibility(View.VISIBLE);
-                Log.d(TAG, "Set Manufacturer");
-                break;
-            case (GenericDeviceType.UUID_CHARACTERISTIC_DEVICE_MODEL_STRING):
-                textViewDeviceModel.setText(characteristicValueString);
-                rowModel.setVisibility(View.VISIBLE);
-                Log.d(TAG, "Set Model");
-                break;
-            case (FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE_STRING):
-                String lightMode = convertLightMode(charValueInt);
-                textViewDeviceMode.setText(lightMode);
-                rowMode.setVisibility(View.VISIBLE);
-                Log.d(TAG, "Set Light Mode");
-                break;
-        }
-    }
-
-     */
-
-    private void clearTextViews() {
+    private void hideRows() {
         int size = rowList.size();
         for (int i = 0; i < size; i++) {
             rowList.get(i).setVisibility(View.GONE);
         }
     }
 
-    String convertLightMode(String characteristicValueInt) {
-        String lightModeString;
-        switch (characteristicValueInt) {
-            case (FlareRTDeviceType.DAY_SOLID_MODE_INT):
-                lightModeString = FlareRTDeviceType.DAY_SOLID_MODE_NAME;
-                break;
-            case (FlareRTDeviceType.DAY_BLINK_MODE_INT):
-                lightModeString = FlareRTDeviceType.DAY_BLINK_MODE_NAME;
-                break;
-            case (FlareRTDeviceType.DAY_BLINK_MODE_2_INT):
-                lightModeString = FlareRTDeviceType.DAY_BLINK_MODE_2_NAME;
-                break;
-            case (FlareRTDeviceType.NIGHT_SOLID_MODE_INT):
-                lightModeString = FlareRTDeviceType.NIGHT_SOLID_MODE_NAME;
-                break;
-            case (FlareRTDeviceType.NIGHT_BLINK_MODE_INT):
-                lightModeString = FlareRTDeviceType.NIGHT_BLINK_MODE_NAME;
-                break;
-            case (FlareRTDeviceType.OFF_MODE_INT):
-                lightModeString = FlareRTDeviceType.OFF_MODE_NAME;
-                break;
-            default:
-                lightModeString = "Unknown";
-        }
-        return lightModeString;
-    }
 }
