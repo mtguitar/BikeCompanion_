@@ -33,7 +33,6 @@ public class Constants {
             "com.example.bikeCompanion.ACTION_CHARACTERISTIC_CHANGE";
     public static final String ACTION_GATT_ERROR =
             "com.example.bikeCompanion.ACTION_GATT_ERROR";
-
     public final static String EXTRA_DATA =
             "com.example.bikeCompanion.EXTRA_DATA";
 
@@ -46,28 +45,42 @@ public class Constants {
     public static final String GATT_OPERATION_TYPE = "GATT_OPERATION_TYPE";
     public static final String DESCRIPTOR_UUID = "DESCRIPTOR_UUID";
 
-    //Gatt operations
-    public static final String OPERATION_CHARACTERISTIC_CHANGED = "OPERATION_CHARACTERISTIC_CHANGED";
-    public static final String OPERATION_CHARACTERISTIC_READ = "OPERATION_CHARACTERISTIC_READ";
-    public static final String OPERATION_CHARACTERISTIC_WRITE = "OPERATION_CHARACTERISTIC_WRITE";
-    public static final String OPERATION_DESCRIPTOR_WRITE = "OPERATION_DESCRIPTOR_WRITE";
-    public static final String OPERATION_CONNECT_DEVICE = "OPERATION_CONNECT_DEVICE";
-    public static final String OPERATION_DISCONNECT_DEVICE = "OPERATION_DISCONNECT_DEVICE";
-    public static final String OPERATION_DISCOVER_SERVICES = "OPERATION_DISCOVER_SERVICES";
-    public static final String CONNECTION_SUCCESS = "CONNECTION_SUCCESS";
-    public static final String CONNECTION_ERROR = "CONNECTION_ERROR";
+    //Gatt operation types
+    public static final int OPERATION_CONNECT_DEVICE = 0;
+    public static final int OPERATION_DISCONNECT_DEVICE = 1;
+    public static final int OPERATION_DISCOVER_SERVICES = 2;
+
+    public static final int OPERATION_CHARACTERISTIC_CHANGED = 3;
+    public static final int OPERATION_CHARACTERISTIC_READ = 4;
+    public static final int OPERATION_CHARACTERISTIC_WRITE = 5;
+    public static final int OPERATION_DESCRIPTOR_WRITE = 6;
+    public static final int OPERATION_UNKNOWN = 9;
+
+    //Gatt status
     public static final String GATT_STATUS = "GATT_STATUS";
+    public static final int GATT_SUCCESS = 0;
+    public static final int GATT_ERROR = 1;
 
     //Gatt connection states
-    public final static String CONNECTION_STATE_CONNECTED = "Connected";
-    public final static String CONNECTION_STATE_DISCONNECTED = "Disconnected";
-    public static final String CONNECTION_STATE_SERVICES_DISCOVERED = "Ready to Read/Write";
     public static final String CONNECTION_STATE = "CONNECTION_STATE";
+    public static final int CONNECTION_STATE_CONNECTED_INT = 0;
+    public static final int CONNECTION_STATE_DISCONNECTED_INT = 1;
+    public static final int CONNECTION_STATE_SERVICES_DISCOVERED_INT = 2;
+    public static final int CONNECTION_STATE_SERVICES_UNKNOWN_INT = 3;
+    public static final int CONNECTION_STATE_UNKNOWN_INT = 9;
+
+    public static final String CONNECTION_STATE_CONNECTED = String.valueOf(CONNECTION_STATE_CONNECTED_INT);
+    public static final String CONNECTION_STATE_DISCONNECTED = String.valueOf(CONNECTION_STATE_DISCONNECTED_INT);
+    public static final String CONNECTION_STATE_SERVICES_DISCOVERED = String.valueOf(CONNECTION_STATE_SERVICES_DISCOVERED_INT);
+    public static final String CONNECTION_STATE_SERVICES_UNKNOWN = String.valueOf(CONNECTION_STATE_SERVICES_UNKNOWN_INT);
+    public static final String CONNECTION_STATE_UNKNOWN = String.valueOf(CONNECTION_STATE_UNKNOWN_INT);
+
 
     //Device types
     public static final CharSequence DEVICE_TYPE_LIGHT = "light";
     public static final CharSequence DEVICE_TYPE_SPEED = "speed";
 
+    //CCCD UUID - used for subscribing to notifications
     public static final UUID CCCD = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
     //Button text
@@ -75,7 +88,14 @@ public class Constants {
     public static final String BUTTON_TEXT_CONNECTING = "Connecting";
 
 
-
+    //Table row formatting
+    public static final int TEXT_VIEW_NAME = 0;
+    public static final int TEXT_VIEW_VALUE = 1;
+    public static final String BATTERY = "Battery";
+    public static final String MANUFACTURER = "Manufacturer";
+    public static final String MODEL = "Model";
+    public static final String LIGHT_MODE = "Light Mode";
+    public static final String UNKNOWN = "Unknown";
 }
 
 

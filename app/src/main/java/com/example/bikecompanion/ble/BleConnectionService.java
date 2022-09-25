@@ -35,13 +35,7 @@ public class BleConnectionService extends LifecycleService {
     //connection vars
     private BluetoothManager bluetoothManager;
     private BluetoothAdapter bluetoothAdapter;
-    private BluetoothGatt bluetoothGatt;
-    private String deviceMacAddress;
-    private String action;
-    private UUID characteristicToRead;
-    private UUID serviceToRead;
-    private String dataType;
-    private String deviceName;
+
     private int servicesCounter;
     private int connectionCounter;
 
@@ -288,53 +282,49 @@ public class BleConnectionService extends LifecycleService {
         @SuppressLint("MissingPermission")
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-            bluetoothGatt = gatt;
             String gattMacAddress = gatt.getDevice().getAddress();
+            int operationType;
+            int gattStatus;
+            String connectionState;
+
             Log.w(TAG, "New State: " + newState);
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 connectionCounter = 0;
+                gattStatus = Constants.GATT_SUCCESS;
                 if (newState == BluetoothProfile.STATE_CONNECTED) {
-                    String connectionState = Constants.CONNECTION_STATE_CONNECTED;
-                    String operationType = Constants.OPERATION_CONNECT_DEVICE;
-
-                    broadcastUpdateState(connectionState, gatt, operationType);
-                    Log.d(TAG, "Device Connected " + gattMacAddress);
-
-                    getBluetoothDeviceMap().put(gattMacAddress, gatt);
-                    Log.d(TAG, "Put in hashMap: " + gattMacAddress);
+                    connectionState = Constants.CONNECTION_STATE_CONNECTED;
+                    operationType = Constants.OPERATION_CONNECT_DEVICE;
                 } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                    String connectionState = Constants.CONNECTION_STATE_DISCONNECTED;
-                    String operationType = Constants.OPERATION_DISCONNECT_DEVICE;
-
-                    broadcastUpdateState(connectionState, gatt, operationType);
-                    Log.d(TAG, "Device disconnected " + gattMacAddress);
-
-                    getBluetoothDeviceMap().remove(gattMacAddress);
-                    Log.d(TAG, "Removed from hashMap: " + gattMacAddress);
+                    connectionState = Constants.CONNECTION_STATE_DISCONNECTED;
+                    operationType = Constants.OPERATION_DISCONNECT_DEVICE;
+                } else {
+                    operationType = Constants.OPERATION_UNKNOWN;
+                    connectionState = Constants.CONNECTION_STATE_UNKNOWN;
                 }
+
+                broadcastUpdateState(operationType, gatt, connectionState, gattStatus);
+                Log.d(TAG, "New State: " + gattMacAddress + " " + newState);
+
+                getBluetoothDeviceMap().put(gattMacAddress, gatt);
+                Log.d(TAG, "Put in hashMap: " + gattMacAddress);
+
             } else {
+                gattStatus = Constants.GATT_ERROR;
                 if (connectionCounter < 2) {
-                    gatt.close();
                     Log.d(TAG, "Problem connecting/disconnecting. Trying again.");
                     connectionCounter++;
                     connectDevice(gattMacAddress);
                 } else {
-                    gatt.close();
                     connectionCounter = 0;
-                    String operationType;
-                    String connectionState;
-
-                    Log.d(TAG, "Problem connecting/disconnecting, newstate: " + newState);
-                    if (newState == BluetoothProfile.STATE_CONNECTED){
+                    Log.d(TAG, "Problem connecting/disconnecting, newState: " + newState);
+                    if (newState == BluetoothProfile.STATE_CONNECTED) {
                         operationType = Constants.OPERATION_DISCONNECT_DEVICE;
                         connectionState = Constants.CONNECTION_STATE_CONNECTED;
-                    }
-                    else {
+                    } else {
                         operationType = Constants.OPERATION_CONNECT_DEVICE;
                         connectionState = Constants.CONNECTION_STATE_DISCONNECTED;
                     }
-                    broadcastUpdateError(connectionState, gatt, operationType);
-
+                    broadcastUpdateState(operationType, gatt, connectionState, gattStatus);
                 }
             }
         }
@@ -342,21 +332,33 @@ public class BleConnectionService extends LifecycleService {
         @SuppressLint("MissingPermission")
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                String connectionState = Constants.CONNECTION_STATE_SERVICES_DISCOVERED;
-                String operationType = Constants.OPERATION_DISCOVER_SERVICES;
+            String connectionState;
+            int operationType;
+            int gattStatus;
 
-                broadcastUpdateState(connectionState, gatt, operationType);
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                connectionState = Constants.CONNECTION_STATE_SERVICES_DISCOVERED;
+                operationType = Constants.OPERATION_DISCOVER_SERVICES;
+                gattStatus = Constants.GATT_SUCCESS;
+
+                broadcastUpdateState(operationType, gatt, connectionState, gattStatus);
                 Log.w(TAG, "Service discovery successful");
                 servicesCounter = 0;
 
             } else {
+                gatt.close();
                 if (servicesCounter < 2) {
                     servicesCounter++;
-                    String address = gatt.getDevice().getAddress();
-                    connectDevice(address);
+                    String gattMacAddress = gatt.getDevice().getAddress();
+
+                    discoverServices(gattMacAddress);
                     Log.w(TAG, "Service discovery failed. Trying again");
                 } else {
+                    connectionState = Constants.CONNECTION_STATE_SERVICES_UNKNOWN;
+                    operationType = Constants.OPERATION_DISCOVER_SERVICES;
+                    gattStatus = Constants.GATT_ERROR;
+
+                    broadcastUpdateState(operationType, gatt, connectionState, gattStatus);
                     servicesCounter = 0;
                     Log.w(TAG, "Service discovery failed");
                 }
@@ -366,23 +368,28 @@ public class BleConnectionService extends LifecycleService {
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicRead(gatt, characteristic, status);
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                String operationType = Constants.OPERATION_CHARACTERISTIC_READ;
-                broadcastUpdateCharacteristic(gatt, characteristic, operationType);
+                int operationType = Constants.OPERATION_CHARACTERISTIC_READ;
+                int gattStatus = Constants.GATT_SUCCESS;
+                broadcastUpdateCharacteristic(operationType, gatt, characteristic, gattStatus);
                 Log.w(TAG, "Received characteristicRead" + characteristic);
             }
         }
 
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             Log.w(TAG, "Received characteristicChanged" + characteristic + " " + Arrays.toString(characteristic.getValue()));
-            String operationType = Constants.OPERATION_CHARACTERISTIC_CHANGED;
-            broadcastUpdateCharacteristic(gatt, characteristic, operationType);
+            int operationType = Constants.OPERATION_CHARACTERISTIC_CHANGED;
+            int gattStatus = Constants.GATT_SUCCESS;
+
+            broadcastUpdateCharacteristic(operationType, gatt, characteristic, gattStatus);
         }
 
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                String operationType = Constants.OPERATION_CHARACTERISTIC_WRITE;
-                broadcastUpdateCharacteristic(gatt, characteristic, operationType);
+                int operationType = Constants.OPERATION_CHARACTERISTIC_WRITE;
+                int gattStatus = Constants.GATT_SUCCESS;
+
+                broadcastUpdateCharacteristic(operationType, gatt, characteristic, gattStatus);
                 Log.w(TAG, "Received characteristicWrite" + characteristic);
             }
         }
@@ -390,13 +397,13 @@ public class BleConnectionService extends LifecycleService {
         public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
             super.onDescriptorWrite(gatt, descriptor, status);
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                String operationType = Constants.OPERATION_DESCRIPTOR_WRITE;
-                broadcastUpdateDescriptor(gatt, descriptor, operationType);
+                int operationType = Constants.OPERATION_DESCRIPTOR_WRITE;
+                int gattStatus = Constants.GATT_SUCCESS;
+
+                broadcastUpdateDescriptor(operationType, gatt, descriptor, gattStatus);
                 Log.w(TAG, "Received descriptorWrite" + descriptor);
             }
         }
-
-
     };
 
     /**
@@ -404,14 +411,15 @@ public class BleConnectionService extends LifecycleService {
      */
 
     // Broadcast updates to connection state changes
-    private void broadcastUpdateState(final String connectionState, BluetoothGatt gatt, String operationType) {
+    private void broadcastUpdateState(int operationType, BluetoothGatt gatt, String connectionState, int status) {
         String action = Constants.ACTION_GATT_STATE_CHANGE;
         String gattMacAddress = gatt.getDevice().getAddress();
 
         Bundle bundle = new Bundle();
         bundle.putString(Constants.GATT_MAC_ADDRESS, gattMacAddress);
         bundle.putString(Constants.CONNECTION_STATE, connectionState);
-        bundle.putString(Constants.GATT_OPERATION_TYPE, operationType);
+        bundle.putInt(Constants.GATT_OPERATION_TYPE, operationType);
+        bundle.putInt(Constants.GATT_STATUS, status);
 
         final Intent intent = new Intent(action);
         intent.putExtra(Constants.EXTRA_DATA, bundle);
@@ -419,82 +427,45 @@ public class BleConnectionService extends LifecycleService {
     }
 
     // Broadcast updates to characteristics
-    private void broadcastUpdateCharacteristic(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, String operationType) {
-        /*
-        String action = Constants.ACTION_CHARACTERISTIC_CHANGE;
-        String characteristicMacAddress = gatt.getDevice().getAddress();
-        String characteristicUUID = (characteristic.getUuid()).toString();
-        String characteristicValueString = characteristic.getStringValue(0);
-        int characteristicValueInt = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_SINT8, 0);
-
-        Log.d(TAG, "Bundle: " + characteristicMacAddress + " " + characteristicUUID + " " + characteristicValueString + " " + characteristicValueInt);
-
-
-        Bundle characteristicBundle = new Bundle();
-        characteristicBundle.putString(Constants.GATT_MAC_ADDRESS, characteristicMacAddress);
-        characteristicBundle.putString(Constants.CHARACTERISTIC_UUID, characteristicUUID);
-        characteristicBundle.putString(Constants.CHARACTERISTIC_VALUE_STRING, characteristicValueString);
-        characteristicBundle.putInt(Constants.CHARACTERISTIC_VALUE_INT, characteristicValueInt);
-        characteristicBundle.putString(Constants.GATT_OPERATION_TYPE, operationType);
-
-        final Intent intent = new Intent(action);
-        intent.putExtra(Constants.EXTRA_DATA, characteristicBundle);
-        sendBroadcast(intent);
-
-         */
-
+    private void broadcastUpdateCharacteristic(int operationType, BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         //Test with Byte data
-        String actionByte = Constants.ACTION_CHARACTERISTIC_CHANGE_BYTE;
+        String action = Constants.ACTION_CHARACTERISTIC_CHANGE_BYTE;
 
-        String characteristicMacAddress = gatt.getDevice().getAddress();
+        String gattMacAddress = gatt.getDevice().getAddress();
         String characteristicUUID = (characteristic.getUuid()).toString();
-        byte[] characteristicValueByte = characteristic.getValue();
+        byte[] characteristicValue = characteristic.getValue();
 
-        Log.d(TAG, "characteristic value: " + characteristicValueByte);
+        Log.d(TAG, "characteristic value: " + characteristicValue);
 
         Bundle characteristicBundleByte = new Bundle();
-        characteristicBundleByte.putString(Constants.GATT_MAC_ADDRESS, characteristicMacAddress);
+        characteristicBundleByte.putString(Constants.GATT_MAC_ADDRESS, gattMacAddress);
         characteristicBundleByte.putString(Constants.CHARACTERISTIC_UUID, characteristicUUID);
-        characteristicBundleByte.putByteArray(Constants.CHARACTERISTIC_VALUE_BYTE, characteristicValueByte);
-        characteristicBundleByte.putString(Constants.GATT_OPERATION_TYPE, operationType);
+        characteristicBundleByte.putByteArray(Constants.CHARACTERISTIC_VALUE_BYTE, characteristicValue);
+        characteristicBundleByte.putInt(Constants.GATT_OPERATION_TYPE, operationType);
 
-        final Intent intentByte = new Intent(actionByte);
+        final Intent intentByte = new Intent(action);
         intentByte.putExtra(Constants.EXTRA_DATA, characteristicBundleByte);
         sendBroadcast(intentByte);
     }
 
     // Broadcast updates to descriptors
-    private void broadcastUpdateDescriptor(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, String operationType) {
+    private void broadcastUpdateDescriptor(int operationType, BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
         String action = Constants.ACTION_DESCRIPTOR_CHANGE;
-        String descriptorMacAddress = gatt.getDevice().getAddress();
+        String gattMacAddress = gatt.getDevice().getAddress();
         String descriptorUUID = descriptor.getUuid().toString();
 
-        Log.d(TAG, "Bundle: " + descriptorMacAddress + " " + descriptorUUID);
+        Log.d(TAG, "Bundle: " + gattMacAddress + " " + descriptorUUID);
 
         Bundle characteristicBundle = new Bundle();
-        characteristicBundle.putString(Constants.GATT_MAC_ADDRESS, descriptorMacAddress);
+        characteristicBundle.putString(Constants.GATT_MAC_ADDRESS, gattMacAddress);
         characteristicBundle.putString(Constants.DESCRIPTOR_UUID, descriptorUUID);
-        characteristicBundle.putString(Constants.GATT_OPERATION_TYPE, operationType);
+        characteristicBundle.putInt(Constants.GATT_OPERATION_TYPE, operationType);
 
         final Intent intent = new Intent(action);
         intent.putExtra(Constants.EXTRA_DATA, characteristicBundle);
         sendBroadcast(intent);
     }
 
-    // Broadcast errors
-    private void broadcastUpdateError(final String connectionState, final BluetoothGatt gatt, final String operationType){
-        String action = Constants.ACTION_GATT_ERROR;
-        String gattMacAddress = gatt.getDevice().getAddress();
-
-        Bundle bundle = new Bundle();
-        bundle.putString(Constants.GATT_MAC_ADDRESS, gattMacAddress);
-        bundle.putString(Constants.CONNECTION_STATE, connectionState);
-        bundle.putString(Constants.GATT_OPERATION_TYPE, operationType);
-
-        final Intent intent = new Intent(action);
-        intent.putExtra(Constants.EXTRA_DATA, bundle);
-        sendBroadcast(intent);
-    }
 
     /**
      * Binder

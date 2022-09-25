@@ -1,9 +1,16 @@
 package com.example.bikecompanion.sharedClasses;
 
+import com.example.bikecompanion.deviceTypes.FlareRTDeviceType;
+import com.example.bikecompanion.deviceTypes.GenericDeviceType;
+import com.example.bikecompanion.deviceTypes.SpeedCadenceDeviceType;
+
+import java.util.ArrayList;
+
 public class CharacteristicData {
     String characteristicMacAddress;
     String characteristicUUID;
     byte[] characteristicValue;
+    private static ArrayList<Characteristic> charactersiticList;
 
     public CharacteristicData(String characteristicMacAddress, String characteristicUUID, byte[] characteristicValue) {
         this.characteristicMacAddress = characteristicMacAddress;
@@ -11,8 +18,20 @@ public class CharacteristicData {
         this.characteristicValue = characteristicValue;
     }
 
+    public static ArrayList<Characteristic> getCharacteristicList() {
+        if (charactersiticList == null) {
+            charactersiticList = new ArrayList<>();
+            GenericDeviceType.getCharacteristicList();
+            FlareRTDeviceType.getCharacteristicList();
+            SpeedCadenceDeviceType.getCharacteristicList();
 
+            charactersiticList.addAll(GenericDeviceType.getCharacteristicList());
+            charactersiticList.addAll(FlareRTDeviceType.getCharacteristicList());
+            charactersiticList.addAll(SpeedCadenceDeviceType.getCharacteristicList());
+        }
+        return charactersiticList;
 
+    }
 
 
     public String getCharacteristicMacAddress() {

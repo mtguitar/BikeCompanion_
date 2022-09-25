@@ -6,7 +6,7 @@ import com.example.bikecompanion.constants.Constants;
 public class GattDiscoverServicesOperation extends GattOperation{
     private String deviceMacAddress;
     private BleConnectionService bleConnectionService;
-    public final String operationType = Constants.OPERATION_DISCOVER_SERVICES;
+    public final int operationType = Constants.OPERATION_DISCOVER_SERVICES;
 
     public GattDiscoverServicesOperation(String deviceMacAddress, BleConnectionService bleConnectionService){
         this.deviceMacAddress = deviceMacAddress;
@@ -24,7 +24,7 @@ public class GattDiscoverServicesOperation extends GattOperation{
     }
 
     @Override
-    public String getOperationType(){
+    public int getOperationType(){
         return operationType;
     }
 }

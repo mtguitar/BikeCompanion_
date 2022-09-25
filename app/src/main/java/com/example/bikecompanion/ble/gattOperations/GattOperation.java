@@ -6,7 +6,7 @@ public abstract class GattOperation {
     protected final static String TAG = "FlareLog GattOp";
     private static final int DEFAULT_TIMEOUT_IN_MILLIS = 10000;
     private BluetoothDevice mDevice;
-    public String operationType;
+    public int operationType;
 
 
     public abstract void execute();
@@ -21,7 +21,7 @@ public abstract class GattOperation {
 
     public abstract boolean hasAvailableCompletionCallback();
 
-    public String getOperationType() {
+    public int getOperationType() {
         return operationType;
     }
 

@@ -11,7 +11,7 @@ public class GattCharacteristicNotifyOperation extends GattOperation{
     private UUID characteristic;
     private boolean enabled;
     private BleConnectionService bleConnectionService;
-    private String operationType = Constants.OPERATION_DESCRIPTOR_WRITE;
+    private int operationType = Constants.OPERATION_DESCRIPTOR_WRITE;
 
     public GattCharacteristicNotifyOperation(String deviceMacAddress, UUID service, UUID characteristic, boolean enabled, BleConnectionService bleConnectionService) {
         this.deviceMacAddress = deviceMacAddress;
@@ -33,7 +33,7 @@ public class GattCharacteristicNotifyOperation extends GattOperation{
     }
 
     @Override
-    public String getOperationType(){
+    public int getOperationType(){
         return operationType;
     }
 

@@ -11,7 +11,7 @@ public class GattCharacteristicWriteOperation extends GattOperation{
     private UUID characteristic;
     private byte[] payload;
     private BleConnectionService bleConnectionService;
-    public final String operationType = Constants.OPERATION_CHARACTERISTIC_WRITE;
+    public final int operationType = Constants.OPERATION_CHARACTERISTIC_WRITE;
 
 
     public GattCharacteristicWriteOperation(String deviceMacAddress, UUID service, UUID characteristic, byte[] payload, BleConnectionService bleConnectionService) {
@@ -34,7 +34,7 @@ public class GattCharacteristicWriteOperation extends GattOperation{
     }
 
     @Override
-    public String getOperationType(){
+    public int getOperationType(){
         return operationType;
     }
 }

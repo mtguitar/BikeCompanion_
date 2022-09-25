@@ -42,7 +42,6 @@ public class GattManager {
     private ConcurrentLinkedQueue<GattOperation> operationQueue;
     private GattOperation pendingOperation;
 
-
     private ConcurrentLinkedQueue<CharacteristicData> characteristicQueue;
 
     private Handler handler;
@@ -68,14 +67,12 @@ public class GattManager {
         characteristicQueue = new ConcurrentLinkedQueue<>();
     }
 
-
     /**
      * Operations Queue
      * rapid ble reads/writes get lost, so this queue makes sure only one operation is processing at
      * a time.  It does not execute the next operation until receiving a response from the broadcast
      * receiver concerning the current operation or the operation times out.
      * TODO: 1. make this a singledton
-     * TODO: 2. figure out a way to match each operation with its callback to ensure a new operation does not execute
      * until all previous operations have finished or timed out
      *
      */
@@ -86,7 +83,6 @@ public class GattManager {
         if (pendingOperation == null){
             processQueue();
         }
-
     }
 
     private void processQueue(){
@@ -214,14 +210,16 @@ public class GattManager {
 
             final String action = intent.getAction();
 
-            //Check if intent concerns same operationType as pendingOperation.  If so, process next operation
+            //Get operationType and gattStatus from bundle
             Bundle extras = intent.getBundleExtra(Constants.EXTRA_DATA);
-            String operationType = extras.getString(Constants.GATT_OPERATION_TYPE);
+            int gattStatus = extras.getInt(Constants.GATT_STATUS);
+            int operationType = extras.getInt(Constants.GATT_OPERATION_TYPE);
 
+            //Check if intent concerns same operationType as pendingOperation.  If so, process next operation
             if (pendingOperation != null){
-                String pendingOperationType = pendingOperation.getOperationType();
+                int pendingOperationType = pendingOperation.getOperationType();
                 Log.d(TAG, "Received intent data for operationType:" + operationType + " Pending: " + pendingOperationType);
-                if (operationType.equals(pendingOperationType)){
+                if (operationType == pendingOperationType){
                     pendingOperation = null;
                     Log.d(TAG, "Operation finished: " + action);
                     if (operationQueue.peek() != null) {
@@ -230,73 +228,43 @@ public class GattManager {
                 }
             }
 
-            if (action.equals(Constants.ACTION_GATT_ERROR)) {
-                //get connectionState and macAddress from intent extras
-                connectionState = extras.getString(Constants.CONNECTION_STATE);
-                gattMacAddress = extras.getString(Constants.GATT_MAC_ADDRESS);
-                //this indicates which device's connectionState changed
-                getConnectionStateHashMap().put(Constants.GATT_MAC_ADDRESS, gattMacAddress);
-                //put connectionState and macAddress into hashmap
-                getConnectionStateHashMap().put(gattMacAddress, connectionState);
-                //indicate there was an error
-                getConnectionStateHashMap().put(Constants.GATT_STATUS, Constants.CONNECTION_ERROR);
-
-                //put hashmap into MutableLiveData
-                getConnectionStateHashMapLive().postValue(getConnectionStateHashMap());
-
-            }
             if (action.equals(Constants.ACTION_GATT_STATE_CHANGE)) {
-                //get connectionState and macAddress from intent extras
+
+                //Get connectionState and macAddress from intent extras
                 connectionState = extras.getString(Constants.CONNECTION_STATE);
                 gattMacAddress = extras.getString(Constants.GATT_MAC_ADDRESS);
-                //this indicates which device's connectionState changed
-                getConnectionStateHashMap().put(Constants.GATT_MAC_ADDRESS, gattMacAddress);
-                //put connectionState and macAddress into hashmap
-                getConnectionStateHashMap().put(gattMacAddress, connectionState);
-                //this indicates the connection change was successfully
-                getConnectionStateHashMap().put(Constants.GATT_STATUS, Constants.CONNECTION_SUCCESS);
 
-                //put hashmap into MutableLiveData
-                getConnectionStateHashMapLive().postValue(getConnectionStateHashMap());
+                //If device is now connected, start operation to discover its services
                 if (connectionState.equals(Constants.CONNECTION_STATE_CONNECTED)) {
                     discoverServices(gattMacAddress);
-                    getIsConnected().postValue(true);
                 }
-                if (connectionState.equals(Constants.CONNECTION_STATE_DISCONNECTED)) {
-                    getIsConnected().postValue(false);
-                }
-            }
-            if (action.equals(Constants.ACTION_CHARACTERISTIC_CHANGE)) {
-                //get data and macAddress from intent extras
-                gattMacAddress = extras.getString(Constants.GATT_MAC_ADDRESS);
-                String characteristicUUID = extras.getString(Constants.CHARACTERISTIC_UUID);
-                String characteristicValueString = extras.getString(Constants.CHARACTERISTIC_VALUE_STRING);
-                int characteristicValueInt = extras.getInt(Constants.CHARACTERISTIC_VALUE_INT);
 
-
-                //put connectionState and macAddress into hashmap
-                getDeviceDataHashMap().put(Constants.GATT_MAC_ADDRESS, gattMacAddress);
-                getDeviceDataHashMap().put(Constants.CHARACTERISTIC_UUID, characteristicUUID);
-                getDeviceDataHashMap().put(Constants.CHARACTERISTIC_VALUE_STRING, characteristicValueString);
-                getDeviceDataHashMap().put(Constants.CHARACTERISTIC_VALUE_INT, String.valueOf(characteristicValueInt));
+                //Update connectionStateHashMap
+                // Values associated with status and macAddress keys will be overwritten each time,i.e.
+                // there will only be one row for each at any given time.  This lets the fragment know
+                // which device's data was most recently updated and the status of the update.
+                // There can be many rows of macAddresses - this way we keep a running list of each device
+                // and its current connection state.
+                getConnectionStateHashMap().put(Constants.GATT_STATUS, String.valueOf(gattStatus));
+                getConnectionStateHashMap().put(Constants.GATT_MAC_ADDRESS, gattMacAddress);
+                getConnectionStateHashMap().put(gattMacAddress, connectionState);
 
                 //put hashmap into MutableLiveData
-                getDeviceDataHashMapLive().postValue(getDeviceDataHashMap());
+                getConnectionStateHashMapLive().postValue(getConnectionStateHashMap());
             }
             if (action.equals(Constants.ACTION_CHARACTERISTIC_CHANGE_BYTE)) {
-                //get data and macAddress from intent extras
+                //Get macAddress and data from intent extras
                 String gattMacAddressByte = extras.getString(Constants.GATT_MAC_ADDRESS);
                 String characteristicUUIDByte = extras.getString(Constants.CHARACTERISTIC_UUID);
                 byte[] characteristicValueByte = extras.getByteArray(Constants.CHARACTERISTIC_VALUE_BYTE);
-                int characteristicValueint = characteristicValueByte[0];
-                String chString = String.valueOf(characteristicValueint);
 
-                Log.d(TAG, "Characteristic Change Byte: " + chString);
-
+                //Instantiate new characteristicData object containing all the data
                 CharacteristicData characteristicData = new CharacteristicData(gattMacAddressByte, characteristicUUIDByte, characteristicValueByte);
+
+                //Add the characteristicData object to a queue.
                 characteristicQueue.add(characteristicData);
 
-                //put queue into MutableLiveData
+                //Put the queue into MutableLiveData
                 getCharacteristicQueueLive().postValue(characteristicQueue);
             }
         }
@@ -320,26 +288,7 @@ public class GattManager {
         return connectionStateHashMapLive;
     }
 
-    public MutableLiveData<Boolean> getIsConnected() {
-        if (isConnected == null) {
-            isConnected = new MutableLiveData<>();
-        }
-        return isConnected;
-    }
 
-    public HashMap<String, String> getDeviceDataHashMap() {
-        if (deviceDataHashMap == null) {
-            deviceDataHashMap = new HashMap<String, String>();
-        }
-        return deviceDataHashMap;
-    }
-
-    public static MutableLiveData<HashMap> getDeviceDataHashMapLive() {
-        if (deviceDataHashMapLive == null) {
-            deviceDataHashMapLive = new MutableLiveData<>();
-        }
-        return deviceDataHashMapLive;
-    }
 
     public static MutableLiveData<ConcurrentLinkedQueue> getCharacteristicQueueLive() {
         if (characteristicQueueLive == null) {

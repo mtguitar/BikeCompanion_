@@ -238,7 +238,7 @@ public class BleScannerService extends LifecycleService {
             if (deviceType.contains(Constants.DEVICE_TYPE_LIGHT)) {
                 image = R.drawable.ic_device_type_light;
             } else if (deviceType.contains(Constants.DEVICE_TYPE_SPEED)) {
-                image = R.drawable.ic_speed;
+                image = R.drawable.ic_device_type_csc;
             } else {
                 image = R.drawable.ic_device_type_other_sensor;
             }

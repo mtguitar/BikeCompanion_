@@ -12,7 +12,7 @@ public class GattCharacteristicReadOperation extends GattOperation{
     private UUID service;
     private UUID characteristic;
     private BleConnectionService bleConnectionService;
-    public final String operationType = Constants.OPERATION_CHARACTERISTIC_READ;
+    public final int operationType = Constants.OPERATION_CHARACTERISTIC_READ;
 
 
     public GattCharacteristicReadOperation(String deviceMacAddress, UUID service, UUID characteristic, BleConnectionService bleConnectionService) {
@@ -43,7 +43,7 @@ public class GattCharacteristicReadOperation extends GattOperation{
     }
 
     @Override
-    public String getOperationType(){
+    public int getOperationType(){
         return operationType;
     }
 

@@ -7,7 +7,7 @@ public class GattDisconnectOperation extends GattOperation {
 
     private String deviceMacAddress;
     private BleConnectionService bleConnectionService;
-    public final String operationType = Constants.OPERATION_DISCONNECT_DEVICE;
+    public final int operationType = Constants.OPERATION_DISCONNECT_DEVICE;
 
     public GattDisconnectOperation (String deviceMacAddress, BleConnectionService bleConnectionService){
         this.deviceMacAddress = deviceMacAddress;
@@ -25,7 +25,7 @@ public class GattDisconnectOperation extends GattOperation {
     }
 
     @Override
-    public String getOperationType(){
+    public int getOperationType(){
         return operationType;
     }
 }

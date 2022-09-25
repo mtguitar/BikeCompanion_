@@ -113,7 +113,7 @@ public class DeviceCheckBoxAdapter extends RecyclerView.Adapter<DeviceCheckBoxAd
             if (deviceType.contains(Constants.DEVICE_TYPE_LIGHT)) {
                 holder.selectDeviceImageView.setImageResource(R.drawable.ic_device_type_light);
             } else if (deviceType.contains(Constants.DEVICE_TYPE_SPEED)) {
-                holder.selectDeviceImageView.setImageResource(R.drawable.ic_speed);
+                holder.selectDeviceImageView.setImageResource(R.drawable.ic_device_type_csc);
             } else {
                 holder.selectDeviceImageView.setImageResource(R.drawable.ic_device_type_other_sensor);
             }

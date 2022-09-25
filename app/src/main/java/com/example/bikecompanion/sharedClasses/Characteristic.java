@@ -18,4 +18,28 @@ public class Characteristic {
         this.notify = notify;
         this.write = write;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public UUID getServiceUUID() {
+        return serviceUUID;
+    }
+
+    public UUID getCharacteristicUUID() {
+        return characteristicUUID;
+    }
+
+    public boolean isReadable() {
+        return read;
+    }
+
+    public boolean isNotify() {
+        return notify;
+    }
+
+    public boolean isWriteable() {
+        return write;
+    }
 }

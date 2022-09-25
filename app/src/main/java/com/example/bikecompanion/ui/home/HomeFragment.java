@@ -20,7 +20,6 @@ import com.example.bikecompanion.databases.entities.Bike;
 import com.example.bikecompanion.databases.entities.Device;
 import com.example.bikecompanion.databases.relations.BikeWithDevices;
 import com.example.bikecompanion.databinding.FragmentHomeBinding;
-import com.example.bikecompanion.deviceTypes.FlareRTDeviceType;
 import com.example.bikecompanion.ui.sharedViewModels.SharedEntitiesViewModel;
 
 import java.util.HashMap;
@@ -185,25 +184,9 @@ public class HomeFragment extends Fragment {
 
                 //If services discovered, calls read characteristic method
                 if (connectionState.equals(Constants.CONNECTION_STATE_SERVICES_DISCOVERED)) {
-
                 }
-
             }
         });
-
-        //observes changes to BLE device data
-        sharedEntitiesViewModel.getDeviceDataHashMapLive().observe(getActivity(), new Observer<HashMap>() {
-            @Override
-            public void onChanged(HashMap deviceDataHashMap) {
-                gattMacAddress = (String) deviceDataHashMap.get(Constants.GATT_MAC_ADDRESS);
-                characteristicUUID = (String) deviceDataHashMap.get(Constants.CHARACTERISTIC_UUID);
-                characteristicValueString = (String) deviceDataHashMap.get(Constants.CHARACTERISTIC_VALUE_STRING);
-                characteristicValueByte = (String) deviceDataHashMap.get(Constants.CHARACTERISTIC_VALUE_BYTE);
-                Log.d(TAG, "Received device data: " + gattMacAddress + " " + characteristicUUID + " " + characteristicValueString + " " + characteristicValueByte);
-
-            }
-        });
-
     }
 
     //todo add parameter to specify which bike to initiate
@@ -229,20 +212,17 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 connectDevice(deviceToConnect);
-                writeCharacteristic(macAddressFront, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, FlareRTDeviceType.DAY_BLINK_MODE_BYTE);
             }
         });
 
         buttonBlinkSolidFront.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                writeCharacteristic(macAddressFront, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, FlareRTDeviceType.NIGHT_SOLID_MODE_BYTE);
             }
         });
         buttonOffFront.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                writeCharacteristic(macAddressFront, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, FlareRTDeviceType.OFF_MODE_BYTE);
             }
         });
 
@@ -251,21 +231,18 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 connectDevice(deviceToConnect);
-                writeCharacteristic(macAddressRear, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, FlareRTDeviceType.DAY_BLINK_MODE_BYTE);
             }
         });
 
         buttonBlinkSolidRear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                writeCharacteristic(macAddressRear, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, FlareRTDeviceType.NIGHT_SOLID_MODE_BYTE);
             }
         });
         buttonOffRear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-               writeCharacteristic(macAddressRear, FlareRTDeviceType.UUID_SERVICE_LIGHT_MODE, FlareRTDeviceType.UUID_CHARACTERISTIC_LIGHT_MODE, FlareRTDeviceType.OFF_MODE_BYTE);
             }
         });
     }

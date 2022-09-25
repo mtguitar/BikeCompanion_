@@ -101,7 +101,7 @@
                 app:layout_constraintStart_toEndOf="@+id/button_bike_remove" />
 
             <TableLayout
-                android:id="@+id/tableLayout2"
+                android:id="@+id/character_table_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="70dp"
@@ -199,7 +199,7 @@
                 android:textColor="@color/primaryTextColor"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tableLayout2" />
+                app:layout_constraintTop_toBottomOf="@+id/character_table_layout" />
 
             <Switch
                 android:id="@+id/switch_primary_bike"

@@ -1,5 +1,6 @@
 package com.example.bikecompanion.deviceTypes;
 
+import com.example.bikecompanion.R;
 import com.example.bikecompanion.sharedClasses.Characteristic;
 
 import java.util.ArrayList;
@@ -7,11 +8,10 @@ import java.util.UUID;
 
 public class GenericDeviceType {
 
-    private ArrayList<Characteristic> characteristicsList;
-
-    public final static String DATA_TYPE_BYTE_ARRAY = "DATA_TYPE_BYTE_ARRAY";
-    public final static String DATA_TYPE_STRING = "DATA_TYPE_STRING";
     public final static String DEVICE_TYPE = "Unknown";
+    public final static int icon = R.drawable.ic_device_type_other_sensor;
+
+    private static ArrayList<Characteristic> characteristicList;
 
     // Battery UUIDs
     public final static UUID UUID_SERVICE_BATTERY = UUID.fromString("0000180f-0000-1000-8000-00805f9b34fb");
@@ -38,25 +38,23 @@ public class GenericDeviceType {
     public final static String DATA_TYPE_DEVICE_MODEL = "String";
 
 
-    Characteristic battery = new Characteristic("battery",UUID_SERVICE_BATTERY, UUID_CHARACTERISTIC_BATTERY, true, true, false);
-
-    Characteristic name = new Characteristic("name", UUID_SERVICE_DEVICE_NAME, UUID_CHARACTERISTIC_DEVICE_NAME, true, false, true);
-
-    Characteristic manufacturer = new Characteristic("manufacturer", UUID_SERVICE_DEVICE_MANUFACTURER, UUID_CHARACTERISTIC_DEVICE_MANUFACTURER, true, false, false);
-
-    Characteristic model = new Characteristic("model", UUID_SERVICE_DEVICE_MODEL, UUID_CHARACTERISTIC_DEVICE_MODEL, true, false, false );
+    public static Characteristic battery = new Characteristic("battery",UUID_SERVICE_BATTERY, UUID_CHARACTERISTIC_BATTERY, true, true, false);
+    public static Characteristic name = new Characteristic("name", UUID_SERVICE_DEVICE_NAME, UUID_CHARACTERISTIC_DEVICE_NAME, true, false, true);
+    public static Characteristic manufacturer = new Characteristic("manufacturer", UUID_SERVICE_DEVICE_MANUFACTURER, UUID_CHARACTERISTIC_DEVICE_MANUFACTURER, true, false, false);
+    public static Characteristic model = new Characteristic("model", UUID_SERVICE_DEVICE_MODEL, UUID_CHARACTERISTIC_DEVICE_MODEL, true, false, false );
 
 
-    public ArrayList<Characteristic> getCharacteristicsList() {
-        if (characteristicsList == null){
-            characteristicsList = new ArrayList<>();
-            characteristicsList.add(battery);
-            characteristicsList.add(name);
-            characteristicsList.add(manufacturer);
-            characteristicsList.add(model);
+    public static ArrayList<Characteristic> getCharacteristicList() {
+        if (characteristicList == null){
+            characteristicList = new ArrayList<>();
+            characteristicList.add(battery);
+            characteristicList.add(name);
+            characteristicList.add(manufacturer);
+            characteristicList.add(model);
         }
-        return characteristicsList;
+        return characteristicList;
     }
+
 
 
 }

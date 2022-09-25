@@ -54,12 +54,7 @@ public class MyDevicesAdapter extends RecyclerView.Adapter<MyDevicesAdapter.Devi
             super(itemView);
             textViewDeviceName = itemView.findViewById(R.id.text_view_my_device_name);
             textViewMacAddress = itemView.findViewById(R.id.text_view_my_device_id);
-            textViewDeviceBattery = itemView.findViewById(R.id.text_view_device_battery);
-            textViewDeviceType = itemView.findViewById(R.id.text_view_device_model);
-            textViewDeviceMode = itemView.findViewById(R.id.text_view_device_mode);
-            textViewDeviceManufacturer = itemView.findViewById(R.id.text_view_device_manufacturer);
             textViewDeviceMacAddress = itemView.findViewById(R.id.text_view_scanner_device_mac_address);
-            switchAutoConnect = itemView.findViewById(R.id.switch_primary_bike);
             buttonRemoveDevice = itemView.findViewById(R.id.button_device_remove);
             buttonDisconnectDevice = itemView.findViewById(R.id.button_device_connect);
             constraintLayoutDeviceInfo = itemView.findViewById(R.id.constraint_layout_device_info);

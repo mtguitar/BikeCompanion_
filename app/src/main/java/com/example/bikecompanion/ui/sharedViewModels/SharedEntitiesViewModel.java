@@ -175,9 +175,6 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
     }
 
 
-    public LiveData<HashMap> getDeviceDataHashMapLive() {
-        return gattManager.getDeviceDataHashMapLive();
-    }
 
     public LiveData<ConcurrentLinkedQueue> getCharacteristicQueueLive(){
         return gattManager.getCharacteristicQueueLive();
