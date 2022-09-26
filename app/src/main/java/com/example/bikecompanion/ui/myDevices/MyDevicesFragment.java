@@ -91,7 +91,6 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
 
     private ArrayList<View> rowList;
 
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -171,7 +170,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
                 String connectionState = connectionStateHashMap.get(gattMacAddress);
                 String gattStatus = connectionStateHashMap.get(Constants.GATT_STATUS);
                 Log.d(TAG, "Received ConnectionStateHashMapLive connectionState: " + gattMacAddress + " " + connectionState);
-                updateConnectionState(connectionState);
+                updateConnectionState(gattMacAddress, connectionState);
                 if (gattStatus.equals(Constants.GATT_ERROR)){
                     return;
                 }
@@ -218,7 +217,6 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
                 else{
                     progressBarRow.setVisibility(View.VISIBLE);
                 }
-
             }
         });
 
@@ -261,8 +259,6 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
                 rowFeature = itemView.findViewById(R.id.row_CSC_mode)
         );
 
-
-
         //if the clicked recyclerView item is not currently expanded
         if (constraintLayoutDeviceInfo.getVisibility() == View.GONE) {
             //If another recyclerView items is already expanded
@@ -287,8 +283,8 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             //If no recyclerView items are currently expanded
             if (itemsOpen == 0) {
                 constraintLayoutDeviceInfo.setVisibility(View.VISIBLE);
-                hideRows();
                 imageViewArrow.setRotation(180);
+                hideRows();
 
                 visibleDeviceMacAddress = currentDevice.getDeviceMacAddress();
                 sharedEntitiesViewModel.connectDevice(visibleDeviceMacAddress);
@@ -331,7 +327,6 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         if (currentDeviceMacAddress.equals(connectedDeviceMacAddress)){
             sharedEntitiesViewModel.disconnectDevice(currentDeviceMacAddress);
             Log.d(TAG, "Disconnect device: " + currentDeviceMacAddress);
-
         }
         //Delete device from db
         sharedEntitiesViewModel.delete(currentDevice);
@@ -350,50 +345,47 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         if (deviceConnectionState.equals(Constants.CONNECTION_STATE_DISCONNECTED)) {
             sharedEntitiesViewModel.connectDevice(deviceMacAddress);
             buttonConnectDisconnectDevice.setText(Constants.BUTTON_TEXT_CONNECTING);
-            buttonConnectDisconnectDevice.setEnabled(false);
             Log.d(TAG, "Button Clicked, connecting: " + deviceMacAddress);
         } else {
             sharedEntitiesViewModel.disconnectDevice(deviceMacAddress);
             buttonConnectDisconnectDevice.setText(Constants.BUTTON_TEXT_DISCONNECTING);
-            buttonConnectDisconnectDevice.setEnabled(false);
             Log.d(TAG, "Button Clicked, disconnecting: " + deviceMacAddress);
         }
+        buttonConnectDisconnectDevice.setEnabled(false);
         hideRows();
     }
 
-    private void updateConnectionState(String connectionState) {
-        String gattMacAddress = currentDevice.getDeviceMacAddress();
+    private void updateConnectionState(String gattMacAddress, String connectionState) {
         //displays connection state in textView
-        if (textViewDeviceState != null && gattMacAddress.contentEquals(textViewMacAddress.getText())) {
-            textViewDeviceState.setText(connectionState);
-        }
-        //if connected, changes button to "disconnect"
-        if (connectionState.equals(Constants.CONNECTION_STATE_CONNECTED)) {
-            connectedDeviceMacAddress = gattMacAddress;
-            if (gattMacAddress.equals(visibleDeviceMacAddress)) {
+        if (gattMacAddress.equals(visibleDeviceMacAddress)){
+            //Set textViewDeviceState (not currently working)
+            if (textViewDeviceState != null && gattMacAddress.equals(textViewMacAddress.getText())) {
+                rowState.setVisibility(View.VISIBLE);
+                textViewDeviceState.setText(connectionState);
                 buttonConnectDisconnectDevice.setEnabled(true);
+            }
+            //if connected, changes button to "disconnect"
+            if (connectionState.equals(Constants.CONNECTION_STATE_CONNECTED)) {
+                connectedDeviceMacAddress = gattMacAddress;
                 buttonConnectDisconnectDevice.setText("Disconnect");
             }
-        }
-        //if disconnected, changes button to "Connect," sets isConnected to false, and deletes connectedDeviceMacAddress
-        if (connectionState.equals(Constants.CONNECTION_STATE_DISCONNECTED)) {
-            if (gattMacAddress.equals(visibleDeviceMacAddress)) {
+            //if disconnected, changes button to "Connect," sets isConnected to false, and deletes connectedDeviceMacAddress
+            if (connectionState.equals(Constants.CONNECTION_STATE_DISCONNECTED)) {
                 buttonConnectDisconnectDevice.setEnabled(true);
                 buttonConnectDisconnectDevice.setText("Connect");
+                connectedDeviceMacAddress = null;
             }
-            connectedDeviceMacAddress = null;
         }
     }
 
     private void requestDeviceCharacteristic() {
         RequestDeviceCharacteristic.updateCharacteristic(sharedEntitiesViewModel, currentDevice);
         Log.d(TAG, "Request device characteristics: " + currentDevice);
-
     }
 
     private void updateCharacteristicViews(String macAddress, String characteristicUUIDString, byte[] characteristicValue) {
         if (!macAddress.equals(visibleDeviceMacAddress)) {
-            Log.d(TAG, "Received info for different device");
+            Log.d(TAG, "Received characteristic data for different device");
             return;
         }
         int intValue = characteristicValue[0];
