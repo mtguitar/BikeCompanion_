@@ -147,5 +147,9 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
         return gattManager.getCharacteristicQueueLive();
     }
 
+    public LiveData<Boolean> getOperationsPendingLive(){
+        return gattManager.getOperationsPendingLive();
+    }
+
 
 }

@@ -75,18 +75,18 @@ public class BleConnectionService extends LifecycleService {
     public boolean connectDevice(String deviceMacAddress) {
         initialize();
         if (bluetoothAdapter == null) {
-            Log.w(TAG, "Bluetooth not initialized.");
+            Log.w(TAG, "Bluetooth not initialized. Unable to connect");
             return false;
         }
 
         final BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceMacAddress);
         if (device == null) {
-            Log.w(TAG, "Device not found.  Unable to connect.");
+            Log.w(TAG, "Device not found. Unable to connect.");
             return false;
         }
 
         device.connectGatt(this, false, mBluetoothGattCallback);
-        Log.d(TAG, "Connecting . . .");
+        Log.d(TAG, "Connecting: " + deviceMacAddress);
         return true;
     }
 
@@ -97,7 +97,7 @@ public class BleConnectionService extends LifecycleService {
     public boolean discoverServices(String deviceMacAddress) {
         BluetoothGatt gatt = getBluetoothDeviceMap().get(deviceMacAddress);
         if (gatt == null || bluetoothAdapter == null) {
-            Log.w(TAG, "BluetoothAdapter or gatt not initialized. Gatt: " + gatt);
+            Log.w(TAG, "Unable to discover services. BluetoothAdapter or gatt not initialized. Gatt: " + deviceMacAddress);
             return false;
         }
         gatt.discoverServices();
@@ -113,11 +113,11 @@ public class BleConnectionService extends LifecycleService {
     public boolean disconnectDevice(String deviceMacAddress) {
         BluetoothGatt gatt = getBluetoothDeviceMap().get(deviceMacAddress);
         if (gatt == null || bluetoothAdapter == null) {
-            Log.w(TAG, "BluetoothAdapter or gatt not initialized. Gatt: " + gatt);
+            Log.w(TAG, "Can't disconnect.  BluetoothAdapter or gatt not initialized. Gatt: " + deviceMacAddress);
             return false;
         }
         gatt.disconnect();
-        Log.d(TAG, "Device disconnected " + deviceMacAddress);
+        Log.d(TAG, "Disconnecting: " + deviceMacAddress);
         return true;
     }
 
@@ -126,12 +126,12 @@ public class BleConnectionService extends LifecycleService {
      */
 
     public void writeCharacteristic(String deviceMacAddress, UUID service, UUID characteristic, byte[] payload) {
-        Log.w(TAG, "Received request to write: " + payload[0]);
+        Log.w(TAG, "Received request to write: " + deviceMacAddress + " " + characteristic.toString() + " " + payload[0]);
         BluetoothGatt gatt = getBluetoothDeviceMap().get(deviceMacAddress);
 
         // Check if bluetooth is initialized
         if (gatt == null || bluetoothAdapter == null) {
-            Log.w(TAG, "BluetoothGatt not initialized");
+            Log.w(TAG, "Can't write.  BluetoothGatt not initialized or gatt is null.");
             return;
         }
 
@@ -146,6 +146,8 @@ public class BleConnectionService extends LifecycleService {
                     UUID listCharUUID = gatt.getService(service).getCharacteristics().get(j).getUuid();
                     if (listCharUUID.equals(characteristic)) {
                         containsCharacteristic = true;
+                        Log.d(TAG, "Device contains characteristic: " + deviceMacAddress + " " + characteristic + " " + payload[0]);
+                        break;
                     }
                 }
             }
@@ -160,13 +162,13 @@ public class BleConnectionService extends LifecycleService {
             } else if (isCharacteristicWritableWithoutResponse(characteristicToWrite)) {
                 writeType = BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE;
             } else {
-                Log.d(TAG, "Characteristic not writable");
+                Log.d(TAG, "Characteristic not writeable: " + deviceMacAddress + " " + characteristic + " " + payload[0]);
                 return;
             }
             characteristicToWrite.setWriteType(writeType);
             characteristicToWrite.setValue(payload);
             gatt.writeCharacteristic(characteristicToWrite);
-            Log.d(TAG, "Writing characteristic: " + characteristicToWrite);
+            Log.d(TAG, "Writing characteristic: " + deviceMacAddress + " " + characteristic + " " + payload[0]);
         }
 
     }
@@ -179,11 +181,9 @@ public class BleConnectionService extends LifecycleService {
         Log.w(TAG, "Received request to read characteristic: " + characteristic);
         BluetoothGatt gatt = getBluetoothDeviceMap().get(deviceMacAddress);
         if (gatt == null || bluetoothAdapter == null) {
-            Log.w(TAG, "BluetoothGatt not initialized");
+            Log.w(TAG, "Can't read characteristic. BluetoothGatt not initialized or gatt is null.");
             return;
         }
-        Log.d(TAG, String.valueOf(gatt));
-
         //Check if device has characteristic
         boolean containsCharacteristic = false;
         int serviceListSize = gatt.getServices().size();
@@ -194,7 +194,9 @@ public class BleConnectionService extends LifecycleService {
                 for (int j = 0; j < charListSize; j++) {
                     UUID listCharUUID = gatt.getService(service).getCharacteristics().get(j).getUuid();
                     if (listCharUUID.equals(characteristic)) {
+                        Log.d(TAG, "Device contains characteristic: " + deviceMacAddress + " " + characteristic);
                         containsCharacteristic = true;
+                        break;
                     }
                 }
             }
@@ -205,10 +207,10 @@ public class BleConnectionService extends LifecycleService {
             BluetoothGattCharacteristic characteristicToRead = gatt.getService(service).getCharacteristic(characteristic);
             if (characteristicToRead != null && isCharacteristicReadable(characteristicToRead)) {
                 gatt.readCharacteristic(characteristicToRead);
-                Log.d(TAG, "Reading characteristic: " + characteristicToRead);
+                Log.d(TAG, "Characteristic is readable.  Reading: " + deviceMacAddress + " " + characteristic);
 
             } else {
-                Log.d(TAG, "Char not readable");
+                Log.d(TAG, "Characteristic not readable: " + deviceMacAddress + " " + characteristic);
             }
         }
 
@@ -221,9 +223,9 @@ public class BleConnectionService extends LifecycleService {
 
     public void setCharacteristicNotification(String deviceMacAddress, UUID service, UUID characteristic, boolean enabled) {
         BluetoothGatt gatt = getBluetoothDeviceMap().get(deviceMacAddress);
-        Log.w(TAG, "Received request to set characteristic notification");
+        Log.w(TAG, "Received request to set characteristic notification: " + deviceMacAddress + " " + characteristic.toString());
         if (gatt == null || bluetoothAdapter == null) {
-            Log.w(TAG, "BluetoothGatt not initialized");
+            Log.w(TAG, "Can't subscribe. BluetoothGatt not initialized or gatt is null;");
             return;
         }
 
@@ -237,6 +239,8 @@ public class BleConnectionService extends LifecycleService {
                 for (int j = 0; j < charListSize; j++) {
                     UUID listCharUUID = gatt.getService(service).getCharacteristics().get(j).getUuid();
                     if (listCharUUID.equals(characteristic)) {
+                        Log.w(TAG, "Device contains characteristic: " + deviceMacAddress + " " + characteristic);
+
                         containsCharacteristic = true;
                     }
                 }
@@ -253,13 +257,13 @@ public class BleConnectionService extends LifecycleService {
             if (isCharacteristicNotifiable(characteristicToSubscribe) && gatt.setCharacteristicNotification(characteristicToSubscribe, enabled)) {
                 payload = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE;
                 writeDescriptor(gatt, descriptor, payload);
-                Log.d(TAG, "Set notification for characteristic " + characteristic);
+                Log.w(TAG, "Setting notification for characteristic: " + deviceMacAddress + " " + characteristic);
             } else if (isCharacteristicIndicatable(characteristicToSubscribe) && gatt.setCharacteristicNotification(characteristicToSubscribe, enabled)) {
                 payload = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE;
                 writeDescriptor(gatt, descriptor, payload);
-                Log.d(TAG, "Set indicator for characteristic " + characteristic);
+                Log.w(TAG, "Setting indicator for characteristic: " + deviceMacAddress + " " + characteristic);
             } else {
-                Log.d(TAG, "Characteristic does not support notifications");
+                Log.w(TAG, "Characteristic does not support notification/indication: " + deviceMacAddress + " " + characteristic);
             }
         }
     }
@@ -269,6 +273,7 @@ public class BleConnectionService extends LifecycleService {
      */
 
     private void writeDescriptor(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, byte[] payload) {
+        Log.w(TAG, "Received request to write descriptor: " + gatt.getDevice().getAddress() + " " + descriptor);
         descriptor.setValue(payload);
         gatt.writeDescriptor(descriptor);
     }
@@ -286,9 +291,7 @@ public class BleConnectionService extends LifecycleService {
             int operationType;
             int gattStatus;
             String connectionState;
-            Log.d(TAG, "hashmaplive: " + gatt.getDevice().getAddress() + " " + newState);
-
-            Log.w(TAG, "New State: " + newState);
+            Log.d(TAG, "ConnectionStateChange callback: " + gatt.getDevice().getAddress() + " status: " + status + " newState: " + newState);
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 connectionCounter = 0;
                 gattStatus = Constants.GATT_SUCCESS;
@@ -315,20 +318,19 @@ public class BleConnectionService extends LifecycleService {
                     }
 
                 broadcastUpdateState(operationType, gatt, connectionState, gattStatus);
-                Log.d(TAG, "New State: " + gattMacAddress + " " + newState);
 
                 getBluetoothDeviceMap().put(gattMacAddress, gatt);
-                Log.d(TAG, "Put in hashMap: " + gattMacAddress);
+                Log.d(TAG, "Updated bluetoothDeviceMap with gatt: " + gatt.getDevice().getAddress() + " status: " + status + " newState: " + newState);
 
             } else {
                 gattStatus = Constants.GATT_ERROR;
                 if (connectionCounter < 2) {
-                    Log.d(TAG, "Problem connecting/disconnecting. Trying again.");
+                    Log.d(TAG, "Problem connecting/disconnecting.  Trying again: " + gatt.getDevice().getAddress() + " status: " + status + " newState: " + newState);
                     connectionCounter++;
                     connectDevice(gattMacAddress);
                 } else {
                     connectionCounter = 0;
-                    Log.d(TAG, "Problem connecting/disconnecting, newState: " + newState);
+                    Log.d(TAG, "Problem connecting/disconnecting.  Stopping: " + gatt.getDevice().getAddress() + " status: " + status + " newState: " + newState);
                     if (newState == BluetoothProfile.STATE_CONNECTED) {
                         operationType = Constants.OPERATION_DISCONNECT_DEVICE;
                         connectionState = Constants.CONNECTION_STATE_CONNECTED;
@@ -348,15 +350,13 @@ public class BleConnectionService extends LifecycleService {
             int operationType;
             int gattStatus;
 
-            Log.d(TAG, "hashmaplive: " + gatt.getDevice().getAddress() + "Services discovered" );
-
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 connectionState = Constants.CONNECTION_STATE_SERVICES_DISCOVERED;
                 operationType = Constants.OPERATION_DISCOVER_SERVICES;
                 gattStatus = Constants.GATT_SUCCESS;
 
                 broadcastUpdateState(operationType, gatt, connectionState, gattStatus);
-                Log.w(TAG, "Service discovery successful");
+                Log.d(TAG, "Service discovery successful: " + gatt.getDevice().getAddress() + " status: " + status);
                 servicesCounter = 0;
 
             } else {
@@ -366,7 +366,7 @@ public class BleConnectionService extends LifecycleService {
                     String gattMacAddress = gatt.getDevice().getAddress();
 
                     discoverServices(gattMacAddress);
-                    Log.w(TAG, "Service discovery failed. Trying again");
+                    Log.d(TAG, "Service discovery failed.  Trying again: " + gatt.getDevice().getAddress() + " status: " + status + " serviceCounter: " + servicesCounter);
                 } else {
                     connectionState = Constants.CONNECTION_STATE_SERVICES_UNKNOWN;
                     operationType = Constants.OPERATION_DISCOVER_SERVICES;
@@ -374,7 +374,7 @@ public class BleConnectionService extends LifecycleService {
 
                     broadcastUpdateState(operationType, gatt, connectionState, gattStatus);
                     servicesCounter = 0;
-                    Log.w(TAG, "Service discovery failed");
+                    Log.d(TAG, "Service discovery failed.  Stopping: " + gatt.getDevice().getAddress() + " status: " + status + " serviceCounter: " + servicesCounter);
                 }
             }
         }
@@ -385,7 +385,7 @@ public class BleConnectionService extends LifecycleService {
                 int operationType = Constants.OPERATION_CHARACTERISTIC_READ;
                 int gattStatus = Constants.GATT_SUCCESS;
                 broadcastUpdateCharacteristic(operationType, gatt, characteristic, gattStatus);
-                Log.w(TAG, "Received characteristicRead" + characteristic);
+                Log.d(TAG, "CharacteristicRead callback: " + gatt.getDevice().getAddress() + " status: " + status + " characteristic: " + characteristic);
             }
         }
 
@@ -393,8 +393,9 @@ public class BleConnectionService extends LifecycleService {
             Log.w(TAG, "Received characteristicChanged" + characteristic + " " + Arrays.toString(characteristic.getValue()));
             int operationType = Constants.OPERATION_CHARACTERISTIC_CHANGED;
             int gattStatus = Constants.GATT_SUCCESS;
-
             broadcastUpdateCharacteristic(operationType, gatt, characteristic, gattStatus);
+            Log.d(TAG, "CharacteristicChanged callback: " + gatt.getDevice().getAddress() + " characteristic: " + characteristic + " value: " + Arrays.toString(characteristic.getValue()));
+
         }
 
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
@@ -404,7 +405,8 @@ public class BleConnectionService extends LifecycleService {
                 int gattStatus = Constants.GATT_SUCCESS;
 
                 broadcastUpdateCharacteristic(operationType, gatt, characteristic, gattStatus);
-                Log.w(TAG, "Received characteristicWrite" + characteristic);
+                Log.w(TAG, "CharacteristicWrite callback: " + gatt.getDevice().getAddress() + " characteristic: " + characteristic);
+
             }
         }
 
@@ -415,7 +417,7 @@ public class BleConnectionService extends LifecycleService {
                 int gattStatus = Constants.GATT_SUCCESS;
 
                 broadcastUpdateDescriptor(operationType, gatt, descriptor, gattStatus);
-                Log.w(TAG, "Received descriptorWrite" + descriptor);
+                Log.w(TAG, "DescriptorWrite callback: " + gatt.getDevice().getAddress() + " descriptor: " + descriptor);
             }
         }
     };
@@ -438,6 +440,8 @@ public class BleConnectionService extends LifecycleService {
         final Intent intent = new Intent(action);
         intent.putExtra(Constants.EXTRA_DATA, bundle);
         sendBroadcast(intent);
+        Log.w(TAG, "Sent deviceState broadcastUpdate: " + gattMacAddress + " connectionState: " + connectionState + " operationType: " + operationType + " status: " + status);
+
     }
 
     // Broadcast updates to characteristics
@@ -449,8 +453,6 @@ public class BleConnectionService extends LifecycleService {
         String characteristicUUID = (characteristic.getUuid()).toString();
         byte[] characteristicValue = characteristic.getValue();
 
-        Log.d(TAG, "characteristic value: " + characteristicValue);
-
         Bundle characteristicBundleByte = new Bundle();
         characteristicBundleByte.putString(Constants.GATT_MAC_ADDRESS, gattMacAddress);
         characteristicBundleByte.putString(Constants.CHARACTERISTIC_UUID, characteristicUUID);
@@ -460,6 +462,8 @@ public class BleConnectionService extends LifecycleService {
         final Intent intentByte = new Intent(action);
         intentByte.putExtra(Constants.EXTRA_DATA, characteristicBundleByte);
         sendBroadcast(intentByte);
+        Log.w(TAG, "Sent deviceData broadcastUpdate: " + gattMacAddress + " characteristic: " + characteristicUUID + " operationType: " + operationType + " status: " + status + " value: " + characteristicValue.toString());
+
     }
 
     // Broadcast updates to descriptors
@@ -467,8 +471,6 @@ public class BleConnectionService extends LifecycleService {
         String action = Constants.ACTION_DESCRIPTOR_CHANGE;
         String gattMacAddress = gatt.getDevice().getAddress();
         String descriptorUUID = descriptor.getUuid().toString();
-
-        Log.d(TAG, "Bundle: " + gattMacAddress + " " + descriptorUUID);
 
         Bundle characteristicBundle = new Bundle();
         characteristicBundle.putString(Constants.GATT_MAC_ADDRESS, gattMacAddress);
@@ -478,6 +480,7 @@ public class BleConnectionService extends LifecycleService {
         final Intent intent = new Intent(action);
         intent.putExtra(Constants.EXTRA_DATA, characteristicBundle);
         sendBroadcast(intent);
+        Log.w(TAG, "Sent descriptor broadcastUpdate: " + gattMacAddress + " descriptor: " + descriptorUUID + " operationType: " + operationType + " status: " + status);
 
     }
 

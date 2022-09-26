@@ -70,6 +70,8 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     private TextView textViewDeviceFeature;
     private TextView textViewDeviceState;
 
+    private View progressBarDeviceData;
+
     private Button buttonRemoveDevice;
     private Button buttonConnectDisconnectDevice;
 
@@ -84,6 +86,8 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     private View rowState;
     private View rowLocation;
     private View rowFeature;
+
+    private View progressBarRow;
 
     private ArrayList<View> rowList;
 
@@ -198,6 +202,27 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             }
         });
 
+        //Boolean to check if operations are pending
+        sharedEntitiesViewModel.getOperationsPendingLive().observe(getActivity(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean operationsPending) {
+                Log.d(TAG, "OperationsPending: " + operationsPending);
+                if (progressBarRow == null){
+                    Log.d(TAG, "Progress bar is null");
+                    return;
+                }
+                if (!operationsPending){
+                    progressBarRow.setVisibility(View.INVISIBLE);
+                    Log.d(TAG, "Progress bar is gone");
+                }
+                else{
+                    progressBarRow.setVisibility(View.VISIBLE);
+                }
+
+            }
+        });
+
+
     }
 
 
@@ -220,8 +245,10 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         textViewDeviceFeature = itemView.findViewById(R.id.text_view_CSC_mode);
         buttonRemoveDevice = itemView.findViewById(R.id.button_device_remove);
         buttonConnectDisconnectDevice = itemView.findViewById(R.id.button_device_connect);
+        progressBarDeviceData = itemView.findViewById(R.id.progress_bar_data);
         imageViewArrow = itemView.findViewById(R.id.image_view_arrow);
         constraintLayoutDeviceInfo = itemView.findViewById(R.id.constraint_layout_device_info);
+        progressBarRow = itemView.findViewById(R.id.row_progress_bar);
 
         rowList = new ArrayList<>();
         Collections.addAll(rowList,

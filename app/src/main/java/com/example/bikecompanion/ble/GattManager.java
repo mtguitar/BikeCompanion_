@@ -56,6 +56,8 @@ public class GattManager {
     private static MutableLiveData<HashMap> deviceDataHashMapLive;
 
     private static MutableLiveData<ConcurrentLinkedQueue> characteristicQueueLive;
+    private static MutableLiveData<Boolean> operationsPendingLive;
+    private boolean operationsPending = false;
 
     private boolean boundToService;
 
@@ -94,6 +96,10 @@ public class GattManager {
 
     private void addToQueue(GattOperation operation){
         operationQueue.add(operation);
+        if (operationQueue.size() == 1 && !operationsPending){
+            operationsPending = true;
+            getOperationsPendingLive().postValue(operationsPending);
+        }
         Log.d(TAG, "Added to queue: " + operation);
         if (pendingOperation == null){
             processQueue();
@@ -123,6 +129,8 @@ public class GattManager {
             }, OPERATION_TIMEOUT);
         }
         else{
+            operationsPending = false;
+            getOperationsPendingLive().postValue(operationsPending);
             Log.d(TAG, "No pending operations");
         }
     }
@@ -304,13 +312,18 @@ public class GattManager {
         return connectionStateHashMapLive;
     }
 
-
-
     public static MutableLiveData<ConcurrentLinkedQueue> getCharacteristicQueueLive() {
         if (characteristicQueueLive == null) {
             characteristicQueueLive = new MutableLiveData<>();
         }
         return characteristicQueueLive;
+    }
+
+    public static MutableLiveData<Boolean> getOperationsPendingLive() {
+        if (operationsPendingLive == null) {
+            operationsPendingLive = new MutableLiveData<>();
+        }
+        return operationsPendingLive;
     }
 
 
