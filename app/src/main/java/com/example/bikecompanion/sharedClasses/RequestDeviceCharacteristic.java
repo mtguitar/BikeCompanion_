@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class RequestDeviceCharacteristic {
-    private final String TAG = "FlareLog RequestChar";
+    private final static String TAG = "FlareLog RequestChar";
 
     public static void updateCharacteristic(SharedEntitiesViewModel sharedEntitiesViewModel, Device device) {
         Log.d("FlareLog RequestChar", "Requesting chars");

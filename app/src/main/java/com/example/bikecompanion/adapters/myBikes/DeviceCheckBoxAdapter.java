@@ -30,11 +30,9 @@ public class DeviceCheckBoxAdapter extends RecyclerView.Adapter<DeviceCheckBoxAd
     private List<DeviceWithBikes> deviceWithBikesList;
     private Bike bikeToEdit;
 
-
     public DeviceCheckBoxAdapter(MyBikesListenerInterface listener) {
         this.listener = listener;
     }
-
 
     @NonNull
     @Override

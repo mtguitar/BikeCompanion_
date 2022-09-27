@@ -29,25 +29,15 @@ import java.util.UUID;
 
 public class BleConnectionService extends LifecycleService {
 
-    public boolean isFirstRun = true;
     private final static String TAG = "FlareLog ConnectService";
 
-    //connection vars
     private BluetoothManager bluetoothManager;
     private BluetoothAdapter bluetoothAdapter;
-
     private int servicesCounter;
     private int connectionCounter;
+    private HashMap<String, BluetoothGatt> bluetoothDeviceMap;
 
-    HashMap<String, BluetoothGatt> bluetoothDeviceMap;
-
-    @Override
-    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
-
-        return super.onStartCommand(intent, flags, startId);
-    }
-
-    /**
+    /*
      * Initialize bluetooth adapter
      */
 
@@ -65,10 +55,9 @@ public class BleConnectionService extends LifecycleService {
             return false;
         }
         return true;
-
     }
 
-    /**
+    /*
      * Connect to device
      */
 
@@ -90,7 +79,7 @@ public class BleConnectionService extends LifecycleService {
         return true;
     }
 
-    /**
+    /*
      * Discover services
      */
 
@@ -105,8 +94,7 @@ public class BleConnectionService extends LifecycleService {
         return true;
     }
 
-
-    /**
+    /*
      * Disconnect from device
      */
 
@@ -121,7 +109,7 @@ public class BleConnectionService extends LifecycleService {
         return true;
     }
 
-    /**
+    /*
      * Write characteristic
      */
 
@@ -173,7 +161,7 @@ public class BleConnectionService extends LifecycleService {
 
     }
 
-    /**
+    /*
      * Read characteristic
      */
 
@@ -213,11 +201,9 @@ public class BleConnectionService extends LifecycleService {
                 Log.d(TAG, "Characteristic not readable: " + deviceMacAddress + " " + characteristic);
             }
         }
-
-
     }
 
-    /**
+    /*
      * Subscribe to characteristic notifications
      */
 
@@ -268,8 +254,8 @@ public class BleConnectionService extends LifecycleService {
         }
     }
 
-    /**
-     * Writes descriptors
+    /*
+     * Write descriptors
      */
 
     private void writeDescriptor(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, byte[] payload) {
@@ -278,13 +264,12 @@ public class BleConnectionService extends LifecycleService {
         gatt.writeDescriptor(descriptor);
     }
 
-    /**
+    /*
      * Callbacks
      */
 
     // Implements Gatt Callback method and data received methods
     private final BluetoothGattCallback mBluetoothGattCallback = new BluetoothGattCallback() {
-        @SuppressLint("MissingPermission")
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             String gattMacAddress = gatt.getDevice().getAddress();
@@ -315,19 +300,18 @@ public class BleConnectionService extends LifecycleService {
                     default:
                         operationType = Constants.OPERATION_UNKNOWN;
                         connectionState = Constants.CONNECTION_STATE_UNKNOWN;
-                    }
+                }
 
                 broadcastUpdateState(operationType, gatt, connectionState, gattStatus);
-
                 getBluetoothDeviceMap().put(gattMacAddress, gatt);
                 Log.d(TAG, "Updated bluetoothDeviceMap with gatt: " + gatt.getDevice().getAddress() + " status: " + status + " newState: " + newState);
 
             } else {
                 gattStatus = Constants.GATT_ERROR;
                 if (connectionCounter < 2) {
-                    Log.d(TAG, "Problem connecting/disconnecting.  Trying again: " + gatt.getDevice().getAddress() + " status: " + status + " newState: " + newState);
                     connectionCounter++;
                     connectDevice(gattMacAddress);
+                    Log.d(TAG, "Problem connecting/disconnecting.  Trying again: " + gatt.getDevice().getAddress() + " status: " + status + " newState: " + newState);
                 } else {
                     connectionCounter = 0;
                     Log.d(TAG, "Problem connecting/disconnecting.  Stopping: " + gatt.getDevice().getAddress() + " status: " + status + " newState: " + newState);
@@ -354,7 +338,6 @@ public class BleConnectionService extends LifecycleService {
                 connectionState = Constants.CONNECTION_STATE_SERVICES_DISCOVERED;
                 operationType = Constants.OPERATION_DISCOVER_SERVICES;
                 gattStatus = Constants.GATT_SUCCESS;
-
                 broadcastUpdateState(operationType, gatt, connectionState, gattStatus);
                 Log.d(TAG, "Service discovery successful: " + gatt.getDevice().getAddress() + " status: " + status);
                 servicesCounter = 0;
@@ -364,14 +347,12 @@ public class BleConnectionService extends LifecycleService {
                 if (servicesCounter < 2) {
                     servicesCounter++;
                     String gattMacAddress = gatt.getDevice().getAddress();
-
                     discoverServices(gattMacAddress);
                     Log.d(TAG, "Service discovery failed.  Trying again: " + gatt.getDevice().getAddress() + " status: " + status + " serviceCounter: " + servicesCounter);
                 } else {
                     connectionState = Constants.CONNECTION_STATE_SERVICES_UNKNOWN;
                     operationType = Constants.OPERATION_DISCOVER_SERVICES;
                     gattStatus = Constants.GATT_ERROR;
-
                     broadcastUpdateState(operationType, gatt, connectionState, gattStatus);
                     servicesCounter = 0;
                     Log.d(TAG, "Service discovery failed.  Stopping: " + gatt.getDevice().getAddress() + " status: " + status + " serviceCounter: " + servicesCounter);
@@ -380,7 +361,6 @@ public class BleConnectionService extends LifecycleService {
         }
 
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            super.onCharacteristicRead(gatt, characteristic, status);
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 int operationType = Constants.OPERATION_CHARACTERISTIC_READ;
                 int gattStatus = Constants.GATT_SUCCESS;
@@ -390,12 +370,10 @@ public class BleConnectionService extends LifecycleService {
         }
 
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-            Log.w(TAG, "Received characteristicChanged" + characteristic + " " + Arrays.toString(characteristic.getValue()));
             int operationType = Constants.OPERATION_CHARACTERISTIC_CHANGED;
             int gattStatus = Constants.GATT_SUCCESS;
             broadcastUpdateCharacteristic(operationType, gatt, characteristic, gattStatus);
             Log.d(TAG, "CharacteristicChanged callback: " + gatt.getDevice().getAddress() + " characteristic: " + characteristic + " value: " + Arrays.toString(characteristic.getValue()));
-
         }
 
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
@@ -403,10 +381,8 @@ public class BleConnectionService extends LifecycleService {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 int operationType = Constants.OPERATION_CHARACTERISTIC_WRITE;
                 int gattStatus = Constants.GATT_SUCCESS;
-
                 broadcastUpdateCharacteristic(operationType, gatt, characteristic, gattStatus);
                 Log.w(TAG, "CharacteristicWrite callback: " + gatt.getDevice().getAddress() + " characteristic: " + characteristic);
-
             }
         }
 
@@ -415,7 +391,6 @@ public class BleConnectionService extends LifecycleService {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 int operationType = Constants.OPERATION_DESCRIPTOR_WRITE;
                 int gattStatus = Constants.GATT_SUCCESS;
-
                 broadcastUpdateDescriptor(operationType, gatt, descriptor, gattStatus);
                 Log.w(TAG, "DescriptorWrite callback: " + gatt.getDevice().getAddress() + " descriptor: " + descriptor);
             }
@@ -485,11 +460,11 @@ public class BleConnectionService extends LifecycleService {
     }
 
 
-    /**
+    /*
      * Binder
      */
 
-//Allows fragments to bind to this service
+    //Allows fragments to bind to this service
     public class LocalBinder extends Binder {
         public BleConnectionService getService() {
             return BleConnectionService.this;
@@ -505,7 +480,7 @@ public class BleConnectionService extends LifecycleService {
         return binder;
     }
 
-    /**
+    /*
      * Hashmap to store device info
      */
 
@@ -575,7 +550,7 @@ public class BleConnectionService extends LifecycleService {
  */
 
 
-    /**
+    /*
      * Helper methods to check if characteristic is readable, writable, notifiable
      */
 

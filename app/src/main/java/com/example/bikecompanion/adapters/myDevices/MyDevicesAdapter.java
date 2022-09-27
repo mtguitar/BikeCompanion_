@@ -66,7 +66,7 @@ public class MyDevicesAdapter extends RecyclerView.Adapter<MyDevicesAdapter.Devi
                         int position = getAbsoluteAdapterPosition();
 
                         if (position != RecyclerView.NO_POSITION){
-                            listener.onItemClick(position, itemView, devices);
+                            listener.onRVItemClick(position, itemView, devices);
 
                         }
                     }

@@ -24,7 +24,7 @@ import com.google.android.material.navigation.NavigationView;
 public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = "FlareLog";
-    private static final int REQUEST_ENABLE_BT = 1;
+    private final static int REQUEST_ENABLE_BT = 1;
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;

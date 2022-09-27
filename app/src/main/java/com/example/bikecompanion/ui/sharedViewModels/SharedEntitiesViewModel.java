@@ -31,7 +31,6 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
     private List<Bike> bikeList;
     private List<Device> deviceList;
 
-
     public SharedEntitiesViewModel(@NonNull Application application) {
         super(application);
         repository = new EntitiesRepository(application);
@@ -72,7 +71,6 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
         return repository.getDeviceWithBikes();
     }
 
-
     public void insert(BikeDeviceCrossRef bikeDeviceCrossRef) {
         repository.insertBikeDeviceCrossRef(bikeDeviceCrossRef);
     }
@@ -99,7 +97,7 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
     }
 
 
-    /**
+    /*
      * BleConnection methods
      */
 
@@ -134,14 +132,13 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
     }
 
 
-    /**
+    /*
      * LiveData getters
      */
 
     public LiveData<HashMap> getConnectionStateHashMapLive() {
         return gattManager.getConnectionStateHashMapLive();
     }
-
 
     public LiveData<ConcurrentLinkedQueue> getCharacteristicQueueLive(){
         return gattManager.getCharacteristicQueueLive();

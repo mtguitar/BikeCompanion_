@@ -7,7 +7,7 @@ import com.example.bikecompanion.databases.entities.Device;
 import java.util.List;
 
 public interface MyDevicesListenerInterface {
-    void onItemClick(int position, View itemView, List<Device> devices);
+    void onRVItemClick(int position, View itemView, List<Device> devices);
 
     void onButtonClickRemoveDevice(int position, List<Device> devices);
 

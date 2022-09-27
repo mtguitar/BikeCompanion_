@@ -4,7 +4,7 @@ import android.bluetooth.BluetoothDevice;
 
 public abstract class GattOperation {
     protected final static String TAG = "FlareLog GattOp";
-    private static final int DEFAULT_TIMEOUT_IN_MILLIS = 10000;
+    private final static int DEFAULT_TIMEOUT_IN_MILLIS = 10000;
     private BluetoothDevice mDevice;
     public int operationType;
 

@@ -38,32 +38,26 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class GattManager {
 
     private final static String TAG = "FlareLog GattManager";
-
-    private ConcurrentLinkedQueue<GattOperation> operationQueue;
-    private GattOperation pendingOperation;
-
-
-    private ConcurrentLinkedQueue<CharacteristicData> characteristicQueue;
-
-    private Handler handler;
     private static final long OPERATION_TIMEOUT = 2000;
-    private BleConnectionService bleConnectionService;
 
-    private HashMap<String, String> connectionStateHashMap;
-    private static MutableLiveData<HashMap> connectionStateHashMapLive;
-    private MutableLiveData<Boolean> isConnected;
-    private HashMap<String, String> deviceDataHashMap;
-    private static MutableLiveData<HashMap> deviceDataHashMapLive;
-
+    private static GattManager instance;
     private static MutableLiveData<ConcurrentLinkedQueue> characteristicQueueLive;
+    private static MutableLiveData<HashMap> connectionStateHashMapLive;
+    private static HashMap<String, String> connectionStateHashMap;
     private static MutableLiveData<Boolean> operationsPendingLive;
     private boolean operationsPending = false;
 
+    private Context context;
+    private ConcurrentLinkedQueue<GattOperation> operationQueue;
+    private GattOperation pendingOperation;
+    private ConcurrentLinkedQueue<CharacteristicData> characteristicQueue;
+    private Handler handler;
+    private BleConnectionService bleConnectionService;
+
     private boolean boundToService;
 
-    private Context context;
-
-    private static GattManager instance;
+    //private HashMap<String, String> deviceDataHashMap;
+    //private static MutableLiveData<HashMap> deviceDataHashMapLive;
 
     public static GattManager getInstance(Application application){
         if (instance == null) {
@@ -84,12 +78,11 @@ public class GattManager {
         characteristicQueue = new ConcurrentLinkedQueue<>();
     }
 
-    /**
+    /*
      * Operations Queue
-     * rapid ble reads/writes get lost, so this queue makes sure only one operation is processing at
+     * Rapid ble reads/writes get lost, so this queue makes sure only one operation is processing at
      * a time.  It does not execute the next operation until receiving a response from the broadcast
      * receiver concerning the current operation or the operation times out.
-     * TODO: 1. make this a singledton?
      * until all previous operations have finished or timed out
      *
      */
@@ -136,21 +129,12 @@ public class GattManager {
     }
 
     private void executeOperation(GattOperation operation){
-        Log.d(TAG, "Executing Operation: " + operation);
         operation.execute();
+        Log.d(TAG, "Executing Operation: " + operation);
     }
 
-    private void queuePeek(){
-        int size = operationQueue.size();
-        Log.d(TAG, "Queue size: " + size);
-        GattOperation nextOperation = operationQueue.peek();
-        Log.d(TAG, "Next Operation Up: " + nextOperation);
-    }
-
-
-
-    /**
-     * methods to interact with BleConnectionService
+    /*
+     * Public methods to interact with BleConnectionService
      */
 
     public void connectDevice(String deviceMacAddress) {
@@ -208,19 +192,17 @@ public class GattManager {
 
     public void registerBroadcastReceiver(Context context) {
         //Set intent filters and register receiver to listen for updates
-        createIntentFilter();
-        context.registerReceiver(gattUpdateReceiver, createIntentFilter());
+        IntentFilter intentFilters = createIntentFilter();
+        context.registerReceiver(gattUpdateReceiver, intentFilters);
     }
 
     //Intent filters for receiving intents
     public static IntentFilter createIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
-
         intentFilter.addAction(Constants.ACTION_GATT_STATE_CHANGE);
         intentFilter.addAction(Constants.ACTION_CHARACTERISTIC_CHANGE);
         intentFilter.addAction(Constants.ACTION_DESCRIPTOR_CHANGE);
         intentFilter.addAction(Constants.ACTION_GATT_ERROR);
-
         return intentFilter;
     }
 
@@ -263,8 +245,9 @@ public class GattManager {
                 // which device's data was most recently updated and the status of the update.
                 // There can be many rows of macAddresses - this way we keep a running list of each device
                 // and its current connection state.
-                connectionStateHashMap = getConnectionStateHashMap();
+
                 //Checks to see if key value pair is already in HashMap
+                connectionStateHashMap = getConnectionStateHashMap();
                 if (connectionStateHashMap.get(gattMacAddress) != null && connectionStateHashMap.get(gattMacAddress).equals(connectionState)){
                     return;
                 }
@@ -272,7 +255,7 @@ public class GattManager {
                 getConnectionStateHashMap().put(Constants.GATT_MAC_ADDRESS, gattMacAddress);
                 getConnectionStateHashMap().put(gattMacAddress, connectionState);
 
-                //put hashmap into MutableLiveData
+                //post hashmap into MutableLiveData
                 Log.d(TAG, "connectionStateHashMapLive: " + gattMacAddress + " " + connectionState);
                 getConnectionStateHashMapLive().postValue(getConnectionStateHashMap());
             }
@@ -294,11 +277,11 @@ public class GattManager {
         }
     };
 
-    /**
+    /*
      * LiveData
      */
 
-    public HashMap<String, String> getConnectionStateHashMap() {
+    public static HashMap<String, String> getConnectionStateHashMap() {
         if (connectionStateHashMap == null) {
             connectionStateHashMap = new HashMap<String, String>();
         }

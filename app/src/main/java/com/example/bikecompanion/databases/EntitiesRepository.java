@@ -37,8 +37,7 @@ public class EntitiesRepository {
         context = application.getApplicationContext();
     }
 
-
-    /**
+    /*
      * LiveData
      */
 
@@ -52,7 +51,7 @@ public class EntitiesRepository {
         return devicesWithBikes;
     }
 
-    /**
+    /*
      * Methods to interact with entitiesDao (which interacts with database)
      */
 
@@ -101,7 +100,7 @@ public class EntitiesRepository {
     }
 
 
-    /**
+    /*
      * AsyncTasks for writing/reading to/from db to ensure that we are not working on the main thread
      */
 
@@ -133,7 +132,6 @@ public class EntitiesRepository {
             return null;
         }
     }
-
 
     private static class UpdateBikeAsyncTask extends android.os.AsyncTask<Bike, Void, Void> {
         private EntitiesDao entitiesDao;

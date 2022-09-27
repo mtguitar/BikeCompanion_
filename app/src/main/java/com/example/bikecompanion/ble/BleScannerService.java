@@ -55,6 +55,7 @@ public class BleScannerService extends LifecycleService {
     private ArrayList<ScannerListenerInterface> scanResults;
     private String deviceName;
     private String deviceMacAddress;
+    public static MutableLiveData<ArrayList<ScannerListenerInterface>> scannerLiveDataList;
 
 
     public BleScannerService() {
@@ -98,10 +99,9 @@ public class BleScannerService extends LifecycleService {
         if (intent.hasExtra("serviceUuids")) {
             serviceUuids = ParcelUuid.fromString(intent.getStringExtra("serviceUuids"));
         }
-
     }
 
-    /**
+    /*
      * Code related to scanning
      */
 
@@ -129,12 +129,11 @@ public class BleScannerService extends LifecycleService {
             }
         }, SCAN_PERIOD);
         scanner.startScan(Collections.singletonList(scanFilter), scanSettings, scanCallback);
-        Log.d(TAG, "Scanning");
-
         scanning = true;
-
         //send intent to fragment alerting it that scanning has started
         sendIntentToFragment(Constants.ACTION_BLE_SCANNING_STARTED);
+        Log.d(TAG, "Scanning");
+
     }
 
     //scanCallback object to receive scan results
@@ -151,7 +150,6 @@ public class BleScannerService extends LifecycleService {
             addScanResults(deviceName, deviceMacAddress, deviceType);
         }
     };
-
 
 
     //Stops scanning
@@ -189,18 +187,21 @@ public class BleScannerService extends LifecycleService {
     }
 
 
-    /**
-     * LiveData code
+    /*
+     * LiveData
      */
-    public static MutableLiveData<ArrayList<ScannerListenerInterface>> scannerLiveDataList = new MutableLiveData<>();
+
+
 
     public static MutableLiveData<ArrayList<ScannerListenerInterface>> getScanResults() {
+        if (scannerLiveDataList == null){
+            scannerLiveDataList = new MutableLiveData<>();
+        }
         return scannerLiveDataList;
     }
 
     private void addScanResults(String deviceName, String deviceMacAddress, String deviceType)
     {
-
         if (scannerLiveDataList == null) {
             scannerLiveDataList = new MutableLiveData<>();
         }
@@ -215,7 +216,6 @@ public class BleScannerService extends LifecycleService {
                     if (deviceMacAddress.equals(scanResults.get(i).getDeviceMacAddress())) {
                         return;
                     }
-
                 }
             }
         }
@@ -227,11 +227,8 @@ public class BleScannerService extends LifecycleService {
                 if (deviceMacAddress.equals(deviceList.get(j).getDeviceMacAddress())) {
                     return;
                 }
-
-
             }
         }
-
 
             //if deviceMacAddress not already in list, add device to scannerResults
             int image;
@@ -245,7 +242,6 @@ public class BleScannerService extends LifecycleService {
             scanResults.add(new ScannerListenerInterface(image, deviceName, deviceMacAddress, deviceType));
             scannerLiveDataList.postValue(scanResults);
         }
-
 
 
     private void initObservers() {
