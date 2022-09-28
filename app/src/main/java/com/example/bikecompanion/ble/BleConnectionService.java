@@ -360,6 +360,7 @@ public class BleConnectionService extends LifecycleService {
             }
         }
 
+
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 int operationType = Constants.OPERATION_CHARACTERISTIC_READ;

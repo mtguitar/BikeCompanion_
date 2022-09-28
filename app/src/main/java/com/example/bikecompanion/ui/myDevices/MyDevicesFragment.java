@@ -227,6 +227,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         //Setup views
         this.itemView = itemView;
 
+
         textViewDeviceName = itemView.findViewById(R.id.text_view_my_device_name);
         textViewMacAddress = itemView.findViewById(R.id.text_view_my_device_id);
         textViewDeviceBattery = itemView.findViewById(R.id.text_view_device_battery);
