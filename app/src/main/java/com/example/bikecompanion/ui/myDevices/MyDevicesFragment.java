@@ -78,7 +78,6 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     private View rowMode;
     private View rowManufacturer;
     private View rowModel;
-    private View rowState;
     private View rowLocation;
     private View rowFeature;
     private View rowProgressBar;
@@ -98,7 +97,6 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         initFAB();
         initRecyclerView();
         initObservers();
-        initConnectionStateHashMap();
         return view;
     }
 
@@ -106,6 +104,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     public void onPause() {
         super.onPause();
         Log.d(TAG, "On pause");
+
         if (itemsOpen >= 1) {
             lastItemOpen.setVisibility(View.GONE);
             lastArrowOpen.setRotation(0);
@@ -113,7 +112,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             hideCharacteristicRows();
         }
         //Loop through devices in hashmap and disconnect any device that is connected
-        for (Map.Entry<String, String> entry : connectionStateHashMap.entrySet()) {
+        for (Map.Entry<String, String> entry : getConnectionStateHashMap().entrySet()) {
             String macAddress = entry.getKey();
             String connectionState = entry.getValue();
             if (!connectionState.equals(Constants.CONNECTION_STATE_DISCONNECTED)) {
@@ -122,7 +121,6 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             }
         }
     }
-
 
     private void initFAB() {
         FloatingActionButton fabNewDevice = view.findViewById(R.id.fac_add_device);
@@ -148,16 +146,20 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         sharedEntitiesViewModel.getAllDevices().observe(getViewLifecycleOwner(), new Observer<List<Device>>() {
             @Override
             public void onChanged(List<Device> devices) {
-                Log.d(TAG, "Received devices live data from db");
                 deviceList = devices;
                 deviceAdapter.setDevices(devices);
+                if (deviceList != null && getConnectionStateHashMap().size() == 0){
+                    initConnectionStateHashMap();
+                }
+                Log.d(TAG, "Received devices live data from db: " + devices);
+
             }
         });
 
         //connectionStateHashmap key = macAddress, value = connectionState (connected, services discovered, disconnected)
         sharedEntitiesViewModel.getConnectionStateHashMapLive().observe(getActivity(), connectionStateHashMapArg -> {
             //merge existing hashMap with updated hashMap
-            connectionStateHashMap.putAll(connectionStateHashMapArg);
+            getConnectionStateHashMap().putAll(connectionStateHashMapArg);
 
             //checks which device was updated and calls updateConnectionState to update UI
             String gattMacAddress = connectionStateHashMap.get(Constants.GATT_MAC_ADDRESS);
@@ -169,12 +171,20 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             if (gattStatus.equals(Constants.GATT_ERROR)){
                 return;
             }
-            if (connectionState.equals(Constants.CONNECTION_STATE_CONNECTED)){
+            if (Constants.CONNECTION_STATE_CONNECTED.equals(connectionState)){
                 sharedEntitiesViewModel.discoverServices(gattMacAddress);
                 Log.d(TAG, "Discover services: " + gattMacAddress);
             }
-            else if (connectionState.equals(Constants.CONNECTION_STATE_SERVICES_DISCOVERED)) {
-                requestDeviceCharacteristic();
+            if (Constants.CONNECTION_STATE_SERVICES_DISCOVERED.equals(connectionState)) {
+                int size = deviceList.size();
+                for (int i = 0; i < size; i++){
+                    String deviceMacAddress = deviceList.get(i).getDeviceMacAddress();
+                    if (gattMacAddress.equals(deviceMacAddress)) {
+                        Device device = deviceList.get(i);
+                        requestDeviceCharacteristic(device);
+                    }
+                    return;
+                }
             }
         });
 
@@ -209,9 +219,9 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         });
     }
 
+
     //initializes connectionStateHashMap and sets value for each device in deviceList to disconnected
     private void initConnectionStateHashMap(){
-        connectionStateHashMap = new HashMap<>();
         int listSize = deviceList.size();
         for (int i = 0; i < listSize; i++){
             String deviceMacAddress = deviceList.get(i).getDeviceMacAddress();
@@ -249,7 +259,6 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
                 rowMode = itemView.findViewById(R.id.row_mode),
                 rowManufacturer = itemView.findViewById(R.id.row_manufacturer),
                 rowModel = itemView.findViewById(R.id.row_model),
-                rowState = itemView.findViewById(R.id.row_connection_state),
                 rowLocation = itemView.findViewById(R.id.row_csc_location),
                 rowFeature = itemView.findViewById(R.id.row_CSC_mode)
         );
@@ -265,7 +274,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
                 itemsOpen--;
 
                 //Disconnect the last visible device if currently connected
-                String lastVisibleDeviceConnectionState = connectionStateHashMap.get(lastVisibleDevice);
+                String lastVisibleDeviceConnectionState = getConnectionStateHashMap().get(lastVisibleDevice);
                 if (lastVisibleDeviceConnectionState != null &&
                         !lastVisibleDeviceConnectionState.equals(Constants.CONNECTION_STATE_DISCONNECTED)) {
                     sharedEntitiesViewModel.disconnectDevice(lastVisibleDevice);
@@ -280,10 +289,9 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
 
                 visibleDeviceMacAddress = currentDevice.getDeviceMacAddress();
                 sharedEntitiesViewModel.connectDevice(visibleDeviceMacAddress);
-                Log.d(TAG, "Connect device: " + visibleDeviceMacAddress);
-
-                buttonConnectDisconnectDevice.setText(Constants.BUTTON_TEXT_CONNECTING);
+                textViewDeviceState.setText(Constants.CONNECTION_STATE_CONNECTING_NAME);
                 buttonConnectDisconnectDevice.setEnabled(false);
+                Log.d(TAG, "Connect device: " + visibleDeviceMacAddress);
 
                 lastVisibleDevice = visibleDeviceMacAddress;
                 lastItemOpen = constraintLayoutDeviceInfo;
@@ -299,10 +307,10 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             hideCharacteristicRows();
 
             //Disconnect the visible device if currently connected
-            if (connectionStateHashMap == null || visibleDeviceMacAddress == null || connectionStateHashMap.get(visibleDeviceMacAddress) == null){
+            if (visibleDeviceMacAddress == null || getConnectionStateHashMap().get(visibleDeviceMacAddress) == null){
                 return;
             }
-            String visibleDeviceConnectionState = connectionStateHashMap.get(visibleDeviceMacAddress);
+            String visibleDeviceConnectionState = getConnectionStateHashMap().get(visibleDeviceMacAddress);
             if (!visibleDeviceConnectionState.equals(Constants.CONNECTION_STATE_DISCONNECTED)) {
                 Log.d(TAG, "Item clicked, trying to disconnect: " + visibleDeviceMacAddress);
                 sharedEntitiesViewModel.disconnectDevice(visibleDeviceMacAddress);
@@ -332,15 +340,17 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     public void onButtonClickConnectDisconnect(int position, List<Device> devices) {
         Device currentDevice = devices.get(position);
         String deviceMacAddress = currentDevice.getDeviceMacAddress();
-        String deviceConnectionState = connectionStateHashMap.get(deviceMacAddress);
+        String deviceConnectionState = getConnectionStateHashMap().get(deviceMacAddress);
 
-        if (deviceConnectionState.equals(Constants.CONNECTION_STATE_DISCONNECTED)) {
+        if (Constants.CONNECTION_STATE_DISCONNECTED.equals(deviceConnectionState)) {
             sharedEntitiesViewModel.connectDevice(deviceMacAddress);
-            buttonConnectDisconnectDevice.setText(Constants.BUTTON_TEXT_CONNECTING);
+            //buttonConnectDisconnectDevice.setText(Constants.BUTTON_TEXT_CONNECTING);
+            textViewDeviceState.setText(Constants.CONNECTION_STATE_CONNECTING_NAME);
             Log.d(TAG, "Button Clicked, connecting: " + deviceMacAddress);
         } else {
             sharedEntitiesViewModel.disconnectDevice(deviceMacAddress);
-            buttonConnectDisconnectDevice.setText(Constants.BUTTON_TEXT_DISCONNECTING);
+            //buttonConnectDisconnectDevice.setText(Constants.BUTTON_TEXT_DISCONNECTING);
+            textViewDeviceState.setText(Constants.CONNECTION_STATE_DISCONNECTING_NAME);
             Log.d(TAG, "Button Clicked, disconnecting: " + deviceMacAddress);
         }
         buttonConnectDisconnectDevice.setEnabled(false);
@@ -350,19 +360,19 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     private void updateConnectionStateUI(String gattMacAddress, String connectionState) {
         //displays connection state in textView
         if (gattMacAddress.equals(visibleDeviceMacAddress)){
-            //Set textViewDeviceState (not currently working)
+            //Set textViewDeviceState
             if (textViewDeviceState != null && gattMacAddress.equals(textViewMacAddress.getText())) {
-                rowState.setVisibility(View.VISIBLE);
-                textViewDeviceState.setText(connectionState);
+                String connectionStateName = GenericDeviceType.getConnectionStateNameHashMap().get(connectionState);
+                textViewDeviceState.setText(connectionStateName);
                 buttonConnectDisconnectDevice.setEnabled(true);
             }
             //if connected, changes button to "disconnect"
-            if (connectionState.equals(Constants.CONNECTION_STATE_CONNECTED)) {
+            if (Constants.CONNECTION_STATE_CONNECTED.equals(connectionState)) {
                 connectedDeviceMacAddress = gattMacAddress;
                 buttonConnectDisconnectDevice.setText("Disconnect");
             }
             //if disconnected, changes button to "Connect," sets isConnected to false, and deletes connectedDeviceMacAddress
-            if (connectionState.equals(Constants.CONNECTION_STATE_DISCONNECTED)) {
+            if (Constants.CONNECTION_STATE_DISCONNECTED.equals(connectionState)) {
                 buttonConnectDisconnectDevice.setEnabled(true);
                 buttonConnectDisconnectDevice.setText("Connect");
                 connectedDeviceMacAddress = null;
@@ -370,9 +380,9 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         }
     }
 
-    private void requestDeviceCharacteristic() {
-        RequestDeviceCharacteristic.updateCharacteristic(sharedEntitiesViewModel, currentDevice);
-        Log.d(TAG, "Request device characteristics: " + currentDevice);
+    private void requestDeviceCharacteristic(Device device) {
+        RequestDeviceCharacteristic.updateCharacteristic(sharedEntitiesViewModel, device);
+        Log.d(TAG, "Request device characteristics: " + device);
     }
 
     private void updateCharacteristicUI(String macAddress, String characteristicUUIDString, byte[] characteristicValue) {
@@ -425,6 +435,13 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         for (int i = 0; i < size; i++) {
             rowList.get(i).setVisibility(View.GONE);
         }
+    }
+
+    private HashMap<String, String> getConnectionStateHashMap(){
+        if (connectionStateHashMap == null){
+            connectionStateHashMap = new HashMap<>();
+        }
+        return connectionStateHashMap;
     }
 
 }

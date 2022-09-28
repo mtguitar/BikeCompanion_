@@ -80,6 +80,18 @@ public class Constants {
     public static final String CONNECTION_STATE_SERVICES_UNKNOWN = String.valueOf(CONNECTION_STATE_SERVICES_UNKNOWN_INT);
     public static final String CONNECTION_STATE_UNKNOWN = String.valueOf(CONNECTION_STATE_UNKNOWN_INT);
 
+    public static final String CONNECTION_STATE_DISCONNECTED_NAME = "Disconnected";
+    public static final String CONNECTION_STATE_CONNECTING_NAME = "Connecting";
+    public static final String CONNECTION_STATE_CONNECTED_NAME = "Connected";
+    public static final String CONNECTION_STATE_DISCONNECTING_NAME = "Disconnecting";
+    public static final String CONNECTION_STATE_SERVICES_DISCOVERED_NAME = "Connected";
+    public static final String CONNECTION_STATE_UNKNOWN_NAME = "Unknown state";
+
+
+
+
+
+
 
     //Device types
     public static final CharSequence DEVICE_TYPE_LIGHT = "light";

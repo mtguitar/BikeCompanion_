@@ -248,9 +248,6 @@ public class GattManager {
 
                 //Checks to see if key value pair is already in HashMap
                 connectionStateHashMap = getConnectionStateHashMap();
-                if (connectionStateHashMap.get(gattMacAddress) != null && connectionStateHashMap.get(gattMacAddress).equals(connectionState)){
-                    return;
-                }
                 getConnectionStateHashMap().put(Constants.GATT_STATUS, String.valueOf(gattStatus));
                 getConnectionStateHashMap().put(Constants.GATT_MAC_ADDRESS, gattMacAddress);
                 getConnectionStateHashMap().put(gattMacAddress, connectionState);

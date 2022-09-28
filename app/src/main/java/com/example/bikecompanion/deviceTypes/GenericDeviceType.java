@@ -1,9 +1,11 @@
 package com.example.bikecompanion.deviceTypes;
 
 import com.example.bikecompanion.R;
+import com.example.bikecompanion.constants.Constants;
 import com.example.bikecompanion.sharedClasses.Characteristic;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class GenericDeviceType {
@@ -53,6 +55,19 @@ public class GenericDeviceType {
             characteristicList.add(model);
         }
         return characteristicList;
+    }
+
+    public static HashMap<String, String> getConnectionStateNameHashMap(){
+        HashMap<String, String> connectionStateNameHashMap = new HashMap<>();
+
+        connectionStateNameHashMap.put(Constants.CONNECTION_STATE_DISCONNECTED, Constants.CONNECTION_STATE_DISCONNECTED_NAME);
+        connectionStateNameHashMap.put(Constants.CONNECTION_STATE_CONNECTING, Constants.CONNECTION_STATE_CONNECTING_NAME);
+        connectionStateNameHashMap.put(Constants.CONNECTION_STATE_CONNECTED, Constants.CONNECTION_STATE_CONNECTED_NAME);
+        connectionStateNameHashMap.put(Constants.CONNECTION_STATE_DISCONNECTING, Constants.CONNECTION_STATE_DISCONNECTING_NAME);
+        connectionStateNameHashMap.put(Constants.CONNECTION_STATE_SERVICES_DISCOVERED, Constants.CONNECTION_STATE_SERVICES_DISCOVERED_NAME);
+        connectionStateNameHashMap.put(Constants.CONNECTION_STATE_UNKNOWN, Constants.CONNECTION_STATE_UNKNOWN_NAME);
+
+        return connectionStateNameHashMap;
     }
 
 
