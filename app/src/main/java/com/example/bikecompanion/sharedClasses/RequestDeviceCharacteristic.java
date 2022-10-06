@@ -19,7 +19,7 @@ public class RequestDeviceCharacteristic {
         String gattMacAddress = device.getDeviceMacAddress();
         String deviceType = device.getDeviceType();
         ArrayList<Characteristic> characteristicList = GenericDeviceType.getCharacteristicList();
-        if (deviceType.equals(FlareRTDeviceType.DEVICE_TYPE)) {
+        if (deviceType.equals(FlareRTDeviceType.getDeviceType())) {
             characteristicList.addAll(FlareRTDeviceType.getCharacteristicList());
         }
         if (device.getDeviceType().equals(SpeedCadenceDeviceType.DEVICE_TYPE)) {

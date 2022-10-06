@@ -13,10 +13,11 @@ public class SpeedCadenceDeviceType {
     public final static String DEVICE_TYPE = "Speed/Cadence";
     public final static int icon = R.drawable.ic_device_type_csc;
 
-
     //Advertised service UUIDs
     public final static String STRING_SERVICE_ADVERTISED_1 = "00001816-0000-1000-8000-00805f9b34fb";
     public final static UUID UUID_SERVICE_ADVERTISED_1 = UUID.fromString(STRING_SERVICE_ADVERTISED_1);
+    private static ArrayList<UUID> advertisedServiceList;
+
 
     // Device Feature
     public final static String UUID_SERVICE_CSC_FEATURE_STRING = "00001816-0000-1000-8000-00805f9b34fb";
@@ -70,16 +71,31 @@ public class SpeedCadenceDeviceType {
     public static Characteristic sensorFeature = new Characteristic("csc sensor feature", UUID_SERVICE_CSC_FEATURE, UUID_CHARACTERISTIC_CSC_FEATURE, true, false, false);
 
 
+    /**
+     *
+     * Getters
+     */
+
+
     public static ArrayList<Characteristic> getCharacteristicList() {
         if (characteristicList == null){
-            characteristicList = new ArrayList<>();
+            characteristicList = AbstractDeviceType.getCharacteristicList();
             characteristicList.add(sensorLocation);
             characteristicList.add(sensorFeature);
-
         }
         return characteristicList;
     }
 
+    public static ArrayList<UUID> getAdvertisedServiceList() {
+        if (advertisedServiceList == null) {
+            advertisedServiceList = new ArrayList<>();
+            advertisedServiceList.add(UUID_SERVICE_ADVERTISED_1);
+        }
+        return advertisedServiceList;
+    }
 
+    public static int getIcon() {
+        return icon;
+    }
 
 }

@@ -24,6 +24,7 @@ import com.example.bikecompanion.adapters.myDevices.MyDevicesAdapter;
 import com.example.bikecompanion.adapters.myDevices.MyDevicesListenerInterface;
 import com.example.bikecompanion.constants.Constants;
 import com.example.bikecompanion.databases.entities.Device;
+import com.example.bikecompanion.deviceTypes.AbstractDeviceType;
 import com.example.bikecompanion.deviceTypes.FlareRTDeviceType;
 import com.example.bikecompanion.deviceTypes.GenericDeviceType;
 import com.example.bikecompanion.deviceTypes.SpeedCadenceDeviceType;
@@ -395,17 +396,17 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         String stringValue = new String(characteristicValue);
 
         switch (characteristicUUIDString) {
-            case (GenericDeviceType.UUID_CHARACTERISTIC_BATTERY_STRING):
+            case (AbstractDeviceType.UUID_CHARACTERISTIC_BATTERY_STRING):
                 textViewDeviceBattery.setText(String.valueOf(intValue));
                 rowBattery.setVisibility(View.VISIBLE);
                 Log.d(TAG, "Set Battery");
                 break;
-            case (GenericDeviceType.UUID_CHARACTERISTIC_DEVICE_MANUFACTURER_STRING):
+            case (AbstractDeviceType.UUID_CHARACTERISTIC_DEVICE_MANUFACTURER_STRING):
                 textViewDeviceManufacturer.setText(stringValue);
                 rowManufacturer.setVisibility(View.VISIBLE);
                 Log.d(TAG, "Set Manufacturer");
                 break;
-            case (GenericDeviceType.UUID_CHARACTERISTIC_DEVICE_MODEL_STRING):
+            case (AbstractDeviceType.UUID_CHARACTERISTIC_DEVICE_MODEL_STRING):
                 textViewDeviceModel.setText(stringValue);
                 rowModel.setVisibility(View.VISIBLE);
                 Log.d(TAG, "Set Model");

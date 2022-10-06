@@ -24,7 +24,6 @@ public class AddDeviceFragment extends Fragment {
     private String serviceUuids = null;
     private String deviceType;
 
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -41,7 +40,7 @@ public class AddDeviceFragment extends Fragment {
                 name = null;
                 macAddress = null;
                 serviceUuids = FlareRTDeviceType.STRING_SERVICE_ADVERTISED_1;
-                deviceType = FlareRTDeviceType.DEVICE_TYPE;
+                deviceType = FlareRTDeviceType.getDeviceType().toString();
                 click();
             }
         });
