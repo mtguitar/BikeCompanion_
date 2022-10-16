@@ -47,7 +47,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     private View view;
     private SharedEntitiesViewModel sharedEntitiesViewModel;
     private MyDevicesAdapter deviceAdapter;
-    private HashMap<String, String> connectionStateHashMap;
+//    private HashMap<String, String> connectionStateHashMap;
     private List<Device> deviceList;
     private ArrayList<View> rowList;
 
@@ -101,28 +101,6 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         return view;
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.d(TAG, "On pause");
-
-        if (itemsOpen >= 1) {
-            lastItemOpen.setVisibility(View.GONE);
-            lastArrowOpen.setRotation(0);
-            itemsOpen--;
-            hideCharacteristicRows();
-        }
-        //Loop through devices in hashmap and disconnect any device that is connected
-        for (Map.Entry<String, String> entry : getConnectionStateHashMap().entrySet()) {
-            String macAddress = entry.getKey();
-            String connectionState = entry.getValue();
-            if (!connectionState.equals(Constants.CONNECTION_STATE_DISCONNECTED)) {
-                sharedEntitiesViewModel.disconnectDevice(macAddress);
-                Log.d(TAG, "Disconnect device: " + macAddress);
-            }
-        }
-    }
-
     private void initFAB() {
         FloatingActionButton fabNewDevice = view.findViewById(R.id.fac_add_device);
         fabNewDevice.setOnClickListener(new View.OnClickListener() {
@@ -133,12 +111,12 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             }
         });
     }
-
+//TODO Move all the shareentitiesviewmodel stuff with the cardviews over to the adapter and figure out how to keep open state persistent
     private void initRecyclerView() {
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view_my_bikes);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
-        deviceAdapter = new MyDevicesAdapter(this);
+        deviceAdapter = new MyDevicesAdapter(this, sharedEntitiesViewModel);
         recyclerView.setAdapter(deviceAdapter);
     }
 
@@ -163,9 +141,9 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
             getConnectionStateHashMap().putAll(connectionStateHashMapArg);
 
             //checks which device was updated and calls updateConnectionState to update UI
-            String gattMacAddress = connectionStateHashMap.get(Constants.GATT_MAC_ADDRESS);
-            String connectionState = connectionStateHashMap.get(gattMacAddress);
-            String gattStatus = connectionStateHashMap.get(Constants.GATT_STATUS);
+            String gattMacAddress = getConnectionStateHashMap().get(Constants.GATT_MAC_ADDRESS);
+            String connectionState = getConnectionStateHashMap().get(gattMacAddress);
+            String gattStatus = getConnectionStateHashMap().get(Constants.GATT_STATUS);
             Log.d(TAG, "Received ConnectionStateHashMapLive connectionState: " + gattMacAddress + " " + connectionState);
             updateConnectionStateUI(gattMacAddress, connectionState);
 
@@ -223,22 +201,15 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
 
     //initializes connectionStateHashMap and sets value for each device in deviceList to disconnected
     private void initConnectionStateHashMap(){
-        int listSize = deviceList.size();
-        for (int i = 0; i < listSize; i++){
-            String deviceMacAddress = deviceList.get(i).getDeviceMacAddress();
-            connectionStateHashMap.put(deviceMacAddress, Constants.CONNECTION_STATE_DISCONNECTED);
+        for (Device device : deviceList) {
+            String deviceMacAddress = device.getDeviceMacAddress();
+            sharedEntitiesViewModel.setConnectionStateHashMap(deviceMacAddress, Constants.CONNECTION_STATE_DISCONNECTED);
         }
     }
 
     //On click listener for clicking on an "device" item in the recyclerView
     @Override
     public void onRVItemClick(int position, View itemView, List<Device> devices) {
-        currentDevice = devices.get(position);
-
-        //Setup views
-        this.itemView = itemView;
-
-
         textViewDeviceName = itemView.findViewById(R.id.text_view_my_device_name);
         textViewMacAddress = itemView.findViewById(R.id.text_view_my_device_id);
         textViewDeviceBattery = itemView.findViewById(R.id.text_view_device_battery);
@@ -252,9 +223,11 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         buttonConnectDisconnectDevice = itemView.findViewById(R.id.button_device_connect);
         progressBarDeviceData = itemView.findViewById(R.id.progress_bar_data);
         imageViewArrow = itemView.findViewById(R.id.image_view_arrow);
-        constraintLayoutDeviceInfo = itemView.findViewById(R.id.constraint_layout_device_info);
         rowProgressBar = itemView.findViewById(R.id.row_progress_bar);
 
+        currentDevice = devices.get(position);
+        this.itemView = itemView;
+        constraintLayoutDeviceInfo = itemView.findViewById(R.id.constraint_layout_device_info);
         rowList = new ArrayList<>();
         Collections.addAll(rowList,
                 rowBattery = itemView.findViewById(R.id.row_battery),
@@ -267,48 +240,21 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
 
         //if the clicked recyclerView item is not currently expanded
         if (constraintLayoutDeviceInfo.getVisibility() == View.GONE) {
-            //If another recyclerView items is already expanded
-            if (itemsOpen >= 1) {
-                //deflate the item, rotate the arrow, hide its rows, subtract 1 from itemsOpen
-                lastItemOpen.setVisibility(View.GONE);
-                lastArrowOpen.setRotation(0);
-                //hideRows();
-                itemsOpen--;
-
-                //Disconnect the last visible device if currently connected
-                String lastVisibleDeviceConnectionState = getConnectionStateHashMap().get(lastVisibleDevice);
-                if (lastVisibleDeviceConnectionState != null &&
-                        !lastVisibleDeviceConnectionState.equals(Constants.CONNECTION_STATE_DISCONNECTED)) {
-                    sharedEntitiesViewModel.disconnectDevice(lastVisibleDevice);
-                    Log.d(TAG, "Item clicked, trying to disconnect: " + lastVisibleDevice);
-                }
+            //If another recyclerView item is already expanded -> Disconnect the last visible device
+            String lastVisibleDeviceConnectionState = getConnectionStateHashMap().get(lastVisibleDevice);
+            if (lastVisibleDeviceConnectionState != null &&
+                    !lastVisibleDeviceConnectionState.equals(Constants.CONNECTION_STATE_DISCONNECTED)) {
+                sharedEntitiesViewModel.disconnectDevice(lastVisibleDevice);
+                Log.d(TAG, "Item clicked, trying to disconnect: " + lastVisibleDevice);
             }
-            //If no recyclerView items are currently expanded
-            if (itemsOpen == 0) {
-                constraintLayoutDeviceInfo.setVisibility(View.VISIBLE);
-                imageViewArrow.setRotation(180);
-                hideCharacteristicRows();
-
-                visibleDeviceMacAddress = currentDevice.getDeviceMacAddress();
-                sharedEntitiesViewModel.connectDevice(visibleDeviceMacAddress);
-                textViewDeviceState.setText(Constants.CONNECTION_STATE_CONNECTING_NAME);
-                buttonConnectDisconnectDevice.setEnabled(false);
-                Log.d(TAG, "Connect device: " + visibleDeviceMacAddress);
-
-                lastVisibleDevice = visibleDeviceMacAddress;
-                lastItemOpen = constraintLayoutDeviceInfo;
-                lastArrowOpen = imageViewArrow;
-                itemsOpen++;
-            }
+            //Connect device that is clicked
+            visibleDeviceMacAddress = currentDevice.getDeviceMacAddress();
+            sharedEntitiesViewModel.connectDevice(visibleDeviceMacAddress);
+            Log.d(TAG, "Connect device: " + visibleDeviceMacAddress);
+            itemsOpen++;
         }
-        //If the clicked recyclerView item is already expanded -> deflate view, rotate arrow, hide old rows
+        //If the clicked recyclerView item is already expanded -> Disconnect the visible device
         else {
-            //Deflate the item, change the arrow rotation,
-            constraintLayoutDeviceInfo.setVisibility(View.GONE);
-            imageViewArrow.setRotation(0);
-            hideCharacteristicRows();
-
-            //Disconnect the visible device if currently connected
             if (visibleDeviceMacAddress == null || getConnectionStateHashMap().get(visibleDeviceMacAddress) == null){
                 return;
             }
@@ -433,17 +379,15 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     }
 
     private void hideCharacteristicRows() {
-        int size = rowList.size();
-        for (int i = 0; i < size; i++) {
-            rowList.get(i).setVisibility(View.GONE);
+        if (rowList != null) {
+            for (View row : rowList) {
+                row.setVisibility(View.GONE);
+            }
         }
     }
 
-    private HashMap<String, String> getConnectionStateHashMap(){
-        if (connectionStateHashMap == null){
-            connectionStateHashMap = new HashMap<>();
-        }
-        return connectionStateHashMap;
+    private Map<String, String> getConnectionStateHashMap(){
+        return sharedEntitiesViewModel.getConnectionStateHashMap();
     }
 
 }

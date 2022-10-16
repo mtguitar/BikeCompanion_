@@ -16,6 +16,7 @@ import com.example.bikecompanion.databases.relations.DeviceWithBikes;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -30,6 +31,9 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
     private LiveData<List<Bike>> allBikes;
     private List<Bike> bikeList;
     private List<Device> deviceList;
+
+    private Map<String, String> connectionStateHashMap;
+
 
     public SharedEntitiesViewModel(@NonNull Application application) {
         super(application);
@@ -149,4 +153,14 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
     }
 
 
+    public Map<String, String> getConnectionStateHashMap() {
+        if (connectionStateHashMap == null) {
+            connectionStateHashMap = new HashMap<>();
+        }
+        return connectionStateHashMap;
+    }
+
+    public void setConnectionStateHashMap(String macAddress, String connectionState) {
+        getConnectionStateHashMap().put(macAddress, connectionState);
+    }
 }

@@ -16,12 +16,11 @@ public class GenericDeviceType extends AbstractDeviceType {
     }
 
     @Override
-    public DeviceTypeEnum getDeviceType() {
+    public DeviceType getDeviceType() {
         return null;
     }
 
-    @Override
-    public int getIcon() {
+    public static int getIcon() {
         return icon;
     }
 }

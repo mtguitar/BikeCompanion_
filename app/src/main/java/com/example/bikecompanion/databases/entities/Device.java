@@ -4,6 +4,8 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import com.example.bikecompanion.deviceTypes.DeviceType;
+
 @Entity(tableName = "device_table", indices = {@Index(value = {"deviceMacAddress"}, unique = true)})
 public class Device {
 
@@ -15,7 +17,8 @@ public class Device {
     private String deviceAssignedName;
     private String deviceBleName;
     private String deviceType;
-
+    private DeviceType deviceTypeEnum;
+    private String connectionState;
 
 
     public Device(String deviceAssignedName, String deviceBleName, String deviceMacAddress, String deviceType) {
@@ -48,5 +51,21 @@ public class Device {
 
     public void setDeviceId(int deviceId) {
         this.deviceId = deviceId;
+    }
+
+    public void setDeviceTypeEnum(DeviceType deviceTypeEnum) {
+        this.deviceTypeEnum = deviceTypeEnum;
+    }
+
+    public void setConnectionState(String connectionState) {
+        this.connectionState = connectionState;
+    }
+
+    public DeviceType getDeviceTypeEnum() {
+        return deviceTypeEnum;
+    }
+
+    public String getConnectionState() {
+        return connectionState;
     }
 }

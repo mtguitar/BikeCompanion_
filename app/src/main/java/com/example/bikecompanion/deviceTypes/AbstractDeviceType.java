@@ -73,9 +73,7 @@ public abstract class AbstractDeviceType {
 
     public abstract ArrayList<UUID> getAdvertisedServiceList();
 
-    public abstract DeviceTypeEnum getDeviceType();
-
-    public abstract int getIcon();
+    public abstract DeviceType getDeviceType();
 
 
 }

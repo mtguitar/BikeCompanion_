@@ -93,8 +93,8 @@ public class FlareRTDeviceType {
         return advertisedServiceList;
     }
 
-    public static DeviceTypeEnum getDeviceType() {
-        return DeviceTypeEnum.REAR_LIGHT;
+    public static DeviceType getDeviceType() {
+        return DeviceType.REAR_LIGHT;
     }
 
     public static int getIcon() {

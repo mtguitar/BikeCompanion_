@@ -204,7 +204,6 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
         String deviceMacAddress = scannerAdapter.scanResultsArrayList.get(position).getDeviceMacAddress();
         String deviceType = scannerAdapter.scanResultsArrayList.get(position).getDeviceType();
 
-
         Device newDevice = new Device(deviceName, deviceName, deviceMacAddress, deviceType);
         LiveData<List<Device>> allDevices = myDevicesViewModel.getAllDevices();
         myDevicesViewModel.insert(newDevice);
