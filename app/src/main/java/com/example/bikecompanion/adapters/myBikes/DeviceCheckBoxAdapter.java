@@ -16,6 +16,7 @@ import com.example.bikecompanion.databases.entities.Bike;
 import com.example.bikecompanion.databases.entities.Device;
 import com.example.bikecompanion.databases.relations.BikeWithDevices;
 import com.example.bikecompanion.databases.relations.DeviceWithBikes;
+import com.example.bikecompanion.deviceTypes.DeviceType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,17 +106,9 @@ public class DeviceCheckBoxAdapter extends RecyclerView.Adapter<DeviceCheckBoxAd
             }
 
             //add image based on deviceType
-            String deviceType = currentDevice.getDeviceType();
-            deviceType = deviceType.toLowerCase();
-            Log.d(TAG, "Current device type: " + deviceType);
-            if (deviceType.contains(Constants.DEVICE_TYPE_LIGHT)) {
-                holder.selectDeviceImageView.setImageResource(R.drawable.ic_device_type_light);
-            } else if (deviceType.contains(Constants.DEVICE_TYPE_SPEED)) {
-                holder.selectDeviceImageView.setImageResource(R.drawable.ic_device_type_csc);
-            } else {
-                holder.selectDeviceImageView.setImageResource(R.drawable.ic_device_type_other_sensor);
-            }
-
+            DeviceType deviceType = currentDevice.getDeviceType();
+            int icon = deviceType.getIcon();
+            holder.selectDeviceImageView.setImageResource(icon);
         }
     }
 

@@ -13,64 +13,39 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 
 import com.example.bikecompanion.R;
+import com.example.bikecompanion.deviceTypes.DeviceType;
 import com.example.bikecompanion.deviceTypes.FlareRTDeviceType;
 import com.example.bikecompanion.deviceTypes.SpeedCadenceDeviceType;
 import com.google.android.material.snackbar.Snackbar;
 
 public class AddDeviceFragment extends Fragment {
 
-    private String name = null;
-    private String macAddress = null;
-    private String serviceUuids = null;
-    private String deviceType;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_device, container, false);
 
-        Button buttonSelectFlare = view.findViewById(R.id.button_select_flare);
-        Button buttonSelectSpeed = view.findViewById(R.id.button_select_speed);
-        Button buttonSelectOther = view.findViewById(R.id.button_select_other);
+        Button buttonSelectFlare = view.findViewById(DeviceType.REAR_LIGHT.getIcon());
+        Button buttonSelectSpeed = view.findViewById(DeviceType.SPEED_CADENCE.getIcon());
+        Button buttonSelectOther = view.findViewById(DeviceType.GENERIC.getIcon());
 
 
-        buttonSelectFlare.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                name = null;
-                macAddress = null;
-                serviceUuids = FlareRTDeviceType.STRING_SERVICE_ADVERTISED_1;
-                deviceType = FlareRTDeviceType.getDeviceType().toString();
-                click();
-            }
-        });
+        buttonSelectFlare.setOnClickListener(view1 -> click(FlareRTDeviceType.STRING_SERVICE_ADVERTISED_1, DeviceType.REAR_LIGHT));
         buttonSelectSpeed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                name = null;
-                macAddress = null;
-                serviceUuids = SpeedCadenceDeviceType.STRING_SERVICE_ADVERTISED_1;
-                deviceType = SpeedCadenceDeviceType.DEVICE_TYPE;
-                click();
+                click(SpeedCadenceDeviceType.STRING_SERVICE_ADVERTISED_1, DeviceType.SPEED_CADENCE);
 
             }
         });
-        buttonSelectOther.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                name = null;
-                macAddress = null;
-                serviceUuids = null;
-                deviceType = "other";
-                click();
-            }
-        });
+        buttonSelectOther.setOnClickListener(view12 -> click(null, DeviceType.GENERIC));
 
         return view;
     }
 
-    private void click(){
-        NavDirections action = AddDeviceFragmentDirections.deviceToScanner(null, null, serviceUuids, deviceType);
+    private void click(String serviceUuids, DeviceType deviceType){
+        NavDirections action = AddDeviceFragmentDirections.deviceToScanner(serviceUuids, deviceType);
         Navigation.findNavController(getView()).navigate(action);
         Snackbar snackbar = Snackbar.make(getView(),"Selected: " + serviceUuids, Snackbar.LENGTH_SHORT);
         snackbar.show();

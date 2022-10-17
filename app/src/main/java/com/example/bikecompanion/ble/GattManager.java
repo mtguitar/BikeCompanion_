@@ -25,6 +25,7 @@ import com.example.bikecompanion.constants.Constants;
 import com.example.bikecompanion.sharedClasses.CharacteristicData;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -42,9 +43,12 @@ public class GattManager {
 
     private static GattManager instance;
     private static MutableLiveData<ConcurrentLinkedQueue> characteristicQueueLive;
-    private static MutableLiveData<HashMap> connectionStateHashMapLive;
-    private static HashMap<String, String> connectionStateHashMap;
+//    private static MutableLiveData<HashMap> connectionStateHashMapLive;
+    private static MutableLiveData<ConcurrentLinkedQueue> connectionStateQueueLive;
+    private ConcurrentLinkedQueue<String[]> connectionStateQueue;
+    private String[] deviceConnectionState;
     private static MutableLiveData<Boolean> operationsPendingLive;
+
     private boolean operationsPending = false;
 
     private Context context;
@@ -133,7 +137,7 @@ public class GattManager {
         Log.d(TAG, "Executing Operation: " + operation);
     }
 
-    /*
+    /**
      * Public methods to interact with BleConnectionService
      */
 
@@ -238,6 +242,9 @@ public class GattManager {
                 //Get connectionState and macAddress from intent extras
                 connectionState = extras.getString(Constants.CONNECTION_STATE);
                 gattMacAddress = extras.getString(Constants.GATT_MAC_ADDRESS);
+                String[] deviceConnectionStateUpdate = setDeviceConnectionState(gattMacAddress, connectionState);
+                getConnectionStateQueue().add(deviceConnectionStateUpdate);
+                getConnectionStateQueueLive().postValue(getConnectionStateQueue());
 
                 //Update connectionStateHashMap
                 // Values associated with status and macAddress keys will be overwritten each time,i.e.
@@ -247,14 +254,14 @@ public class GattManager {
                 // and its current connection state.
 
                 //Checks to see if key value pair is already in HashMap
-                connectionStateHashMap = getConnectionStateHashMap();
-                getConnectionStateHashMap().put(Constants.GATT_STATUS, String.valueOf(gattStatus));
-                getConnectionStateHashMap().put(Constants.GATT_MAC_ADDRESS, gattMacAddress);
-                getConnectionStateHashMap().put(gattMacAddress, connectionState);
-
-                //post hashmap into MutableLiveData
-                Log.d(TAG, "connectionStateHashMapLive: " + gattMacAddress + " " + connectionState);
-                getConnectionStateHashMapLive().postValue(getConnectionStateHashMap());
+//                connectionStateHashMap = getConnectionStateHashMap();
+//                getConnectionStateHashMap().put(Constants.GATT_STATUS, String.valueOf(gattStatus));
+//                getConnectionStateHashMap().put(Constants.GATT_MAC_ADDRESS, gattMacAddress);
+//                getConnectionStateHashMap().put(gattMacAddress, connectionState);
+//
+//                //post hashmap into MutableLiveData
+//                Log.d(TAG, "connectionStateHashMapLive: " + gattMacAddress + " " + connectionState);
+//                getConnectionStateHashMapLive().postValue(getConnectionStateHashMap());
             }
             if (action.equals(Constants.ACTION_CHARACTERISTIC_CHANGE_BYTE)) {
                 //Get macAddress and data from intent extras
@@ -274,23 +281,39 @@ public class GattManager {
         }
     };
 
-    /*
+
+
+    /**
      * LiveData
      */
 
-    public static HashMap<String, String> getConnectionStateHashMap() {
-        if (connectionStateHashMap == null) {
-            connectionStateHashMap = new HashMap<String, String>();
+
+
+//    public static MutableLiveData<HashMap> getConnectionStateHashMapLive() {
+//        if (connectionStateHashMapLive == null) {
+//            connectionStateHashMapLive = new MutableLiveData<>();
+//        }
+//        return connectionStateHashMapLive;
+//    }
+
+    private ConcurrentLinkedQueue<String[]> getConnectionStateQueue() {
+        if (connectionStateQueue == null) {
+            connectionStateQueue = new ConcurrentLinkedQueue<>();
         }
-        return connectionStateHashMap;
+        return connectionStateQueue;
     }
 
-    public static MutableLiveData<HashMap> getConnectionStateHashMapLive() {
-        if (connectionStateHashMapLive == null) {
-            connectionStateHashMapLive = new MutableLiveData<>();
-        }
-        return connectionStateHashMapLive;
+    private String[] setDeviceConnectionState(String macAddress, String connectionState) {
+        return deviceConnectionState = new String[]{macAddress, connectionState};
     }
+
+    public static MutableLiveData<ConcurrentLinkedQueue> getConnectionStateQueueLive() {
+        if (connectionStateQueueLive == null) {
+            connectionStateQueueLive = new MutableLiveData<>();
+        }
+        return connectionStateQueueLive;
+    }
+
 
     public static MutableLiveData<ConcurrentLinkedQueue> getCharacteristicQueueLive() {
         if (characteristicQueueLive == null) {
@@ -305,8 +328,5 @@ public class GattManager {
         }
         return operationsPendingLive;
     }
-
-
-
 
 }

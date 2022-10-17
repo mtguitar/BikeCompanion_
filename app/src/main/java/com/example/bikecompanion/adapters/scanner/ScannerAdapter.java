@@ -17,11 +17,11 @@ import java.util.ArrayList;
 
 public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerViewHolder> {
 
-    public ArrayList<ScannerListenerInterface> scanResultsArrayList;
+    public ArrayList<ScannerListenerInterface> scanResults;
     public RecyclerViewInterface recyclerViewInterface;
 
-    public ScannerAdapter(ArrayList<ScannerListenerInterface> scanResultsArrayList, RecyclerViewInterface recyclerViewInterface) {
-        this.scanResultsArrayList = scanResultsArrayList;
+    public ScannerAdapter(ArrayList<ScannerListenerInterface> scanResults, RecyclerViewInterface recyclerViewInterface) {
+        this.scanResults = scanResults;
         this.recyclerViewInterface = recyclerViewInterface;
     }
 
@@ -100,7 +100,7 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
 
     @Override
     public void onBindViewHolder(@NonNull ScannerAdapter.ScannerViewHolder holder, int position) {
-        ScannerListenerInterface currentItem = scanResultsArrayList.get(position);
+        ScannerListenerInterface currentItem = scanResults.get(position);
         holder.imageViewScanResults.setImageResource(currentItem.getImageResource());
         holder.textViewScannerDeviceMacAddress.setText(currentItem.getDeviceMacAddress());
         holder.textViewScannerDeviceName.setText(currentItem.getDeviceName());
@@ -110,7 +110,7 @@ public class ScannerAdapter extends RecyclerView.Adapter<ScannerAdapter.ScannerV
 
     @Override
     public int getItemCount() {
-        return scanResultsArrayList.size();
+        return scanResults.size();
 
     }
 

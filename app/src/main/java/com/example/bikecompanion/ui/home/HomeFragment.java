@@ -25,6 +25,7 @@ import com.example.bikecompanion.ui.sharedViewModels.SharedEntitiesViewModel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class HomeFragment extends Fragment {
 
@@ -99,7 +100,7 @@ public class HomeFragment extends Fragment {
 
         initViews();
         initDatabaseObservers();
-        initBleServiceObservers();
+//        initBleServiceObservers();
         return view;
     }
 
@@ -173,21 +174,11 @@ public class HomeFragment extends Fragment {
     }
 
 
-    private void initBleServiceObservers() {
-        //observes changes to BLE device connection state
-        sharedEntitiesViewModel.getConnectionStateHashMapLive().observe(getActivity(), new Observer<HashMap>() {
-            @Override
-            public void onChanged(HashMap connectionStateHashMapArg) {
-                connectionStateHashMap = connectionStateHashMapArg;
-                gattMacAddress = connectionStateHashMap.get(Constants.GATT_MAC_ADDRESS);
-                connectionState = connectionStateHashMap.get(gattMacAddress);
-
-                //If services discovered, calls read characteristic method
-                if (connectionState.equals(Constants.CONNECTION_STATE_SERVICES_DISCOVERED)) {
-                }
-            }
-        });
-    }
+//    private void initBleServiceObservers() {
+//        //observes changes to BLE device connection state
+//        sharedEntitiesViewModel.getConnectionStateQueueLive().observe(getActivity(), (ConcurrentLinkedQueue) concurrentLinkedQue -> {
+//                     });
+//    }
 
     //todo add parameter to specify which bike to initiate
     private void initBike(){

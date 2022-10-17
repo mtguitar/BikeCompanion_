@@ -3,6 +3,7 @@ package com.example.bikecompanion.sharedClasses;
 import android.util.Log;
 
 import com.example.bikecompanion.databases.entities.Device;
+import com.example.bikecompanion.deviceTypes.DeviceType;
 import com.example.bikecompanion.deviceTypes.FlareRTDeviceType;
 import com.example.bikecompanion.deviceTypes.GenericDeviceType;
 import com.example.bikecompanion.deviceTypes.SpeedCadenceDeviceType;
@@ -16,26 +17,28 @@ public class RequestDeviceCharacteristic {
 
     public static void updateCharacteristic(SharedEntitiesViewModel sharedEntitiesViewModel, Device device) {
         Log.d("FlareLog RequestChar", "Requesting chars");
-        String gattMacAddress = device.getDeviceMacAddress();
-        String deviceType = device.getDeviceType();
+        String macAddress = device.getDeviceMacAddress();
+        DeviceType deviceType = device.getDeviceType();
         ArrayList<Characteristic> characteristicList = GenericDeviceType.getCharacteristicList();
-        if (deviceType.equals(FlareRTDeviceType.getDeviceType())) {
-            characteristicList.addAll(FlareRTDeviceType.getCharacteristicList());
+        if (deviceType.equals(FlareRTDeviceType.getDeviceType().toString())) {
+            characteristicList = FlareRTDeviceType.getCharacteristicList();
         }
         if (device.getDeviceType().equals(SpeedCadenceDeviceType.DEVICE_TYPE)) {
             characteristicList.addAll(SpeedCadenceDeviceType.getCharacteristicList());
         }
-        int size = characteristicList.size();
-        for (int i = 0; i < size; i++) {
-            UUID serviceUUID = characteristicList.get(i).getServiceUUID();
-            UUID characteristicUUID = characteristicList.get(i).getCharacteristicUUID();
-            if (characteristicList.get(i).isReadable()) {
-                sharedEntitiesViewModel.readCharacteristics(gattMacAddress, serviceUUID, characteristicUUID);
+        for (Characteristic characteristic : characteristicList) {
+            UUID serviceUUID = characteristic.getServiceUUID();
+            UUID characteristicUUID = characteristic.getCharacteristicUUID();
+            if (characteristic.isReadable()) {
+                sharedEntitiesViewModel.readCharacteristics(macAddress, serviceUUID, characteristicUUID);
+                Log.d(TAG, "Requesting to read characteristic: " + characteristicUUID);
             }
-            if (characteristicList.get(i).isNotify()) {
-                sharedEntitiesViewModel.setCharacteristicNotification(gattMacAddress, serviceUUID, characteristicUUID, true);
+            if (characteristic.isNotify()) {
+                sharedEntitiesViewModel.setCharacteristicNotification(macAddress, serviceUUID, characteristicUUID, true);
             }
+
         }
+
     }
 
 }

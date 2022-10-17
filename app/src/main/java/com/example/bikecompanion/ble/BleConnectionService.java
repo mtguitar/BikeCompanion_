@@ -461,7 +461,7 @@ public class BleConnectionService extends LifecycleService {
     }
 
 
-    /*
+    /**
      * Binder
      */
 

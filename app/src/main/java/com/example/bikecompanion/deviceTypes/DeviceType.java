@@ -7,60 +7,60 @@ import java.util.UUID;
 public enum DeviceType {
     FRONT_LIGHT {
         @Override
-        ArrayList<Characteristic> getCharacteristicList() {
+        public ArrayList<Characteristic> getCharacteristicList() {
             return FlareRTDeviceType.getCharacteristicList();
         }
         @Override
-        ArrayList<UUID> getAdvertisedServiceList(){
+        public ArrayList<UUID> getAdvertisedServiceList(){
             return FlareRTDeviceType.getAdvertisedServiceList();
         }
         @Override
-        int getIcon(){
+        public int getIcon(){
             return FlareRTDeviceType.getIcon();
         }
 
     },
     REAR_LIGHT{
         @Override
-        ArrayList<Characteristic> getCharacteristicList() {
+        public ArrayList<Characteristic> getCharacteristicList() {
             return FlareRTDeviceType.getCharacteristicList();
         }
         @Override
-        ArrayList<UUID> getAdvertisedServiceList(){
+        public ArrayList<UUID> getAdvertisedServiceList(){
             return FlareRTDeviceType.getAdvertisedServiceList();
         }
         @Override
-        int getIcon(){
+        public int getIcon(){
             return FlareRTDeviceType.getIcon();
         }
     },
     SPEED_CADENCE{
         @Override
-        ArrayList<Characteristic> getCharacteristicList() {
+        public ArrayList<Characteristic> getCharacteristicList() {
             return SpeedCadenceDeviceType.getCharacteristicList();
         }
         @Override
-        ArrayList<UUID> getAdvertisedServiceList(){
+        public ArrayList<UUID> getAdvertisedServiceList(){
             return SpeedCadenceDeviceType.getAdvertisedServiceList();
         }
         @Override
-        int getIcon(){
+        public int getIcon(){
             return SpeedCadenceDeviceType.getIcon();
         }
     },
     GENERIC{
         @Override
-        ArrayList<Characteristic> getCharacteristicList() {
+        public ArrayList<Characteristic> getCharacteristicList() {
             return GenericDeviceType.getCharacteristicList();
         }
 
         @Override
-        ArrayList<UUID> getAdvertisedServiceList() {
+        public ArrayList<UUID> getAdvertisedServiceList() {
             return null;
         }
 
         @Override
-        int getIcon(){
+        public int getIcon(){
             return GenericDeviceType.getIcon();
         }
     };
@@ -71,8 +71,8 @@ public enum DeviceType {
 //    private ArrayList<UUID> advertisedServiceList;
 //    private int icon;
 
-    abstract ArrayList<Characteristic> getCharacteristicList();
-    abstract ArrayList<UUID> getAdvertisedServiceList();
-    abstract int getIcon();
+    public abstract ArrayList<Characteristic> getCharacteristicList();
+    public abstract ArrayList<UUID> getAdvertisedServiceList();
+    public abstract int getIcon();
 
 }

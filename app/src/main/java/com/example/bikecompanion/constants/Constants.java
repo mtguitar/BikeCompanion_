@@ -103,6 +103,10 @@ public class Constants {
     //Button text
     public static final String BUTTON_TEXT_DISCONNECTING = "Disconnecting";
     public static final String BUTTON_TEXT_CONNECTING = "Connecting";
+    public static final String BUTTON_TEXT_DISCONNECT = "Disconnect";
+    public static final String BUTTON_TEXT_CONNECT = "Connect";
+
+
 
 
     //Table row formatting
@@ -113,6 +117,9 @@ public class Constants {
     public static final String MODEL = "Model";
     public static final String LIGHT_MODE = "Light Mode";
     public static final String UNKNOWN = "Unknown";
+
+
+
 }
 
 

@@ -37,20 +37,12 @@
         android:label="@string/menu_scanner"
         tools:layout="@layout/fragment_scanner" >
         <argument
-            android:name="name"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="macAddress"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
             android:name="serviceUuids"
             app:argType="string"
             app:nullable="true" />
         <argument
             android:name="deviceType"
-            app:argType="string"
+            app:argType="com.example.bikecompanion.deviceTypes.DeviceType"
             app:nullable="true" />
         <action
             android:id="@+id/action_nav_scanner_to_nav_my_devices"

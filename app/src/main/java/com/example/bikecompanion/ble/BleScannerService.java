@@ -11,7 +11,9 @@ import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.ParcelUuid;
 import android.util.Log;
 
@@ -24,6 +26,7 @@ import com.example.bikecompanion.R;
 import com.example.bikecompanion.constants.Constants;
 import com.example.bikecompanion.databases.EntitiesRepository;
 import com.example.bikecompanion.databases.entities.Device;
+import com.example.bikecompanion.deviceTypes.DeviceType;
 import com.example.bikecompanion.ui.scanner.ScannerListenerInterface;
 
 import java.util.ArrayList;
@@ -49,7 +52,7 @@ public class BleScannerService extends LifecycleService {
     private static final long SCAN_PERIOD =3000;
 
     private ParcelUuid serviceUuids = null;
-    private String deviceType = "Unknown";
+    private DeviceType deviceType;
 
     //scanResults vars
     private ArrayList<ScannerListenerInterface> scanResults;
@@ -59,33 +62,34 @@ public class BleScannerService extends LifecycleService {
 
 
     public BleScannerService() {
-    }
-
-    @Override
-    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
         initObservers();
 
-        String action = intent.getAction();
-        getIntentExtras(intent);
-
-        Log.d(TAG, "Received intent from fragment: " + action + " " + deviceType);
-
-        switch (action){
-            case Constants.ACTION_START_OR_RESUME_SERVICE:
-                startScan();
-                Log.d(TAG, "Started service");
-                break;
-
-            case Constants.ACTION_STOP_SERVICE:
-                Log.d(TAG, "Stopped service");
-                if(scanning){
-                    stopScanning();
-                }
-                break;
-        }
-
-        return super.onStartCommand(intent, flags, startId);
     }
+
+//    @Override
+//    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
+//
+//        String action = intent.getAction();
+//        getIntentExtras(intent);
+//
+//        Log.d(TAG, "Received intent from fragment: " + action + " " + deviceType);
+//
+//        switch (action){
+//            case Constants.ACTION_START_OR_RESUME_SERVICE:
+//                startScan();
+//                Log.d(TAG, "Started service");
+//                break;
+//
+//            case Constants.ACTION_STOP_SERVICE:
+//                Log.d(TAG, "Stopped service");
+//                if(scanning){
+//                    stopScanning();
+//                }
+//                break;
+//        }
+//
+//        return super.onStartCommand(intent, flags, startId);
+//    }
 
     //makes sure next scan does not have any leftover filters
     public void onDestroy() {
@@ -95,18 +99,37 @@ public class BleScannerService extends LifecycleService {
     }
 
     private void getIntentExtras(Intent intent){
-        deviceType = intent.getStringExtra("deviceType");
-        if (intent.hasExtra("serviceUuids")) {
-            serviceUuids = ParcelUuid.fromString(intent.getStringExtra("serviceUuids"));
+//        if (intent.hasExtra("serviceUuids")) {
+////            serviceUuids = ParcelUuid.fromString(intent.getStringExtra("serviceUuids"));
+//        }
+    }
+
+    /**
+     * Binder
+     */
+
+    //Allows fragments to bind to this service
+    public class LocalBinder extends Binder {
+        public BleScannerService getService() {
+            return BleScannerService.this;
         }
     }
 
-    /*
+    private final IBinder binder = new LocalBinder();
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        super.onBind(intent);
+        return binder;
+    }
+
+    /**
      * Code related to scanning
      */
 
+
     // Scans for devices
-    public void startScan() {
+    public void startScan(ParcelUuid serviceUuids, DeviceType deviceType) {
 
         //initialize ble
         initializeBluetooth();
@@ -187,11 +210,9 @@ public class BleScannerService extends LifecycleService {
     }
 
 
-    /*
+    /**
      * LiveData
      */
-
-
 
     public static MutableLiveData<ArrayList<ScannerListenerInterface>> getScanResults() {
         if (scannerLiveDataList == null){
@@ -200,7 +221,7 @@ public class BleScannerService extends LifecycleService {
         return scannerLiveDataList;
     }
 
-    private void addScanResults(String deviceName, String deviceMacAddress, String deviceType)
+    private void addScanResults(String deviceName, String deviceMacAddress, DeviceType deviceType)
     {
         if (scannerLiveDataList == null) {
             scannerLiveDataList = new MutableLiveData<>();
@@ -231,14 +252,7 @@ public class BleScannerService extends LifecycleService {
         }
 
             //if deviceMacAddress not already in list, add device to scannerResults
-            int image;
-            if (deviceType.contains(Constants.DEVICE_TYPE_LIGHT)) {
-                image = R.drawable.ic_device_type_light;
-            } else if (deviceType.contains(Constants.DEVICE_TYPE_SPEED)) {
-                image = R.drawable.ic_device_type_csc;
-            } else {
-                image = R.drawable.ic_device_type_other_sensor;
-            }
+            int image = deviceType.getIcon();
             scanResults.add(new ScannerListenerInterface(image, deviceName, deviceMacAddress, deviceType));
             scannerLiveDataList.postValue(scanResults);
         }
@@ -258,11 +272,6 @@ public class BleScannerService extends LifecycleService {
 
         });
     }
-
-
-
-
-
 
 }
 

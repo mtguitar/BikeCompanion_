@@ -1,6 +1,7 @@
 package com.example.bikecompanion.ui.sharedViewModels;
 
 import android.app.Application;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -31,8 +32,8 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
     private LiveData<List<Bike>> allBikes;
     private List<Bike> bikeList;
     private List<Device> deviceList;
-
     private Map<String, String> connectionStateHashMap;
+    private Map<String, View> expandedViews;
 
 
     public SharedEntitiesViewModel(@NonNull Application application) {
@@ -140,8 +141,8 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
      * LiveData getters
      */
 
-    public LiveData<HashMap> getConnectionStateHashMapLive() {
-        return gattManager.getConnectionStateHashMapLive();
+    public LiveData<ConcurrentLinkedQueue> getConnectionStateQueueLive() {
+        return gattManager.getConnectionStateQueueLive();
     }
 
     public LiveData<ConcurrentLinkedQueue> getCharacteristicQueueLive(){
@@ -153,6 +154,10 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
     }
 
 
+    /**
+     *
+     * HashMaps to keep track of deviceConnectionState and whether item views are expanded
+     */
     public Map<String, String> getConnectionStateHashMap() {
         if (connectionStateHashMap == null) {
             connectionStateHashMap = new HashMap<>();
@@ -160,7 +165,11 @@ public class SharedEntitiesViewModel extends AndroidViewModel {
         return connectionStateHashMap;
     }
 
-    public void setConnectionStateHashMap(String macAddress, String connectionState) {
-        getConnectionStateHashMap().put(macAddress, connectionState);
+
+    public Map<String, View> getExpandedViews() {
+        if (expandedViews == null){
+            expandedViews = new HashMap<>();
+        }
+        return expandedViews;
     }
 }

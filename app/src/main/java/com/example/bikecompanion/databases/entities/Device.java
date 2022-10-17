@@ -16,12 +16,12 @@ public class Device {
     private String deviceMacAddress;
     private String deviceAssignedName;
     private String deviceBleName;
-    private String deviceType;
+    private DeviceType deviceType;
     private DeviceType deviceTypeEnum;
     private String connectionState;
 
 
-    public Device(String deviceAssignedName, String deviceBleName, String deviceMacAddress, String deviceType) {
+    public Device(String deviceAssignedName, String deviceBleName, String deviceMacAddress, DeviceType deviceType) {
         this.deviceAssignedName = deviceAssignedName;
         this.deviceBleName = deviceBleName;
         this.deviceMacAddress = deviceMacAddress;
@@ -41,7 +41,7 @@ public class Device {
         return deviceMacAddress;
     }
 
-    public String getDeviceType() {
+    public DeviceType getDeviceType() {
         return deviceType;
     }
 

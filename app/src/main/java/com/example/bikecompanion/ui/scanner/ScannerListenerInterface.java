@@ -1,12 +1,14 @@
 package com.example.bikecompanion.ui.scanner;
 
+import com.example.bikecompanion.deviceTypes.DeviceType;
+
 public class ScannerListenerInterface {
     private int imageResource;
     private String deviceName;
     private String deviceMacAddress;
-    private String deviceType;
+    private DeviceType deviceType;
 
-    public ScannerListenerInterface(int imageResource, String deviceName, String deviceMacAddress, String deviceType){
+    public ScannerListenerInterface(int imageResource, String deviceName, String deviceMacAddress, DeviceType deviceType){
         this.imageResource = imageResource;
         this.deviceName = deviceName;
         this.deviceMacAddress = deviceMacAddress;
@@ -25,7 +27,7 @@ public class ScannerListenerInterface {
         return deviceMacAddress;
     }
 
-    public String getDeviceType(){
+    public DeviceType getDeviceType(){
         return deviceType;
     }
 

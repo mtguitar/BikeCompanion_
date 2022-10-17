@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.ParcelUuid;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ import com.example.bikecompanion.R;
 import com.example.bikecompanion.adapters.scanner.RecyclerViewInterface;
 import com.example.bikecompanion.adapters.scanner.ScannerAdapter;
 import com.example.bikecompanion.ble.BleScannerService;
+import com.example.bikecompanion.deviceTypes.DeviceType;
 import com.example.bikecompanion.sharedClasses.RegisterBroadcastReceiver;
 import com.example.bikecompanion.constants.Constants;
 import com.example.bikecompanion.databases.entities.Device;
@@ -38,10 +40,12 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
 
     private static final String TAG = "FlareLog ScanFrag";
 
+    private ScannerViewModel scannerViewModel;
+
     //scanning vars
     private boolean scanning = true;
     private String serviceUuids;
-    private String deviceType;
+    private DeviceType deviceType;
     private ArrayList scanResults;
     private RecyclerView recyclerView;
     private String deviceName;
@@ -57,20 +61,16 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
     private SharedEntitiesViewModel myDevicesViewModel;
 
 
-
-
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        myDevicesViewModel = new ViewModelProvider(this).get(SharedEntitiesViewModel.class);
-
+        scannerViewModel = new ViewModelProvider(this).get(ScannerViewModel.class);
+        scannerViewModel.bindService();
         getVarsFromPreviousFragment();
 
-
-
-
         //SendCommand to BleScannerService to start scanning
-        sendCommandToService(BleScannerService.class, Constants.ACTION_START_OR_RESUME_SERVICE);
+        scannerViewModel.startScan(ParcelUuid.fromString(serviceUuids), deviceType);
+//        sendCommandToService(BleScannerService.class, Constants.ACTION_START_OR_RESUME_SERVICE);
 
     }
 
@@ -100,16 +100,16 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
     @Override
     public void onPause() {
         super.onPause();
-        sendCommandToService(BleScannerService.class, Constants.ACTION_STOP_SERVICE);
+        scannerViewModel.stopScan();
+//        sendCommandToService(BleScannerService.class, Constants.ACTION_STOP_SERVICE);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        sendCommandToService(BleScannerService.class, Constants.ACTION_STOP_SERVICE);
+        scannerViewModel.stopScan();
+//        sendCommandToService(BleScannerService.class, Constants.ACTION_STOP_SERVICE);
     }
-
-
 
 
     private void getVarsFromPreviousFragment(){
@@ -171,14 +171,16 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
             @Override
             public void onClick(View view) {
                 if(scanning){
-                    sendCommandToService(BleScannerService.class, Constants.ACTION_STOP_SERVICE);
+                    scannerViewModel.stopScan();
+//                    sendCommandToService(BleScannerService.class, Constants.ACTION_STOP_SERVICE);
                 }
                 else{
                     if(scanResults != null) {
                         scanResults.clear();
                         updateRecycleViewer(scanResults);
                     }
-                    sendCommandToService(BleScannerService.class, Constants.ACTION_START_OR_RESUME_SERVICE);
+                    scannerViewModel.startScan(ParcelUuid.fromString(serviceUuids), deviceType);
+//                    sendCommandToService(BleScannerService.class, Constants.ACTION_START_OR_RESUME_SERVICE);
                 }
             }
         });
@@ -191,18 +193,18 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
 
         //Get device info when clicked
         ScannerAdapter scannerAdapter = new ScannerAdapter(scanResults, this);
-        deviceName = scannerAdapter.scanResultsArrayList.get(position).getDeviceName();
-        deviceMacAddress = scannerAdapter.scanResultsArrayList.get(position).getDeviceMacAddress();
-        deviceType = scannerAdapter.scanResultsArrayList.get(position).getDeviceType();
+        deviceName = scannerAdapter.scanResults.get(position).getDeviceName();
+        deviceMacAddress = scannerAdapter.scanResults.get(position).getDeviceMacAddress();
+        deviceType = scannerAdapter.scanResults.get(position).getDeviceType();
     }
 
     //Adds device to MyDevices database then navigates to MyDevices frag
     @Override
     public void onButtonClick(int position) {
         ScannerAdapter scannerAdapter = new ScannerAdapter(scanResults, this);
-        String deviceName = scannerAdapter.scanResultsArrayList.get(position).getDeviceName();
-        String deviceMacAddress = scannerAdapter.scanResultsArrayList.get(position).getDeviceMacAddress();
-        String deviceType = scannerAdapter.scanResultsArrayList.get(position).getDeviceType();
+        String deviceName = scannerAdapter.scanResults.get(position).getDeviceName();
+        String deviceMacAddress = scannerAdapter.scanResults.get(position).getDeviceMacAddress();
+        DeviceType deviceType = scannerAdapter.scanResults.get(position).getDeviceType();
 
         Device newDevice = new Device(deviceName, deviceName, deviceMacAddress, deviceType);
         LiveData<List<Device>> allDevices = myDevicesViewModel.getAllDevices();
@@ -213,22 +215,22 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
     }
 
 
-    /**
-     * BleScannerService
-     */
-    //Sends intents to BleScannerService
-    private void sendCommandToService(Class serviceClass, String action) {
-        Intent bleServiceIntent = new Intent(requireContext(), serviceClass);
-        bleServiceIntent.setAction(action);
-        if(serviceUuids != null) {
-            bleServiceIntent.putExtra("serviceUuids", serviceUuids);
-        }
-        if(deviceType != null) {
-            bleServiceIntent.putExtra("deviceType", deviceType);
-        }
-        requireContext().startService(bleServiceIntent);
-        Log.d(TAG, "Sent intent to " + serviceClass + " " + action);
-    }
+//    /**
+//     * BleScannerService
+//     */
+//    //Sends intents to BleScannerService
+//    private void sendCommandToService(Class serviceClass, String action) {
+//        Intent bleServiceIntent = new Intent(requireContext(), serviceClass);
+//        bleServiceIntent.setAction(action);
+//        if(serviceUuids != null) {
+//            bleServiceIntent.putExtra("serviceUuids", serviceUuids);
+//        }
+//        if(deviceType != null) {
+//            bleScannerService.setDeviceType(deviceType);
+//        }
+//        requireContext().startService(bleServiceIntent);
+//        Log.d(TAG, "Sent intent to " + serviceClass + " " + action);
+//    }
 
     /**
      * Broadcast receiver

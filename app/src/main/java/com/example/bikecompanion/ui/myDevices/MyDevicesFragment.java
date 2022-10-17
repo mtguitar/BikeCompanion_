@@ -35,7 +35,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -47,19 +46,15 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     private View view;
     private SharedEntitiesViewModel sharedEntitiesViewModel;
     private MyDevicesAdapter deviceAdapter;
-//    private HashMap<String, String> connectionStateHashMap;
     private List<Device> deviceList;
     private ArrayList<View> rowList;
 
     //variables related to keeping track of recyclerView items/devices/views
     private int itemsOpen = 0;
-    private View lastItemOpen;
-    private ImageView lastArrowOpen;
-    private String lastVisibleDevice;
-    private String connectedDeviceMacAddress;
     private String visibleDeviceMacAddress;
     private View constraintLayoutDeviceInfo;
     private Device currentDevice;
+    private String connectedDeviceMacAddress;
 
     //views contained within each recyclerView item
     private View itemView;
@@ -92,124 +87,53 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_my_devices, container, false);
         initFAB();
         initRecyclerView();
         initObservers();
+
         return view;
     }
 
     private void initFAB() {
         FloatingActionButton fabNewDevice = view.findViewById(R.id.fac_add_device);
-        fabNewDevice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                NavDirections action = MyDevicesFragmentDirections.actionNavMyDevicesToNavAddDevice();
-                Navigation.findNavController(getView()).navigate(action);
-            }
+        fabNewDevice.setOnClickListener(view -> {
+            NavDirections action = MyDevicesFragmentDirections.actionNavMyDevicesToNavAddDevice();
+            Navigation.findNavController(getView()).navigate(action);
         });
     }
-//TODO Move all the shareentitiesviewmodel stuff with the cardviews over to the adapter and figure out how to keep open state persistent
+
     private void initRecyclerView() {
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view_my_bikes);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         deviceAdapter = new MyDevicesAdapter(this, sharedEntitiesViewModel);
         recyclerView.setAdapter(deviceAdapter);
+        for (View expandedView : sharedEntitiesViewModel.getExpandedViews().values()){
+            expandedView.setVisibility(View.VISIBLE);
+            Log.d(TAG, "Got expanded View: " + expandedView);
+        }
     }
 
     private void initObservers() {
-        //list of devices from devices_table
-        sharedEntitiesViewModel.getAllDevices().observe(getViewLifecycleOwner(), new Observer<List<Device>>() {
-            @Override
-            public void onChanged(List<Device> devices) {
-                deviceList = devices;
-                deviceAdapter.setDevices(devices);
-                if (deviceList != null && getConnectionStateHashMap().size() == 0){
-                    initConnectionStateHashMap();
-                }
-                Log.d(TAG, "Received devices live data from db: " + devices);
-
-            }
-        });
-
-        //connectionStateHashmap key = macAddress, value = connectionState (connected, services discovered, disconnected)
-        sharedEntitiesViewModel.getConnectionStateHashMapLive().observe(getActivity(), connectionStateHashMapArg -> {
-            //merge existing hashMap with updated hashMap
-            getConnectionStateHashMap().putAll(connectionStateHashMapArg);
-
-            //checks which device was updated and calls updateConnectionState to update UI
-            String gattMacAddress = getConnectionStateHashMap().get(Constants.GATT_MAC_ADDRESS);
-            String connectionState = getConnectionStateHashMap().get(gattMacAddress);
-            String gattStatus = getConnectionStateHashMap().get(Constants.GATT_STATUS);
-            Log.d(TAG, "Received ConnectionStateHashMapLive connectionState: " + gattMacAddress + " " + connectionState);
-            updateConnectionStateUI(gattMacAddress, connectionState);
-
-            if (gattStatus.equals(Constants.GATT_ERROR)){
-                return;
-            }
-            if (Constants.CONNECTION_STATE_CONNECTED.equals(connectionState)){
-                sharedEntitiesViewModel.discoverServices(gattMacAddress);
-                Log.d(TAG, "Discover services: " + gattMacAddress);
-            }
-            if (Constants.CONNECTION_STATE_SERVICES_DISCOVERED.equals(connectionState)) {
-                int size = deviceList.size();
-                for (int i = 0; i < size; i++){
-                    String deviceMacAddress = deviceList.get(i).getDeviceMacAddress();
-                    if (gattMacAddress.equals(deviceMacAddress)) {
-                        Device device = deviceList.get(i);
-                        requestDeviceCharacteristic(device);
-                    }
-                    return;
-                }
-            }
-        });
-
+        //List of devices from devices_table
+        sharedEntitiesViewModel.getAllDevices().observe(getViewLifecycleOwner(), devices -> updateDevices(devices));
+        //Queue of updates to a device's connection state.  A new object is added to the queue when there is a change to a device's connection state
+        sharedEntitiesViewModel.getConnectionStateQueueLive().observe(getActivity(), concurrentLinkedQueue -> updateConnectionState(concurrentLinkedQueue));
         //Queue of characteristic objects.  A new object is added to the queue everytime there is a change to a characteristic
-        sharedEntitiesViewModel.getCharacteristicQueueLive().observe(getActivity(), concurrentLinkedQueue -> {
-            ConcurrentLinkedQueue<CharacteristicData> queue = concurrentLinkedQueue;
-            if (queue.peek() == null) {
-                return;
-            }
-            CharacteristicData characteristicData = queue.poll();
-            String gattMacAddress = characteristicData.getCharacteristicMacAddress();
-            String characteristicUUID = characteristicData.getCharacteristicUUID();
-            byte[] characteristicValueByte = characteristicData.getCharacteristicValue();
-
-            updateCharacteristicUI(gattMacAddress, characteristicUUID, characteristicValueByte);
-        });
-
+        sharedEntitiesViewModel.getCharacteristicQueueLive().observe(getActivity(), concurrentLinkedQueue -> updateCharacteristics(concurrentLinkedQueue));
         //Boolean to check if operations are pending
-        sharedEntitiesViewModel.getOperationsPendingLive().observe(getActivity(), operationsPending -> {
-            Log.d(TAG, "OperationsPending: " + operationsPending);
-            if (rowProgressBar == null){
-                Log.d(TAG, "Progress bar is null");
-                return;
-            }
-            if (!operationsPending){
-                rowProgressBar.setVisibility(View.INVISIBLE);
-                Log.d(TAG, "Progress bar is gone");
-            }
-            else{
-                rowProgressBar.setVisibility(View.VISIBLE);
-            }
-        });
+        sharedEntitiesViewModel.getOperationsPendingLive().observe(getActivity(), operationsPending -> updateOperationsPending(operationsPending));
     }
 
-
-    //initializes connectionStateHashMap and sets value for each device in deviceList to disconnected
-    private void initConnectionStateHashMap(){
-        for (Device device : deviceList) {
-            String deviceMacAddress = device.getDeviceMacAddress();
-            sharedEntitiesViewModel.setConnectionStateHashMap(deviceMacAddress, Constants.CONNECTION_STATE_DISCONNECTED);
-        }
-    }
 
     //On click listener for clicking on an "device" item in the recyclerView
     @Override
     public void onRVItemClick(int position, View itemView, List<Device> devices) {
+        currentDevice = devices.get(position);
+        this.itemView = itemView;
+
         textViewDeviceName = itemView.findViewById(R.id.text_view_my_device_name);
         textViewMacAddress = itemView.findViewById(R.id.text_view_my_device_id);
         textViewDeviceBattery = itemView.findViewById(R.id.text_view_device_battery);
@@ -225,9 +149,10 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         imageViewArrow = itemView.findViewById(R.id.image_view_arrow);
         rowProgressBar = itemView.findViewById(R.id.row_progress_bar);
 
-        currentDevice = devices.get(position);
-        this.itemView = itemView;
         constraintLayoutDeviceInfo = itemView.findViewById(R.id.constraint_layout_device_info);
+
+        Log.d(TAG, "You clicked on expanded view: " + constraintLayoutDeviceInfo);
+
         rowList = new ArrayList<>();
         Collections.addAll(rowList,
                 rowBattery = itemView.findViewById(R.id.row_battery),
@@ -237,33 +162,24 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
                 rowLocation = itemView.findViewById(R.id.row_csc_location),
                 rowFeature = itemView.findViewById(R.id.row_CSC_mode)
         );
-
-        //if the clicked recyclerView item is not currently expanded
-        if (constraintLayoutDeviceInfo.getVisibility() == View.GONE) {
-            //If another recyclerView item is already expanded -> Disconnect the last visible device
-            String lastVisibleDeviceConnectionState = getConnectionStateHashMap().get(lastVisibleDevice);
-            if (lastVisibleDeviceConnectionState != null &&
-                    !lastVisibleDeviceConnectionState.equals(Constants.CONNECTION_STATE_DISCONNECTED)) {
-                sharedEntitiesViewModel.disconnectDevice(lastVisibleDevice);
-                Log.d(TAG, "Item clicked, trying to disconnect: " + lastVisibleDevice);
+        hideCharacteristicRows();
+        constraintLayoutDeviceInfo.setVisibility(View.VISIBLE);
+        //Loop through map of devices/views that are currently visible
+        for (String macAddress : sharedEntitiesViewModel.getExpandedViews().keySet()) {
+            //Disconnect device
+            sharedEntitiesViewModel.disconnectDevice(macAddress);
+            Log.d(TAG, "Trying to disconnect device");
+            //Hide view
+            sharedEntitiesViewModel.getExpandedViews().get(macAddress).setVisibility(View.GONE);
+            //Delete entry in expandedViews map
+            sharedEntitiesViewModel.getExpandedViews().remove(macAddress);
             }
-            //Connect device that is clicked
+        //Connects device and adds it to expandedViews map if it's still visible after looping through list
+        if (constraintLayoutDeviceInfo.getVisibility() == View.VISIBLE){
+            sharedEntitiesViewModel.connectDevice(currentDevice.getDeviceMacAddress());
+            sharedEntitiesViewModel.getExpandedViews().put(currentDevice.getDeviceMacAddress(), constraintLayoutDeviceInfo);
+            //Stores which device is currently expanded
             visibleDeviceMacAddress = currentDevice.getDeviceMacAddress();
-            sharedEntitiesViewModel.connectDevice(visibleDeviceMacAddress);
-            Log.d(TAG, "Connect device: " + visibleDeviceMacAddress);
-            itemsOpen++;
-        }
-        //If the clicked recyclerView item is already expanded -> Disconnect the visible device
-        else {
-            if (visibleDeviceMacAddress == null || getConnectionStateHashMap().get(visibleDeviceMacAddress) == null){
-                return;
-            }
-            String visibleDeviceConnectionState = getConnectionStateHashMap().get(visibleDeviceMacAddress);
-            if (!visibleDeviceConnectionState.equals(Constants.CONNECTION_STATE_DISCONNECTED)) {
-                Log.d(TAG, "Item clicked, trying to disconnect: " + visibleDeviceMacAddress);
-                sharedEntitiesViewModel.disconnectDevice(visibleDeviceMacAddress);
-                Log.d(TAG, "Disconnect device: " + visibleDeviceMacAddress);
-            }
         }
     }
 
@@ -288,7 +204,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     public void onButtonClickConnectDisconnect(int position, List<Device> devices) {
         Device currentDevice = devices.get(position);
         String deviceMacAddress = currentDevice.getDeviceMacAddress();
-        String deviceConnectionState = getConnectionStateHashMap().get(deviceMacAddress);
+        String deviceConnectionState = sharedEntitiesViewModel.getConnectionStateHashMap().get(deviceMacAddress);
 
         if (Constants.CONNECTION_STATE_DISCONNECTED.equals(deviceConnectionState)) {
             sharedEntitiesViewModel.connectDevice(deviceMacAddress);
@@ -305,26 +221,29 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         hideCharacteristicRows();
     }
 
-    private void updateConnectionStateUI(String gattMacAddress, String connectionState) {
-        //displays connection state in textView
-        if (gattMacAddress.equals(visibleDeviceMacAddress)){
-            //Set textViewDeviceState
-            if (textViewDeviceState != null && gattMacAddress.equals(textViewMacAddress.getText())) {
-                String connectionStateName = GenericDeviceType.getConnectionStateNameHashMap().get(connectionState);
-                textViewDeviceState.setText(connectionStateName);
-                buttonConnectDisconnectDevice.setEnabled(true);
-            }
-            //if connected, changes button to "disconnect"
-            if (Constants.CONNECTION_STATE_CONNECTED.equals(connectionState)) {
-                connectedDeviceMacAddress = gattMacAddress;
-                buttonConnectDisconnectDevice.setText("Disconnect");
-            }
-            //if disconnected, changes button to "Connect," sets isConnected to false, and deletes connectedDeviceMacAddress
-            if (Constants.CONNECTION_STATE_DISCONNECTED.equals(connectionState)) {
-                buttonConnectDisconnectDevice.setEnabled(true);
-                buttonConnectDisconnectDevice.setText("Connect");
-                connectedDeviceMacAddress = null;
-            }
+    private void updateConnectionStateUI(String macAddress, String connectionState) {
+        //Check if the updated connectionState info concerns the device that is currently visible
+        if (!macAddress.equals(visibleDeviceMacAddress)) {
+            Log.d(TAG, "Received connection state info for device that's not visible");
+            return;
+        }
+        Log.d(TAG, "Updating connectionState UI");
+        //Set textViewDeviceState
+        if (textViewDeviceState != null && macAddress.equals(textViewMacAddress.getText())) {
+            String connectionStateName = GenericDeviceType.getConnectionStateNameHashMap().get(connectionState);
+            textViewDeviceState.setText(connectionStateName);
+            buttonConnectDisconnectDevice.setEnabled(true);
+        }
+        //if connected, changes button to "disconnect"
+        if (Constants.CONNECTION_STATE_CONNECTED.equals(connectionState)) {
+            connectedDeviceMacAddress = macAddress;
+            buttonConnectDisconnectDevice.setText(Constants.BUTTON_TEXT_DISCONNECT);
+        }
+        //if disconnected, changes button to "Connect," sets isConnected to false, and deletes connectedDeviceMacAddress
+        if (Constants.CONNECTION_STATE_DISCONNECTED.equals(connectionState)) {
+            buttonConnectDisconnectDevice.setEnabled(true);
+            buttonConnectDisconnectDevice.setText(Constants.BUTTON_TEXT_CONNECT);
+            connectedDeviceMacAddress = null;
         }
     }
 
@@ -386,8 +305,81 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         }
     }
 
-    private Map<String, String> getConnectionStateHashMap(){
-        return sharedEntitiesViewModel.getConnectionStateHashMap();
+
+    /**
+     *
+     * Methods related to updates to liveData
+     */
+
+    private void updateDevices(List<Device> devices) {
+        deviceList = devices;
+        deviceAdapter.setDevices(devices);
+        Log.d(TAG, "Received devices live data from db: " + devices);
+    }
+
+    private void updateConnectionState(ConcurrentLinkedQueue concurrentLinkedQueue) {
+        ConcurrentLinkedQueue<String[]> connectionStateQueue = concurrentLinkedQueue;
+        if (connectionStateQueue.peek() == null) {
+            return;
+        }
+        String[] connectionStateUpdate = connectionStateQueue.poll();
+        String macAddress = connectionStateUpdate[0];
+        String connectionState = connectionStateUpdate[1];
+        Log.d(TAG, "Received connectionStateUpdate: " + macAddress + " " + connectionState);
+        updateConnectionStateUI(macAddress, connectionState);
+
+        //If device is connected, send command to discovered services on the device, which is a necessary step to read/write the device
+        if (Constants.CONNECTION_STATE_CONNECTED.equals(connectionState)){
+            sharedEntitiesViewModel.discoverServices(macAddress);
+            Log.d(TAG, "Discover services: " + macAddress);
+        }
+
+        //If services are discovered, send command to discovered services on the device, which is a necessary step to read/write the device
+        if (Constants.CONNECTION_STATE_SERVICES_DISCOVERED.equals(connectionState)) {
+            Log.d(TAG, "Services discovered: " + macAddress);
+            for (Device device : deviceList){
+                String deviceMacAddress = device.getDeviceMacAddress();
+                Log.d(TAG, "DeviceList loop: " + macAddress + " " + deviceMacAddress);
+                if (macAddress.equals(deviceMacAddress)) {
+                    requestDeviceCharacteristic(device);
+                    Log.d(TAG, "Requesting characteristics for: " + macAddress);
+                    return;
+                }
+            }
+
+        }
+        if (Constants.CONNECTION_STATE_DISCONNECTED.equals(connectionState)){
+
+        }
+    }
+
+    private void updateCharacteristics(ConcurrentLinkedQueue concurrentLinkedQueue) {
+        ConcurrentLinkedQueue<CharacteristicData> characteristicQueue = concurrentLinkedQueue;
+        if (characteristicQueue.peek() == null) {
+            return;
+        }
+        CharacteristicData characteristicData = characteristicQueue.poll();
+        String gattMacAddress = characteristicData.getCharacteristicMacAddress();
+        String characteristicUUID = characteristicData.getCharacteristicUUID();
+        byte[] characteristicValueByte = characteristicData.getCharacteristicValue();
+
+        updateCharacteristicUI(gattMacAddress, characteristicUUID, characteristicValueByte);
+    }
+
+    private void updateOperationsPending(Boolean operationsPending) {
+        Log.d(TAG, "OperationsPending: " + operationsPending);
+        if (rowProgressBar == null){
+            Log.d(TAG, "Progress bar is null");
+            return;
+        }
+        if (!operationsPending){
+            rowProgressBar.setVisibility(View.INVISIBLE);
+            Log.d(TAG, "Progress bar is gone");
+        }
+        else{
+            rowProgressBar.setVisibility(View.VISIBLE);
+            Log.d(TAG, "Progress bar is visible");
+        }
     }
 
 }
