@@ -14,7 +14,7 @@ public class GenericDeviceType extends AbstractDeviceType {
     /**
      * Advertised service UUIDs
      */
-    public final static String STRING_SERVICE_ADVERTISED_1 = "0000180a-0000-1000-8000-00805f9b34fb";
+    public final static String STRING_SERVICE_ADVERTISED_1 = "00000000-0000-0000-0000-000000000000";
 
     public final static UUID UUID_SERVICE_ADVERTISED_1 = UUID.fromString(STRING_SERVICE_ADVERTISED_1);
 
