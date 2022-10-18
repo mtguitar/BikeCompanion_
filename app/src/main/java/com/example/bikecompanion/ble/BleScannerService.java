@@ -17,12 +17,9 @@ import android.os.IBinder;
 import android.os.ParcelUuid;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleService;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 
-import com.example.bikecompanion.R;
 import com.example.bikecompanion.constants.Constants;
 import com.example.bikecompanion.databases.EntitiesRepository;
 import com.example.bikecompanion.databases.entities.Device;
@@ -44,7 +41,7 @@ public class BleScannerService extends LifecycleService {
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothLeScanner scanner;
     private Handler handler;
-    private List<Device> deviceList;
+    private List<Device> devices;
 
     //filter and scan settings vars
     private ScanFilter scanFilter;
@@ -62,7 +59,7 @@ public class BleScannerService extends LifecycleService {
 
 
     public BleScannerService() {
-        initObservers();
+//        initObservers();
 
     }
 
@@ -129,7 +126,9 @@ public class BleScannerService extends LifecycleService {
 
 
     // Scans for devices
-    public void startScan(ParcelUuid serviceUuids, DeviceType deviceType) {
+    public void startScan(ParcelUuid serviceUuids, DeviceType deviceType, List<Device> devices) {
+        this.devices = devices;
+        this.deviceType = deviceType;
 
         //initialize ble
         initializeBluetooth();
@@ -137,8 +136,10 @@ public class BleScannerService extends LifecycleService {
         //Set scan settings and filter
         scanSettings =
                 new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
-        scanFilter =
-                new ScanFilter.Builder().setServiceUuid(serviceUuids).build();
+        if (!deviceType.equals(DeviceType.GENERIC)){
+            scanFilter =
+                    new ScanFilter.Builder().setServiceUuid(serviceUuids).build();
+        }
 
         // Sets a timer
         handler = new Handler();
@@ -153,10 +154,10 @@ public class BleScannerService extends LifecycleService {
         }, SCAN_PERIOD);
         scanner.startScan(Collections.singletonList(scanFilter), scanSettings, scanCallback);
         scanning = true;
+
         //send intent to fragment alerting it that scanning has started
         sendIntentToFragment(Constants.ACTION_BLE_SCANNING_STARTED);
         Log.d(TAG, "Scanning");
-
     }
 
     //scanCallback object to receive scan results
@@ -241,16 +242,15 @@ public class BleScannerService extends LifecycleService {
             }
         }
 
-        //checks to see if last device discovered is already myDevices
-        int deviceSize = deviceList.size();
-        if(deviceSize > 0) {
-            for (int j = 0; j < deviceSize; j++) {
-                if (deviceMacAddress.equals(deviceList.get(j).getDeviceMacAddress())) {
+        //checks to see if last device discovered is already in myDevices
+        int deviceSize = devices.size();
+        if (deviceSize > 0) {
+            for (Device device : devices) {
+                if (deviceMacAddress.equals(device.getDeviceMacAddress())) {
                     return;
                 }
             }
         }
-
             //if deviceMacAddress not already in list, add device to scannerResults
             int image = deviceType.getIcon();
             scanResults.add(new ScannerListenerInterface(image, deviceName, deviceMacAddress, deviceType));
@@ -258,20 +258,20 @@ public class BleScannerService extends LifecycleService {
         }
 
 
-    private void initObservers() {
-        Log.d(TAG, "initObservers ");
-        EntitiesRepository entitiesRepository = new EntitiesRepository(getApplication());
-        entitiesRepository.getAllDevices().observe(this, new Observer<List<Device>>() {
-
-            @Override
-            public void onChanged(List<Device> devices) {
-                deviceList = devices;
-                Log.d(TAG, "Received devices live data ");
-
-            }
-
-        });
-    }
+//    private void initObservers() {
+//        Log.d(TAG, "initObservers ");
+//        EntitiesRepository entitiesRepository = new EntitiesRepository(getApplication());
+//        entitiesRepository.getAllDevices().observe(this, new Observer<List<Device>>() {
+//
+//            @Override
+//            public void onChanged(List<Device> devices) {
+//                deviceList = devices;
+//                Log.d(TAG, "Received devices live data ");
+//
+//            }
+//
+//        });
+//    }
 
 }
 

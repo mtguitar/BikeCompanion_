@@ -12,7 +12,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
@@ -36,7 +35,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class MyDevicesFragment extends Fragment implements MyDevicesListenerInterface {
@@ -46,7 +44,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
     private View view;
     private SharedEntitiesViewModel sharedEntitiesViewModel;
     private MyDevicesAdapter deviceAdapter;
-    private List<Device> deviceList;
+    private List<Device> devices;
     private ArrayList<View> rowList;
 
     //variables related to keeping track of recyclerView items/devices/views
@@ -312,7 +310,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
      */
 
     private void updateDevices(List<Device> devices) {
-        deviceList = devices;
+        this.devices = devices;
         deviceAdapter.setDevices(devices);
         Log.d(TAG, "Received devices live data from db: " + devices);
     }
@@ -337,7 +335,7 @@ public class MyDevicesFragment extends Fragment implements MyDevicesListenerInte
         //If services are discovered, send command to discovered services on the device, which is a necessary step to read/write the device
         if (Constants.CONNECTION_STATE_SERVICES_DISCOVERED.equals(connectionState)) {
             Log.d(TAG, "Services discovered: " + macAddress);
-            for (Device device : deviceList){
+            for (Device device : devices){
                 String deviceMacAddress = device.getDeviceMacAddress();
                 Log.d(TAG, "DeviceList loop: " + macAddress + " " + deviceMacAddress);
                 if (macAddress.equals(deviceMacAddress)) {

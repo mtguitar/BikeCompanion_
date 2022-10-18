@@ -176,6 +176,7 @@ public class HomeFragment extends Fragment {
 
 //    private void initBleServiceObservers() {
 //        //observes changes to BLE device connection state
+//        sharedEntitiesViewModel.getConnectionStateQueueLive().observe(getActivity(), concurrentLinkedQueue -> );
 //        sharedEntitiesViewModel.getConnectionStateQueueLive().observe(getActivity(), (ConcurrentLinkedQueue) concurrentLinkedQue -> {
 //                     });
 //    }
@@ -186,7 +187,6 @@ public class HomeFragment extends Fragment {
         {
             Bike bike = bikeList.get(0);
             String bikeName = bike.getBikeName();
-
             textViewHomeBikeName.setText(bikeName);
         }
 

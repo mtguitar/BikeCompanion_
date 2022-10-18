@@ -19,6 +19,11 @@ public enum DeviceType {
             return FlareRTDeviceType.getIcon();
         }
 
+        @Override
+        public DeviceType getDeviceType() {
+            return FRONT_LIGHT;
+        }
+
     },
     REAR_LIGHT{
         @Override
@@ -33,6 +38,11 @@ public enum DeviceType {
         public int getIcon(){
             return FlareRTDeviceType.getIcon();
         }
+
+        @Override
+        public DeviceType getDeviceType() {
+            return REAR_LIGHT;
+        }
     },
     SPEED_CADENCE{
         @Override
@@ -46,6 +56,11 @@ public enum DeviceType {
         @Override
         public int getIcon(){
             return SpeedCadenceDeviceType.getIcon();
+        }
+
+        @Override
+        public DeviceType getDeviceType() {
+            return SPEED_CADENCE;
         }
     },
     GENERIC{
@@ -63,6 +78,11 @@ public enum DeviceType {
         public int getIcon(){
             return GenericDeviceType.getIcon();
         }
+
+        @Override
+        public DeviceType getDeviceType() {
+            return GENERIC;
+        }
     };
 
 
@@ -74,5 +94,6 @@ public enum DeviceType {
     public abstract ArrayList<Characteristic> getCharacteristicList();
     public abstract ArrayList<UUID> getAdvertisedServiceList();
     public abstract int getIcon();
+    public abstract DeviceType getDeviceType();
 
 }

@@ -67,10 +67,6 @@ public class MainActivity extends AppCompatActivity {
             promptEnableBT();
         }
 
-
-
-
-
         //Request permissions
         int PERMISSION_ALL = 1;
         ActivityCompat.requestPermissions

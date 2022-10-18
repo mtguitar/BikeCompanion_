@@ -11,35 +11,52 @@ import android.os.ParcelUuid;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 
-import com.example.bikecompanion.ble.BleConnectionService;
 import com.example.bikecompanion.ble.BleScannerService;
 import com.example.bikecompanion.ble.GattManager;
 import com.example.bikecompanion.ble.gattOperations.GattOperation;
 import com.example.bikecompanion.databases.EntitiesRepository;
+import com.example.bikecompanion.databases.entities.Device;
 import com.example.bikecompanion.deviceTypes.DeviceType;
 import com.example.bikecompanion.sharedClasses.CharacteristicData;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class ScannerViewModel extends ViewModel {
+public class ScannerViewModel extends AndroidViewModel {
 
     private final static String TAG = "FlareLog ScannerVM";
 
     private Context context;
+    private EntitiesRepository repository;
     private ConcurrentLinkedQueue<GattOperation> operationQueue;
     private GattOperation pendingOperation;
     private ConcurrentLinkedQueue<CharacteristicData> characteristicQueue;
     private Handler handler;
     private BleScannerService bleScannerService;
+    private DeviceType deviceType;
+    private ParcelUuid serviceUuids;
+    private boolean pendingScanRequest;
+    private List<Device> devices;
+    private LiveData<List<Device>> allDevices;
+
 
     private boolean boundToService;
+
+    public ScannerViewModel(@NonNull Application application) {
+        super(application);
+        context = application.getApplicationContext();
+        repository = new EntitiesRepository(application);
+        allDevices = repository.getAllDevices();
+        bindService();
+    }
 
 
     public void bindService() {
         if (!boundToService) {
-            Intent intent = new Intent(context, BleConnectionService.class);
+            Intent intent = new Intent(context, BleScannerService.class);
             context.bindService(intent, serviceConnection, context.BIND_AUTO_CREATE);
         }
     }
@@ -50,6 +67,9 @@ public class ScannerViewModel extends ViewModel {
         public void onServiceConnected(ComponentName name, IBinder service) {
             bleScannerService = ((BleScannerService.LocalBinder) service).getService();
             boundToService = true;
+            if (pendingScanRequest){
+                startScan(serviceUuids, deviceType, devices);
+            }
             Log.d(TAG, "Bound to service: " + service + " " + name);
         }
 
@@ -60,8 +80,16 @@ public class ScannerViewModel extends ViewModel {
         }
     };
 
-    public void startScan(ParcelUuid serviceUuids, DeviceType deviceType){
-        bleScannerService.startScan(serviceUuids, deviceType);
+    public void startScan(ParcelUuid serviceUuids, DeviceType deviceType, List<Device> devices){
+        if (boundToService){
+            bleScannerService.startScan(serviceUuids, deviceType, devices);
+            pendingScanRequest = false;
+        }
+        else {
+            this.devices = devices;
+            this.serviceUuids = serviceUuids;
+            this.deviceType = deviceType;
+        }
     }
 
     public void stopScan(){
@@ -69,19 +97,10 @@ public class ScannerViewModel extends ViewModel {
     }
 
 
-//    //Sends intents to BleScannerService
-//    private void sendCommandToService(Class serviceClass, String action) {
-//        Intent bleServiceIntent = new Intent(requireContext(), serviceClass);
-//        bleServiceIntent.setAction(action);
-//        if(serviceUuids != null) {
-//            bleServiceIntent.putExtra("serviceUuids", serviceUuids);
-//        }
-//        if(deviceType != null) {
-//            bleScannerService.setDeviceType(deviceType);
-//        }
-//        requireContext().startService(bleServiceIntent);
-//        Log.d(TAG, "Sent intent to " + serviceClass + " " + action);
-//    }
+
+    public LiveData<List<Device>> getAllDevices() {
+        return allDevices;
+    }
 
 
 

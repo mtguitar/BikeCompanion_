@@ -43,7 +43,8 @@
         <argument
             android:name="deviceType"
             app:argType="com.example.bikecompanion.deviceTypes.DeviceType"
-            app:nullable="true" />
+            app:defaultValue="GENERIC"
+            app:nullable="false" />
         <action
             android:id="@+id/action_nav_scanner_to_nav_my_devices"
             app:destination="@id/nav_my_devices"

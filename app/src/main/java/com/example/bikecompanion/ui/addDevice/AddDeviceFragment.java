@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.QuickContactBadge;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +16,7 @@ import androidx.navigation.Navigation;
 import com.example.bikecompanion.R;
 import com.example.bikecompanion.deviceTypes.DeviceType;
 import com.example.bikecompanion.deviceTypes.FlareRTDeviceType;
+import com.example.bikecompanion.deviceTypes.GenericDeviceType;
 import com.example.bikecompanion.deviceTypes.SpeedCadenceDeviceType;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -26,20 +28,14 @@ public class AddDeviceFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_device, container, false);
 
-        Button buttonSelectFlare = view.findViewById(DeviceType.REAR_LIGHT.getIcon());
-        Button buttonSelectSpeed = view.findViewById(DeviceType.SPEED_CADENCE.getIcon());
-        Button buttonSelectOther = view.findViewById(DeviceType.GENERIC.getIcon());
 
+        Button buttonSelectFlare = view.findViewById(R.id.button_select_flare);
+        Button buttonSelectSpeed = view.findViewById(R.id.button_select_speed);
+        Button buttonSelectOther = view.findViewById(R.id.button_select_other);
 
-        buttonSelectFlare.setOnClickListener(view1 -> click(FlareRTDeviceType.STRING_SERVICE_ADVERTISED_1, DeviceType.REAR_LIGHT));
-        buttonSelectSpeed.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                click(SpeedCadenceDeviceType.STRING_SERVICE_ADVERTISED_1, DeviceType.SPEED_CADENCE);
-
-            }
-        });
-        buttonSelectOther.setOnClickListener(view12 -> click(null, DeviceType.GENERIC));
+        buttonSelectFlare.setOnClickListener(v -> click(FlareRTDeviceType.STRING_SERVICE_ADVERTISED_1, DeviceType.REAR_LIGHT));
+        buttonSelectSpeed.setOnClickListener(v -> click(SpeedCadenceDeviceType.STRING_SERVICE_ADVERTISED_1, DeviceType.SPEED_CADENCE));
+        buttonSelectOther.setOnClickListener(v -> click(GenericDeviceType.STRING_SERVICE_ADVERTISED_1, DeviceType.GENERIC));
 
         return view;
     }

@@ -15,6 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -27,6 +28,7 @@ import com.example.bikecompanion.R;
 import com.example.bikecompanion.adapters.scanner.RecyclerViewInterface;
 import com.example.bikecompanion.adapters.scanner.ScannerAdapter;
 import com.example.bikecompanion.ble.BleScannerService;
+import com.example.bikecompanion.databases.EntitiesRepository;
 import com.example.bikecompanion.deviceTypes.DeviceType;
 import com.example.bikecompanion.sharedClasses.RegisterBroadcastReceiver;
 import com.example.bikecompanion.constants.Constants;
@@ -41,6 +43,8 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
     private static final String TAG = "FlareLog ScanFrag";
 
     private ScannerViewModel scannerViewModel;
+
+    private List<Device> devices;
 
     //scanning vars
     private boolean scanning = true;
@@ -69,7 +73,7 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
         getVarsFromPreviousFragment();
 
         //SendCommand to BleScannerService to start scanning
-        scannerViewModel.startScan(ParcelUuid.fromString(serviceUuids), deviceType);
+        scannerViewModel.startScan(ParcelUuid.fromString(serviceUuids), deviceType, devices);
 //        sendCommandToService(BleScannerService.class, Constants.ACTION_START_OR_RESUME_SERVICE);
 
     }
@@ -82,7 +86,7 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
         setupViews();
         setOnClickListeners();
         setupRecyclerViewer();
-        observeLiveData();
+        initObservers();
         registerBroadcastReceiver();
 
         return view;
@@ -147,19 +151,6 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
         recyclerView.setAdapter(scannerAdapter);
         this.scanResults = scanResults;
     }
-    private void observeLiveData(){
-        //Setup observer of livedata for recyclerView, calls updateRecyclerView when data changes
-        final Observer<ArrayList<ScannerListenerInterface>> observerScanResults;
-        observerScanResults = new Observer<ArrayList<ScannerListenerInterface>>(){
-            public void onChanged(@Nullable final ArrayList scanResults) {
-                updateRecycleViewer(scanResults);
-            }
-        };
-
-        //start observing scan results
-        BleScannerService.getScanResults().observe(getActivity(), observerScanResults);
-    }
-
 
     /**
      * On clickListeners
@@ -179,7 +170,7 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
                         scanResults.clear();
                         updateRecycleViewer(scanResults);
                     }
-                    scannerViewModel.startScan(ParcelUuid.fromString(serviceUuids), deviceType);
+                    scannerViewModel.startScan(ParcelUuid.fromString(serviceUuids), deviceType, devices);
 //                    sendCommandToService(BleScannerService.class, Constants.ACTION_START_OR_RESUME_SERVICE);
                 }
             }
@@ -215,22 +206,6 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
     }
 
 
-//    /**
-//     * BleScannerService
-//     */
-//    //Sends intents to BleScannerService
-//    private void sendCommandToService(Class serviceClass, String action) {
-//        Intent bleServiceIntent = new Intent(requireContext(), serviceClass);
-//        bleServiceIntent.setAction(action);
-//        if(serviceUuids != null) {
-//            bleServiceIntent.putExtra("serviceUuids", serviceUuids);
-//        }
-//        if(deviceType != null) {
-//            bleScannerService.setDeviceType(deviceType);
-//        }
-//        requireContext().startService(bleServiceIntent);
-//        Log.d(TAG, "Sent intent to " + serviceClass + " " + action);
-//    }
 
     /**
      * Broadcast receiver
@@ -269,6 +244,25 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
 
         }
     };
+
+    private void initObservers(){
+        final Observer<ArrayList<ScannerListenerInterface>> observerScanResults;
+        observerScanResults = new Observer<ArrayList<ScannerListenerInterface>>(){
+            public void onChanged(@Nullable final ArrayList scanResults) {
+                updateRecycleViewer(scanResults);
+            }
+        };
+
+        //start observing scan results
+        BleScannerService.getScanResults().observe(getActivity(), observerScanResults);
+
+        //Observe changes to list of all devices
+        scannerViewModel.getAllDevices().observe(getViewLifecycleOwner(), devices -> updateDevices(devices));
+    }
+
+    private void updateDevices(List<Device> devices) {
+        this.devices = devices;
+    }
 
 
 }
