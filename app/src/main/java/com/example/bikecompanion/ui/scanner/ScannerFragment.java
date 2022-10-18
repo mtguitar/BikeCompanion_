@@ -15,7 +15,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -28,7 +27,6 @@ import com.example.bikecompanion.R;
 import com.example.bikecompanion.adapters.scanner.RecyclerViewInterface;
 import com.example.bikecompanion.adapters.scanner.ScannerAdapter;
 import com.example.bikecompanion.ble.BleScannerService;
-import com.example.bikecompanion.databases.EntitiesRepository;
 import com.example.bikecompanion.deviceTypes.DeviceType;
 import com.example.bikecompanion.sharedClasses.RegisterBroadcastReceiver;
 import com.example.bikecompanion.constants.Constants;
@@ -62,7 +60,7 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
     private static View progressBarScan;
     private static Button buttonAddToMyDevices;
 
-    private SharedEntitiesViewModel myDevicesViewModel;
+    private SharedEntitiesViewModel sharedEntitiesViewModel;
 
 
     @Override
@@ -70,12 +68,12 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
         super.onCreate(savedInstanceState);
         scannerViewModel = new ViewModelProvider(this).get(ScannerViewModel.class);
         scannerViewModel.bindService();
+        sharedEntitiesViewModel = new ViewModelProvider(this).get(SharedEntitiesViewModel.class);
+
         getVarsFromPreviousFragment();
 
         //SendCommand to BleScannerService to start scanning
         scannerViewModel.startScan(ParcelUuid.fromString(serviceUuids), deviceType, devices);
-//        sendCommandToService(BleScannerService.class, Constants.ACTION_START_OR_RESUME_SERVICE);
-
     }
 
     @Override
@@ -95,6 +93,7 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
     @Override
     public void onResume() {
         super.onResume();
+        initObservers();
         if(scanResults != null) {
             scanResults.clear();
             updateRecycleViewer(scanResults);
@@ -114,7 +113,6 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
         scannerViewModel.stopScan();
 //        sendCommandToService(BleScannerService.class, Constants.ACTION_STOP_SERVICE);
     }
-
 
     private void getVarsFromPreviousFragment(){
         //vars passed from other fragment
@@ -198,13 +196,12 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
         DeviceType deviceType = scannerAdapter.scanResults.get(position).getDeviceType();
 
         Device newDevice = new Device(deviceName, deviceName, deviceMacAddress, deviceType);
-        LiveData<List<Device>> allDevices = myDevicesViewModel.getAllDevices();
-        myDevicesViewModel.insert(newDevice);
+        LiveData<List<Device>> allDevices = sharedEntitiesViewModel.getAllDevices();
+        sharedEntitiesViewModel.insert(newDevice);
 
         NavDirections action = ScannerFragmentDirections.actionNavScannerToNavMyDevices();
         Navigation.findNavController(getView()).navigate(action);
     }
-
 
 
     /**
@@ -241,23 +238,19 @@ public class ScannerFragment extends Fragment implements RecyclerViewInterface {
                 buttonStopScan.setEnabled(true);
                 progressBarScan.setVisibility(View.GONE);
             }
-
         }
     };
 
     private void initObservers(){
         final Observer<ArrayList<ScannerListenerInterface>> observerScanResults;
-        observerScanResults = new Observer<ArrayList<ScannerListenerInterface>>(){
-            public void onChanged(@Nullable final ArrayList scanResults) {
-                updateRecycleViewer(scanResults);
-            }
-        };
+        observerScanResults = scanResults -> updateRecycleViewer(scanResults);
 
         //start observing scan results
         BleScannerService.getScanResults().observe(getActivity(), observerScanResults);
 
         //Observe changes to list of all devices
-        scannerViewModel.getAllDevices().observe(getViewLifecycleOwner(), devices -> updateDevices(devices));
+        sharedEntitiesViewModel.getAllDevices().observe(getViewLifecycleOwner(), devices -> updateDevices(devices));
+        Log.d(TAG, "Update to device list");
     }
 
     private void updateDevices(List<Device> devices) {

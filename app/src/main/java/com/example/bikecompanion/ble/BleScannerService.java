@@ -59,46 +59,13 @@ public class BleScannerService extends LifecycleService {
 
 
     public BleScannerService() {
-//        initObservers();
-
     }
-
-//    @Override
-//    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
-//
-//        String action = intent.getAction();
-//        getIntentExtras(intent);
-//
-//        Log.d(TAG, "Received intent from fragment: " + action + " " + deviceType);
-//
-//        switch (action){
-//            case Constants.ACTION_START_OR_RESUME_SERVICE:
-//                startScan();
-//                Log.d(TAG, "Started service");
-//                break;
-//
-//            case Constants.ACTION_STOP_SERVICE:
-//                Log.d(TAG, "Stopped service");
-//                if(scanning){
-//                    stopScanning();
-//                }
-//                break;
-//        }
-//
-//        return super.onStartCommand(intent, flags, startId);
-//    }
 
     //makes sure next scan does not have any leftover filters
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "BleScannerService Destroyed");
         stopSelf();
-    }
-
-    private void getIntentExtras(Intent intent){
-//        if (intent.hasExtra("serviceUuids")) {
-////            serviceUuids = ParcelUuid.fromString(intent.getStringExtra("serviceUuids"));
-//        }
     }
 
     /**
@@ -123,7 +90,6 @@ public class BleScannerService extends LifecycleService {
     /**
      * Code related to scanning
      */
-
 
     // Scans for devices
     public void startScan(ParcelUuid serviceUuids, DeviceType deviceType, List<Device> devices) {
@@ -179,7 +145,7 @@ public class BleScannerService extends LifecycleService {
     //Stops scanning
     public void stopScanning() {
         //stop scan timer
-        if(handler != null) {
+        if (handler != null) {
             handler.removeCallbacksAndMessages(null);
         }
         //stop scanner
@@ -210,11 +176,9 @@ public class BleScannerService extends LifecycleService {
         //Log.d(TAG, "Sent intent to fragment " + action);
     }
 
-
     /**
      * LiveData
      */
-
     public static MutableLiveData<ArrayList<ScannerListenerInterface>> getScanResults() {
         if (scannerLiveDataList == null){
             scannerLiveDataList = new MutableLiveData<>();
@@ -231,47 +195,24 @@ public class BleScannerService extends LifecycleService {
             scanResults = new ArrayList<>();
         }
         //checks to see if last device discovered is already in list of scan results
-        int scanSize = scanResults.size();
-        if(scanSize > 0) {
-            for (int i = 0; i < scanSize; i++) {
-                {
-                    if (deviceMacAddress.equals(scanResults.get(i).getDeviceMacAddress())) {
-                        return;
-                    }
-                }
+        for (ScannerListenerInterface scanResult : scanResults) {
+            if (deviceMacAddress.equals(scanResult.getDeviceMacAddress())) {
+                return;
             }
         }
-
         //checks to see if last device discovered is already in myDevices
-        int deviceSize = devices.size();
-        if (deviceSize > 0) {
+        if (devices != null) {
             for (Device device : devices) {
                 if (deviceMacAddress.equals(device.getDeviceMacAddress())) {
                     return;
                 }
             }
         }
-            //if deviceMacAddress not already in list, add device to scannerResults
-            int image = deviceType.getIcon();
-            scanResults.add(new ScannerListenerInterface(image, deviceName, deviceMacAddress, deviceType));
-            scannerLiveDataList.postValue(scanResults);
-        }
-
-
-//    private void initObservers() {
-//        Log.d(TAG, "initObservers ");
-//        EntitiesRepository entitiesRepository = new EntitiesRepository(getApplication());
-//        entitiesRepository.getAllDevices().observe(this, new Observer<List<Device>>() {
-//
-//            @Override
-//            public void onChanged(List<Device> devices) {
-//                deviceList = devices;
-//                Log.d(TAG, "Received devices live data ");
-//
-//            }
-//
-//        });
-//    }
+        //if deviceMacAddress not already in list, add device to scannerResults
+        int image = deviceType.getIcon();
+        scanResults.add(new ScannerListenerInterface(image, deviceName, deviceMacAddress, deviceType));
+        scannerLiveDataList.postValue(scanResults);
+    }
 
 }
 

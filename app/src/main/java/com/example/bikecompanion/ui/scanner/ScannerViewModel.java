@@ -42,7 +42,6 @@ public class ScannerViewModel extends AndroidViewModel {
     private List<Device> devices;
     private LiveData<List<Device>> allDevices;
 
-
     private boolean boundToService;
 
     public ScannerViewModel(@NonNull Application application) {
@@ -52,7 +51,6 @@ public class ScannerViewModel extends AndroidViewModel {
         allDevices = repository.getAllDevices();
         bindService();
     }
-
 
     public void bindService() {
         if (!boundToService) {
@@ -89,20 +87,13 @@ public class ScannerViewModel extends AndroidViewModel {
             this.devices = devices;
             this.serviceUuids = serviceUuids;
             this.deviceType = deviceType;
+            pendingScanRequest = true;
         }
     }
 
     public void stopScan(){
         bleScannerService.stopScanning();
     }
-
-
-
-    public LiveData<List<Device>> getAllDevices() {
-        return allDevices;
-    }
-
-
 
 
 
